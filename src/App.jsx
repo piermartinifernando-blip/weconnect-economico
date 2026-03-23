@@ -993,6 +993,144 @@ export default function App() {
             </div>
 
             {/* ── SIMULADOR DE CANALES ── */}
+            <Card title="Simulador de canales — 3 escenarios · altas brutas · churn · neto">
+
+              {/* Leyenda */}
+              <div style={{display:"flex",gap:16,marginBottom:14,flexWrap:"wrap",fontSize:11,padding:"8px 10px",background:C.bg3,borderRadius:8,border:`0.5px solid ${C.bdr}`}}>
+                <span style={{color:C.text2,fontWeight:600}}>Criterio:</span>
+                {[
+                  {color:C.green, label:"Altas brutas = orgánico 239 + leads × conv%"},
+                  {color:C.red,   label:"Churn = 2.9% base activa = 131/mes (fijo)"},
+                  {color:C.blue,  label:"Neto = altas − churn"},
+                ].map((l,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
+                    <div style={{width:8,height:8,borderRadius:2,background:l.color,flexShrink:0}}/>
+                    <span style={{color:C.text2}}>{l.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {[
+                {
+                  num:"1", label:"Escenario 1 — Estado actual",
+                  tag:"ACTUAL MAR 26", tagColor:C.amber, tagBg:C.amberP,
+                  color:C.amber,
+                  canales:[
+                    {canal:"Meta Ads",  inv:1500, cpl:13.27, conv:18, leads:113, extra:20, color:C.amber},
+                    {canal:"Google",    inv:0,    cpl:0,     conv:0,  leads:0,   extra:0,  color:C.text3, off:true},
+                    {canal:"TikTok",    inv:0,    cpl:0,     conv:0,  leads:0,   extra:0,  color:C.text3, off:true},
+                    {canal:"Orgánico",  inv:0,    cpl:0,     conv:0,  leads:0,   extra:239,color:C.text2, org:true},
+                  ],
+                  altas:259, churn:131, neto:128,
+                  inv_usd:1500, ingreso:7.1, ingreso_neto:3.5, cpa:75.0,
+                  nota:"113 leads Meta × 18% conv = 20 altas extra · validado datos reales",
+                },
+                {
+                  num:"2", label:"Escenario 2 — Multi-canal inicial",
+                  tag:"RECOMENDADO ARRANQUE", tagColor:C.blue, tagBg:C.blueP,
+                  color:C.blue,
+                  canales:[
+                    {canal:"Meta Ads",   inv:1500, cpl:13.27, conv:18, leads:113, extra:20, color:C.amber},
+                    {canal:"Google Ads", inv:800,  cpl:11.50, conv:25, leads:70,  extra:17, color:C.blue},
+                    {canal:"TikTok Ads", inv:200,  cpl:8.50,  conv:15, leads:24,  extra:4,  color:"#8B5CF6"},
+                    {canal:"Orgánico",   inv:0,    cpl:0,     conv:0,  leads:0,   extra:239,color:C.text2, org:true},
+                  ],
+                  altas:280, churn:131, neto:149,
+                  inv_usd:2500, ingreso:7.7, ingreso_neto:4.1, cpa:61.0,
+                  nota:"CPA baja a $61 USD por diversificación · +21 altas vs Esc 1",
+                },
+                {
+                  num:"3", label:"Escenario 3 — Full stack",
+                  tag:"OBJETIVO 6 MESES", tagColor:C.green, tagBg:C.greenP,
+                  color:C.green,
+                  canales:[
+                    {canal:"Meta Ads",   inv:3000, cpl:13.27, conv:18, leads:226, extra:41, color:C.amber},
+                    {canal:"Google Ads", inv:1000, cpl:11.50, conv:25, leads:87,  extra:22, color:C.blue},
+                    {canal:"TikTok Ads", inv:500,  cpl:8.50,  conv:15, leads:59,  extra:9,  color:"#8B5CF6"},
+                    {canal:"Orgánico",   inv:0,    cpl:0,     conv:0,  leads:0,   extra:239,color:C.text2, org:true},
+                  ],
+                  altas:311, churn:131, neto:180,
+                  inv_usd:4500, ingreso:8.5, ingreso_neto:4.9, cpa:62.5,
+                  nota:"72 altas extra por pauta · +52 vs Esc 1 · neto +$4.9M ARS/mes",
+                },
+              ].map((e,ei)=>(
+                <div key={ei} style={{
+                  background:C.bg2, border:`0.5px solid ${e.borderColor||e.color}`,
+                  borderRadius:12, padding:"16px 18px", marginBottom:12,
+                  borderLeft:`4px solid ${e.color}`,
+                }}>
+                  {/* Header */}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{width:28,height:28,borderRadius:"50%",background:`${e.color}18`,border:`1px solid ${e.color}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                        <span style={{fontSize:13,fontWeight:700,color:e.color}}>{e.num}</span>
+                      </div>
+                      <div>
+                        <p style={{fontSize:13,fontWeight:600,color:C.text}}>{e.label}</p>
+                        <p style={{fontSize:10,color:C.text3}}>{e.nota}</p>
+                      </div>
+                    </div>
+                    <span style={{background:e.tagBg,color:e.tagColor,fontSize:9,fontWeight:700,padding:"3px 8px",borderRadius:9,whiteSpace:"nowrap"}}>{e.tag}</span>
+                  </div>
+
+                  {/* Desglose por canal */}
+                  <div style={{marginBottom:12}}>
+                    <p style={{fontSize:9,color:C.text3,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6,fontWeight:600}}>Desglose por canal</p>
+                    <div style={{display:"grid",gridTemplateColumns:mob?"1fr 1fr":"repeat(4,1fr)",gap:6}}>
+                      {e.canales.map((c,ci)=>(
+                        <div key={ci} style={{background:C.bg3,border:`0.5px solid ${c.off?C.bdr:C.bdr}`,borderRadius:8,padding:"8px 10px",opacity:c.off?0.4:1}}>
+                          <p style={{fontSize:10,fontWeight:600,color:c.off?C.text3:c.color}}>{c.canal}</p>
+                          {c.off ? (
+                            <p style={{fontSize:10,color:C.text3,marginTop:3}}>sin pauta</p>
+                          ) : c.org ? (
+                            <>
+                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>referidos + orgánico</p>
+                              <p style={{fontSize:12,fontFamily:C.mono,fontWeight:700,color:C.text2,marginTop:3}}>{c.extra} altas</p>
+                            </>
+                          ) : (
+                            <>
+                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>${c.inv.toLocaleString()} USD · CPL ${c.cpl}</p>
+                              <p style={{fontSize:9,color:C.text3}}>{c.leads} leads × {c.conv}%</p>
+                              <p style={{fontSize:12,fontFamily:C.mono,fontWeight:700,color:C.green,marginTop:3}}>+{c.extra} altas</p>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Resultado: altas / churn / neto */}
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                    <div style={{background:C.greenP,border:`0.5px solid ${C.green}`,borderRadius:8,padding:"10px 12px",textAlign:"center"}}>
+                      <p style={{fontSize:9,color:"#0F5226",textTransform:"uppercase",fontWeight:600,marginBottom:4}}>Altas brutas</p>
+                      <p style={{fontSize:26,fontFamily:C.mono,fontWeight:700,color:C.green}}>{e.altas}</p>
+                      <p style={{fontSize:9,color:"#0F5226",marginTop:2}}>${e.ingreso}M ARS/mes</p>
+                    </div>
+                    <div style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,padding:"10px 12px",textAlign:"center"}}>
+                      <p style={{fontSize:9,color:"#891515",textTransform:"uppercase",fontWeight:600,marginBottom:4}}>Churn (−)</p>
+                      <p style={{fontSize:26,fontFamily:C.mono,fontWeight:700,color:C.red}}>−131</p>
+                      <p style={{fontSize:9,color:"#891515",marginTop:2}}>$3.6M ARS perdidos</p>
+                    </div>
+                    <div style={{background:`${e.color}12`,border:`0.5px solid ${e.color}`,borderRadius:8,padding:"10px 12px",textAlign:"center"}}>
+                      <p style={{fontSize:9,color:e.color,textTransform:"uppercase",fontWeight:600,marginBottom:4}}>Neto mensual</p>
+                      <p style={{fontSize:26,fontFamily:C.mono,fontWeight:700,color:e.color}}>+{e.neto}</p>
+                      <p style={{fontSize:9,color:e.color,marginTop:2}}>${e.ingreso_neto}M ARS/mes</p>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:10,paddingTop:8,borderTop:`0.5px solid ${C.bdr}`,fontSize:11,flexWrap:"wrap",gap:6}}>
+                    <span style={{color:C.text2}}>Inversión: <strong style={{color:C.text}}>${e.inv_usd.toLocaleString()} USD/mes</strong></span>
+                    <span style={{color:C.text2}}>CPA real: <strong style={{color:e.color}}>${e.cpa} USD/alta</strong></span>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{padding:"10px 14px",background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+                <p style={{fontSize:11,color:C.red,fontWeight:600}}>⚠ El churn consume 131 clientes/mes = $3.6M ARS en todos los escenarios</p>
+                <p style={{fontSize:11,color:"#891515",fontFamily:C.mono,fontWeight:700}}>Reducir al 1.5% libera +$1.9M/mes adicionales</p>
+              </div>
+            </Card>
 
           </div>
         )}
