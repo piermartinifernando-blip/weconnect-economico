@@ -69,26 +69,29 @@ const D = {
   RED_CAJAS_MES:150, RED_CAJAS_OBJ:3000, RED_CHURN_HOY:2.9, RED_CHURN_OBJ:1.5,
   RED_CLI_OBJ:48000,
   // Proyección modelo real: tasa 2%→5% en 18m · churn 2.9%→1.5% en 12m · CAPEX obra $40M×6m
+  // cobrado = clientes × ARPU cobrado real $22.447 (no teórico)
+  // costo   = OPEX $150.3M + CAPEX obra $40M (abr-sep 26) juntos
+  // BE real: Nov 26 con ARPU cobrado + OPEX correcto
   RED_PROJ:[
-    {mes:"Hoy",   cajas:1000, cap:10500,  pen:2.0, churn:2.90, altas:274,  clientes:4088,  cobrado:112.1, costo:146.6, neto:-34.5,  capex:0  },
-    {mes:"Abr 26",cajas:1150, cap:12075,  pen:2.2, churn:2.78, altas:326,  clientes:4088,  cobrado:112.1, costo:186.6, neto:-74.5,  capex:40 },
-    {mes:"May 26",cajas:1300, cap:13650,  pen:2.3, churn:2.67, altas:382,  clientes:4300,  cobrado:117.9, costo:186.6, neto:-68.7,  capex:40 },
-    {mes:"Jun 26",cajas:1450, cap:15225,  pen:2.5, churn:2.55, altas:445,  clientes:4567,  cobrado:125.2, costo:186.6, neto:-61.4,  capex:40 },
-    {mes:"Jul 26",cajas:1600, cap:16800,  pen:2.7, churn:2.43, altas:512,  clientes:4896,  cobrado:134.3, costo:186.6, neto:-52.4,  capex:40 },
-    {mes:"Ago 26",cajas:1750, cap:18375,  pen:2.8, churn:2.32, altas:585,  clientes:5289,  cobrado:145.1, costo:186.6, neto:-41.6,  capex:40 },
-    {mes:"Sep 26",cajas:1900, cap:19950,  pen:3.0, churn:2.20, altas:662,  clientes:5751,  cobrado:157.7, costo:186.6, neto:-28.9,  capex:40 },
-    {mes:"Oct 26",cajas:2050, cap:21525,  pen:3.2, churn:2.08, altas:746,  clientes:6286,  cobrado:172.4, costo:146.6, neto:25.8,   capex:0  },
-    {mes:"Nov 26",cajas:2200, cap:23100,  pen:3.3, churn:1.97, altas:834,  clientes:6901,  cobrado:189.3, costo:146.6, neto:42.6,   capex:0  },
-    {mes:"Dic 26",cajas:2350, cap:24675,  pen:3.5, churn:1.85, altas:928,  clientes:7599,  cobrado:208.4, costo:146.6, neto:61.8,   capex:0  },
-    {mes:"Ene 27",cajas:2500, cap:26250,  pen:3.7, churn:1.73, altas:1026, clientes:8386,  cobrado:230.0, costo:146.6, neto:83.4,   capex:0  },
-    {mes:"Feb 27",cajas:2650, cap:27825,  pen:3.8, churn:1.62, altas:1131, clientes:9267,  cobrado:254.1, costo:146.6, neto:107.5,  capex:0  },
-    {mes:"Mar 27",cajas:2800, cap:29400,  pen:4.0, churn:1.50, altas:1240, clientes:10248, cobrado:281.1, costo:146.6, neto:134.4,  capex:0  },
-    {mes:"Abr 27",cajas:2950, cap:30975,  pen:4.2, churn:1.50, altas:1355, clientes:11334, cobrado:310.8, costo:146.6, neto:164.2,  capex:0  },
-    {mes:"May 27",cajas:3000, cap:31500,  pen:4.3, churn:1.50, altas:1429, clientes:12519, cobrado:343.3, costo:146.6, neto:196.7,  capex:0  },
-    {mes:"Jun 27",cajas:3000, cap:31500,  pen:4.5, churn:1.50, altas:1482, clientes:13760, cobrado:377.4, costo:146.6, neto:230.7,  capex:0  },
-    {mes:"Sep 27",cajas:3000, cap:31500,  pen:5.0, churn:1.50, altas:1639, clientes:17685, cobrado:485.0, costo:146.6, neto:338.4,  capex:0  },
-    {mes:"Dic 27",cajas:3000, cap:31500,  pen:5.0, churn:1.50, altas:1639, clientes:21745, cobrado:596.4, costo:146.6, neto:449.7,  capex:0  },
-    {mes:"Mar 28",cajas:3000, cap:31500,  pen:5.0, churn:1.50, altas:1639, clientes:25625, cobrado:702.8, costo:146.6, neto:556.1,  capex:0  },
+    {mes:"Hoy",    cajas:1000, cap:10500, pen:2.0, churn:2.90, altas:274,  clientes:4088,  cobrado:91.8,  opex:150.3, capex:0,  costo:150.3, neto:-58.5},
+    {mes:"Abr 26", cajas:1150, cap:12075, pen:2.2, churn:2.78, altas:330,  clientes:4088,  cobrado:91.8,  opex:150.3, capex:40, costo:190.3, neto:-98.5},
+    {mes:"May 26", cajas:1300, cap:13650, pen:2.3, churn:2.67, altas:378,  clientes:4304,  cobrado:96.6,  opex:150.3, capex:40, costo:190.3, neto:-93.7},
+    {mes:"Jun 26", cajas:1450, cap:15225, pen:2.5, churn:2.55, altas:445,  clientes:4567,  cobrado:102.5, opex:150.3, capex:40, costo:190.3, neto:-87.8},
+    {mes:"Jul 26", cajas:1600, cap:16800, pen:2.7, churn:2.43, altas:518,  clientes:4896,  cobrado:109.9, opex:150.3, capex:40, costo:190.3, neto:-80.4},
+    {mes:"Ago 26", cajas:1750, cap:18375, pen:2.8, churn:2.32, altas:578,  clientes:5295,  cobrado:118.9, opex:150.3, capex:40, costo:190.3, neto:-71.4},
+    {mes:"Sep 26", cajas:1900, cap:19950, pen:3.0, churn:2.20, altas:662,  clientes:5750,  cobrado:129.1, opex:150.3, capex:40, costo:190.3, neto:-61.2},
+    {mes:"Oct 26", cajas:2050, cap:21525, pen:3.2, churn:2.08, altas:753,  clientes:6286,  cobrado:141.1, opex:150.3, capex:0,  costo:150.3, neto:-9.2},
+    {mes:"Nov 26", cajas:2200, cap:23100, pen:3.3, churn:1.97, altas:826,  clientes:6908,  cobrado:155.1, opex:150.3, capex:0,  costo:150.3, neto:4.8},
+    {mes:"Dic 26", cajas:2350, cap:24675, pen:3.5, churn:1.85, altas:928,  clientes:7598,  cobrado:170.6, opex:150.3, capex:0,  costo:150.3, neto:20.3},
+    {mes:"Ene 27", cajas:2500, cap:26250, pen:3.7, churn:1.73, altas:1035, clientes:8385,  cobrado:188.2, opex:150.3, capex:0,  costo:150.3, neto:37.9},
+    {mes:"Feb 27", cajas:2650, cap:27825, pen:3.8, churn:1.62, altas:1121, clientes:9275,  cobrado:208.2, opex:150.3, capex:0,  costo:150.3, neto:57.9},
+    {mes:"Mar 27", cajas:2800, cap:29400, pen:4.0, churn:1.50, altas:1240, clientes:10246, cobrado:230.0, opex:150.3, capex:0,  costo:150.3, neto:79.7},
+    {mes:"Abr 27", cajas:2950, cap:30975, pen:4.2, churn:1.50, altas:1365, clientes:11332, cobrado:254.4, opex:150.3, capex:0,  costo:150.3, neto:104.1},
+    {mes:"May 27", cajas:3000, cap:31500, pen:4.3, churn:1.50, altas:1418, clientes:12527, cobrado:281.2, opex:150.3, capex:0,  costo:150.3, neto:130.9},
+    {mes:"Jun 27", cajas:3000, cap:31500, pen:4.5, churn:1.50, altas:1482, clientes:13757, cobrado:308.8, opex:150.3, capex:0,  costo:150.3, neto:158.5},
+    {mes:"Sep 27", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:15033, cobrado:337.4, opex:150.3, capex:0,  costo:150.3, neto:187.1},
+    {mes:"Dic 27", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:16447, cobrado:369.2, opex:150.3, capex:0,  costo:150.3, neto:218.9},
+    {mes:"Mar 28", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:17839, cobrado:400.4, opex:150.3, capex:0,  costo:150.3, neto:250.1},
   ],
   OPEX_CATS:["RRHH","Alquileres y oficinas","Equipamiento","Red e infraestructura","Comisiones ventas","Comisiones cobranza","Marketing","Impuestos y tasas","Tecnología"],
   OPEX_COLORS:["#D13030","#C47A00","#7B5EA7","#0D7377","#1A5FBF","#1A7A3C","#E07040","#5A6A7A","#3C3489"],
@@ -289,8 +292,8 @@ export default function App() {
     D.OPEX_CATS.forEach(cat=>{ row[cat]=(D.OPEX_DATA[cat]||[])[i]||0; });
     return row;
   });
-  const OPEX_BASE = 146.63;
-  const ARPU_BE   = 27425;
+  const OPEX_BASE = 150.3;   // real ene-feb 26
+  const ARPU_BE   = 22447;   // ARPU cobrado real (no teórico)
   const beData    = D.RED_PROJ;
 
   if(loading) return(
@@ -676,7 +679,7 @@ export default function App() {
                   <ComposedChart data={D.CHURN_MENS}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                     <XAxis dataKey="mes" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} interval={3}/>
-                    <YAxis yAxisId="left"  tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,4]}
+                    <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,4]}
                       label={{value:"%",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
                     <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
                       label={{value:"clientes",angle:90,position:"insideRight",fill:C.text2,fontSize:9}}/>
@@ -811,13 +814,13 @@ export default function App() {
         {tab==="be"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Break-even"          value="Oct 26"  sub="Mes 7 · fin CAPEX obra · +$25.8M" type="ok"/>
-              <KPI label="Altas/mes hoy (AB)"  value="274"     sub="2% × 10.500 cap · 1.000 cajas"   type="ok"/>
-              <KPI label="Altas/mes oct 26"    value="746"     sub="3.2% × 21.525 cap · 2.050 cajas" type="ok"/>
-              <KPI label="Red AB completa"     value="May 27"  sub="3.000 cajas · 31.500 posibles"   type="nv"/>
+              <KPI label="Break-even real"      value="Nov 26"  sub="ARPU cobrado $22.447 · OPEX $150.3M · +$4.8M" type="ok"/>
+              <KPI label="Cobrado hoy"          value="$91.8M"  sub="4.088 cli × $22.447 ARPU cobrado real"        type="dn"/>
+              <KPI label="Costo total hoy"      value="$150.3M" sub="OPEX base sin CAPEX obra"                     type="dn"/>
+              <KPI label="Costo con CAPEX obra" value="$190.3M" sub="abr-sep 26 · $40M CAPEX incluido"             type="dn"/>
             </div>
 
-            <Card title="Proyección resultado mensual ($M) — Red AB: +150 cajas/mes · Tasa 2%→5% · Churn 2.9%→1.5% · CAPEX obra $40M×6m" style={{marginBottom:12}}>
+            <Card title="Proyección: cobrado vs OPEX+CAPEX ($M ARS) — ARPU cobrado real $22.447 · BE: Nov 26" style={{marginBottom:12}}>
               <ResponsiveContainer width="100%" height={300}>
                 <ComposedChart data={beData}>
                   <defs>
@@ -830,15 +833,16 @@ export default function App() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                  <YAxis yAxisId="left"  tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
+                  <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
                   <YAxis yAxisId="right" orientation="right" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>v}/>
                   <Tooltip content={<Tip/>}/>
-                  <ReferenceLine yAxisId="left" y={0} stroke={C.navy} strokeDasharray="4 3" label={{value:"Break-even Oct 26",fill:C.navy,fontSize:11,position:"right"}}/>
-                  <ReferenceLine yAxisId="left" x="Oct 26" stroke={C.amber} strokeDasharray="4 3" label={{value:"Fin CAPEX · Red AB crece",fill:C.amber,fontSize:10,position:"insideTopLeft"}}/>
-                  <ReferenceLine yAxisId="left" x="May 27" stroke={C.teal} strokeDasharray="4 3" label={{value:"Red AB completa",fill:C.teal,fontSize:10,position:"insideTopLeft"}}/>
+                  <ReferenceLine y={0} stroke={C.navy} strokeDasharray="4 3" label={{value:"Neto = 0",fill:C.navy,fontSize:10,position:"right"}}/>
+                  <ReferenceLine x="Nov 26" stroke={C.green} strokeWidth={1.5} label={{value:"★ BE Nov 26",fill:C.green,fontSize:10,position:"insideTopLeft"}}/>
+                  <ReferenceLine x="Oct 26" stroke={C.amber} strokeDasharray="4 3" label={{value:"Fin CAPEX obra",fill:C.amber,fontSize:10,position:"insideTopLeft"}}/>
                   <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                  <Area type="monotone" yAxisId="left"  dataKey="neto"     name="Resultado ($M)"   stroke={C.blue}  fill="url(#gCon)" strokeWidth={2.5} dot={false}/>
-                  <Bar  yAxisId="right" dataKey="altas"   name="Altas/mes" fill={C.green} opacity={0.5} radius={[2,2,0,0]}/>
+                  <Area type="monotone" dataKey="cobrado" name="Ingresos cobrados ($M)" stroke={C.blue}  fill="rgba(26,95,191,0.1)" strokeWidth={2} dot={false}/>
+                  <Area type="monotone" dataKey="costo"   name="OPEX + CAPEX ($M)"     stroke={C.red}   fill="rgba(209,48,48,0.08)" strokeWidth={2} dot={false}/>
+                  <Line type="monotone" dataKey="neto"    name="Resultado neto ($M)"   stroke={C.green} strokeWidth={2.5} dot={false} strokeDasharray="4 3"/>
                 </ComposedChart>
               </ResponsiveContainer>
             </Card>
