@@ -225,8 +225,8 @@ const TABS = [
   {id:"churn",    label:"📉 Churn"      },
   {id:"mora",     label:"⚠️ Mora"       },
   {id:"be",       label:"📈 Break-even" },
-  {id:"rrss",     label:"📣 Redes soc." },
-  {id:"ia",       label:"🤖 IA Ventas"  },
+  {id:"rrss",     label:"📣 Canales + IA"},
+
   {id:"plan",     label:"🚀 Plan"       },
 ];
 
@@ -841,108 +841,195 @@ export default function App() {
         {/* ═══ REDES SOCIALES ════════════════════════════════════════ */}
         {tab==="rrss"&&(
           <div>
+
+            {/* ── KPIs de adquisición ── */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Inversión total adquisición" value="$4.3M ARS" sub="Meta $1.8M + equipo WSP $2.5M"     type="nv"/>
-              <KPI label="CPL real corregido"          value="$15.926"   sub="$13.27 USD · antes incorrecto"      type="ok"/>
-              <KPI label="LTV / CAC"                   value="59.5x"     sub="sigue siendo muy bueno"             type="ok"/>
-              <KPI label="Payback"                     value="17 días"   sub="0.58 meses"                         type="ok"/>
+              <KPI label="Inversión pauta total"  value="$4.800 USD" sub="Meta $3k + Google $1k + TikTok $800" type="nv"/>
+              <KPI label="CPL real corregido"     value="$13.27 USD" sub="$15.926 ARS · validado"             type="ok"/>
+              <KPI label="LTV / CAC"              value="59.5x"      sub="muy bueno · payback 17 días"        type="ok"/>
+              <KPI label="Altas proyectadas"      value="~600/mes"   sub="Meta+Google+TikTok+Referidos"       type="ok"/>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-              <Card title="Proyección altas/mes por escenario de inversión">
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={D.CPL_ESC}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
-                    <XAxis dataKey="esc" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                    <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                    <Tooltip content={<Tip/>}/>
-                    <Bar dataKey="altas" name="Altas/mes" radius={[4,4,0,0]}>
-                      {D.CPL_ESC.map((_,i)=><Cell key={i} fill={[C.blue,C.teal,C.green][i]}/>)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                <Ins type="i" html="Escenario 3 (Meta $3k + Google + Referidos) es el <strong>recomendado</strong>: CPL $9.6 USD · LTV/CAC 99x · +812 altas/mes realista."/>
-              </Card>
+            {/* ── ESTADO ACTUAL vs PROPUESTO — diagrama ── */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
 
-              <Card title="Por qué los dos canales juntos — funnel completo">
-                {[
-                  {etapa:"Awareness",canal:"📘 Meta",desc:"Interrumpe · muestra · genera conocimiento de marca en zona",color:C.blue},
-                  {etapa:"Intención",canal:"🔍 Google Search",desc:"Captura cuando ya están buscando · 15–22% conversión",color:C.teal},
-                  {etapa:"Decisión", canal:"🎯 Remarketing",desc:"Meta + Display Google · acompañan hasta el cierre · 4–8%",color:C.purple},
-                  {etapa:"Conversión",canal:"🤖 Bot WSP IA",desc:"Cierra 24/7 · responde en 3 seg · vende cuando el lead está caliente",color:C.green},
-                ].map((f,i)=>(
-                  <div key={i} style={{display:"flex",gap:10,padding:"8px 0",borderBottom:`0.5px solid ${C.bdr}`}}>
-                    <span style={{background:`${f.color}18`,color:f.color,padding:"2px 8px",borderRadius:9,fontSize:10,fontWeight:600,whiteSpace:"nowrap"}}>{f.etapa}</span>
-                    <div>
-                      <p style={{fontSize:11,fontWeight:600,color:C.text}}>{f.canal}</p>
-                      <p style={{fontSize:11,color:C.text2}}>{f.desc}</p>
-                    </div>
+              {/* ACTUAL */}
+              <Card title="Estado actual — fragmentado · manual · sin IA">
+                <div style={{marginBottom:10,padding:"7px 10px",background:C.redP,borderRadius:6,border:`0.5px solid ${C.red}`,fontSize:11,color:"#891515"}}>
+                  3+ números de WSP · sin IA · solo Meta $1.500 USD · sin dashboard
+                </div>
+                {/* Canal único */}
+                <div style={{display:"flex",gap:8,marginBottom:8}}>
+                  <div style={{flex:1,background:C.amberP,border:`0.5px solid ${C.amber}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:C.amber}}>Meta Ads</p>
+                    <p style={{fontSize:10,color:"#7A4C00"}}>$1.500 USD/mes</p>
                   </div>
-                ))}
-                <Ins type="d" html="Sin Meta solo: capturás intención existente pero no generás demanda nueva. Sin Google solo: generás demanda pero perdés los leads que van a buscar antes de decidir."/>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {/* ═══ IA VENTAS ═════════════════════════════════════════════ */}
-        {tab==="ia"&&(
-          <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Costo equipo ventas/mes" value="$2.5M ARS"  sub="personal que atiende el WSP"         type="nv"/>
-              <KPI label="Inversión desarrollo"    value="$690 USD"   sub="−60% vs estimación anterior · 23 hs" type="ok"/>
-              <KPI label="Payback"                 value="8 días"     sub="$828k ARS ÷ $3.16M beneficio mensual" type="ok"/>
-              <KPI label="Beneficio neto mensual"  value="+$3.16M"    sub="ahorro $1.75M + altas +$1.48M − IA $74k" type="ok"/>
-            </div>
-
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-              <Card title="Hoy — proceso manual vs Con IA — 24/7 · &lt;3 segundos">
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                  <div>
-                    <p style={{fontSize:11,fontWeight:600,color:C.text2,marginBottom:8}}>HOY — manual</p>
-                    {["Lead llega al link WSP","Espera que un humano responda","Conversación manual de venta","Alta manual en ISP CUBE"].map((s,i)=>(
-                      <div key={i} style={{display:"flex",gap:8,marginBottom:8,padding:"8px 10px",background:C.bg3,borderRadius:8,border:`0.5px solid ${C.bdr}`}}>
-                        <span style={{fontSize:11,color:C.text3,fontWeight:600,flexShrink:0}}>{i+1}</span>
-                        <p style={{fontSize:11,color:C.text2}}>{s}</p>
-                      </div>
-                    ))}
-                    <Ins type="d" html="El lead está caliente <strong>5–15 minutos</strong>. Después se enfría o se va."/>
+                  <div style={{flex:1,background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:C.text3}}>Google</p>
+                    <p style={{fontSize:10,color:C.text3}}>sin pauta</p>
                   </div>
-                  <div>
-                    <p style={{fontSize:11,fontWeight:600,color:C.green,marginBottom:8}}>CON IA — 24/7 &lt;3s</p>
-                    {["IA responde en <3 segundos","Califica y verifica cobertura","Cotiza, maneja objeciones, cierra","Registra alta (con API ISP CUBE)"].map((s,i)=>(
-                      <div key={i} style={{display:"flex",gap:8,marginBottom:8,padding:"8px 10px",background:C.greenP,borderRadius:8,border:`0.5px solid ${C.green}`}}>
-                        <span style={{fontSize:11,color:C.green,fontWeight:600,flexShrink:0}}>{i+1}</span>
-                        <p style={{fontSize:11,color:"#0F5226"}}>{s}</p>
-                      </div>
-                    ))}
-                    <Ins type="g" html="+20% conversión por resp. inmediata → <strong>+54 altas/mes = +$1.48M/mes</strong>."/>
+                  <div style={{flex:1,background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:C.text3}}>TikTok</p>
+                    <p style={{fontSize:10,color:C.text3}}>sin pauta</p>
                   </div>
+                </div>
+                {/* Flecha */}
+                <div style={{textAlign:"center",fontSize:16,color:C.text3,margin:"4px 0"}}>↓</div>
+                {/* 4 números separados */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                  {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
+                    <div key={i} style={{background:"#FEE9E9",border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",fontSize:10,color:"#891515",textAlign:"center",fontWeight:600}}>{w}</div>
+                  ))}
+                </div>
+                {/* Flecha */}
+                <div style={{textAlign:"center",fontSize:16,color:C.text3,margin:"4px 0"}}>↓</div>
+                {/* Operadores */}
+                <div style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                  <p style={{fontSize:11,fontWeight:600,color:C.text2}}>4 operadores responden manualmente</p>
+                  <p style={{fontSize:10,color:C.text3,marginTop:2}}>sin historial unificado · sin métricas · leads se pierden de noche</p>
                 </div>
               </Card>
 
-              <Card title="Opciones de implementación">
-                {[
-                  {titulo:"Opción A — Typebot + Claude API",sub:"Para empezar · Sin programador · 1–2 semanas",costo:"~$200 USD/mes",color:C.blue,items:["Typebot (flujo visual): $50 USD/mes","Claude API (Anthropic): ~$8 USD/mes","WhatsApp Business API: ~$34 USD/mes","Configuración inicial: $500–1.000 USD única vez"]},
-                  {titulo:"Opción B — Bot completo con ISP CUBE",sub:"Versión completa · opción A + 54h más",costo:"~$62 USD/mes",color:C.green,items:["Claude API + hosting: ~$28 USD/mes","WhatsApp Business API: ~$34 USD/mes","Desarrollo adicional: $0 — ya son suscriptores","Ventas + soporte + cobros integrados"]},
-                ].map((op,i)=>(
-                  <div key={i} style={{marginBottom:16,padding:"12px 14px",background:C.bg3,borderRadius:10,border:`0.5px solid ${C.bdr}`}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-                      <div>
-                        <p style={{fontSize:12,fontWeight:600,color:C.text}}>{op.titulo}</p>
-                        <p style={{fontSize:10,color:C.text2}}>{op.sub}</p>
-                      </div>
-                      <span style={{background:`${op.color}18`,color:op.color,padding:"3px 8px",borderRadius:9,fontSize:11,fontWeight:600,whiteSpace:"nowrap"}}>{op.costo}</span>
+              {/* PROPUESTO */}
+              <Card title="Estado propuesto — unificado · IA 24/7 · multi-canal">
+                <div style={{marginBottom:10,padding:"7px 10px",background:C.greenP,borderRadius:6,border:`0.5px solid ${C.green}`,fontSize:11,color:"#0F5226"}}>
+                  1 número · IA responde en &lt;3 seg · 24/7 · dashboard en tiempo real
+                </div>
+                {/* 4 canales */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                  {[
+                    {label:"Meta Ads",   val:"$3.000 USD",  color:C.amber,  bg:C.amberP,  tc:"#7A4C00"},
+                    {label:"Google Ads", val:"$1.000 USD",  color:C.blue,   bg:C.blueP,   tc:"#103B8A"},
+                    {label:"TikTok Ads", val:"$800 USD",    color:"#8B5CF6",bg:"#EDE9FE",  tc:"#4C1D95"},
+                    {label:"Referidos",  val:"+105 altas",  color:C.teal,   bg:C.tealP,   tc:"#065457"},
+                  ].map((c,i)=>(
+                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
+                      <p style={{fontSize:10,color:c.tc}}>{c.val}</p>
                     </div>
-                    {op.items.map((it,j)=><p key={j} style={{fontSize:11,color:C.text2,marginBottom:2}}>• {it}</p>)}
-                  </div>
-                ))}
+                  ))}
+                </div>
+                {/* Flecha */}
+                <div style={{textAlign:"center",fontSize:16,color:C.green,margin:"4px 0"}}>↓</div>
+                {/* Hub IA */}
+                <div style={{background:C.tealP,border:`0.5px solid ${C.teal}`,borderRadius:8,padding:"8px 10px",textAlign:"center",marginBottom:8}}>
+                  <p style={{fontSize:11,fontWeight:600,color:C.teal}}>Hub IA unificado · 1 número · Claude API</p>
+                  <p style={{fontSize:10,color:"#065457",marginTop:2}}>Ventas · Soporte · Cobranza · Reclamos — mismo canal</p>
+                </div>
+                {/* Flecha */}
+                <div style={{textAlign:"center",fontSize:16,color:C.green,margin:"4px 0"}}>↓</div>
+                {/* 3 salidas */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
+                  {[
+                    {label:"IA cierra",  sub:"70% sin operador", color:C.green, bg:C.greenP, tc:"#0F5226"},
+                    {label:"Escala",     sub:"30% con contexto", color:"#7B5EA7",bg:"#EDE9FE",tc:"#4C1D95"},
+                    {label:"Dashboard",  sub:"métricas live",    color:C.blue,  bg:C.blueP,  tc:"#103B8A"},
+                  ].map((s,i)=>(
+                    <div key={i} style={{background:s.bg,border:`0.5px solid ${s.color}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:s.color}}>{s.label}</p>
+                      <p style={{fontSize:10,color:s.tc,marginTop:2}}>{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
               </Card>
             </div>
+
+            {/* ── SIMULADOR DE CANALES ── */}
+            <Card title="Simulador de canales — altas y CPL por escenario">
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+                {[
+                  {esc:"Solo Meta $1.5k",  altas:107, cpl:14.0, inv:1500, color:C.text2},
+                  {esc:"Meta $3k",         altas:214, cpl:14.0, inv:3000, color:C.amber},
+                  {esc:"Meta+Google",      altas:270, cpl:13.3, inv:4000, color:C.blue},
+                  {esc:"Meta+G+TikTok ⭐", altas:340, cpl:12.4, inv:4800, color:C.green},
+                ].map((e,i)=>(
+                  <div key={i} style={{background:i===3?C.greenP:C.bg3,border:`0.5px solid ${i===3?C.green:C.bdr}`,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                    <p style={{fontSize:10,color:C.text2,marginBottom:6,fontWeight:600}}>{e.esc}</p>
+                    <p style={{fontSize:22,fontFamily:C.mono,fontWeight:600,color:e.color}}>{e.altas}</p>
+                    <p style={{fontSize:10,color:C.text2,margin:"4px 0"}}>altas/mes</p>
+                    <div style={{background:`${e.color}18`,borderRadius:6,padding:"4px 6px",marginTop:6}}>
+                      <p style={{fontSize:11,color:e.color,fontWeight:600,fontFamily:C.mono}}>CPL ${e.cpl} USD</p>
+                    </div>
+                    <p style={{fontSize:9,color:C.text3,marginTop:4}}>Inv: ${e.inv.toLocaleString("es-AR")} USD/mes</p>
+                  </div>
+                ))}
+              </div>
+              <Ins type="g" html="Con Meta+Google+TikTok: <strong>340 altas/mes</strong> · CPL $12.4 USD · LTV/CAC 96x · payback 13 días"/>
+              <Ins type="i" html="TikTok agrega +70 altas/mes con CPM 40% más bajo que Meta feed · ideal para awareness en zonas nuevas"/>
+            </Card>
+
+            {/* ── IA VENTAS — MAQUETA DE PRODUCCIÓN ── */}
+            <Card title="IA ventas WSP — maqueta de producción · Claude API + Make.com">
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+
+                {/* Flujo de implementación */}
+                <div>
+                  <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Flujo técnico · Make.com · sin programador</p>
+                  {[
+                    {n:"1",label:"WA Business API",sub:"trigger: mensaje entrante",color:C.green},
+                    {n:"2",label:"Verificar cobertura",sub:"consulta KML de la zona",color:C.teal},
+                    {n:"3",label:"Claude API",sub:"genera respuesta personalizada",color:C.blue},
+                    {n:"4",label:"Responde al cliente",sub:"en &lt;3 seg · lenguaje natural",color:C.blue},
+                    {n:"5",label:"¿Cierra venta?",sub:"sí → ISPCube · no → operador",color:"#7B5EA7"},
+                    {n:"6",label:"Dashboard actualiza",sub:"conv · canal · tasa cierre",color:C.amber},
+                  ].map((s,i)=>(
+                    <div key={i}>
+                      <div style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 0"}}>
+                        <div style={{width:22,height:22,borderRadius:"50%",background:`${s.color}20`,border:`1px solid ${s.color}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                          <span style={{fontSize:10,fontWeight:600,color:s.color}}>{s.n}</span>
+                        </div>
+                        <div>
+                          <p style={{fontSize:12,fontWeight:600,color:C.text}}>{s.label}</p>
+                          <p style={{fontSize:10,color:C.text2}} dangerouslySetInnerHTML={{__html:s.sub}}/>
+                        </div>
+                      </div>
+                      {i<5 && <div style={{marginLeft:11,width:1,height:8,background:C.bdr}}/>}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Costos y KPIs */}
+                <div>
+                  <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Costos mensuales · opción A (para arrancar)</p>
+                  {[
+                    {item:"Make.com (automatización)",  costo:"$9 USD/mes"},
+                    {item:"Claude API (Anthropic)",      costo:"~$8 USD/mes"},
+                    {item:"WA Business API",             costo:"~$34 USD/mes"},
+                    {item:"Configuración inicial",       costo:"$500–1.000 USD única vez"},
+                  ].map((c,i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:11}}>
+                      <span style={{color:C.text2}}>{c.item}</span>
+                      <span style={{fontFamily:C.mono,fontWeight:600,color:C.navy}}>{c.costo}</span>
+                    </div>
+                  ))}
+                  <div style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderTop:`1px solid ${C.navy}`,marginTop:4,fontSize:12,fontWeight:600}}>
+                    <span style={{color:C.navy}}>Total recurrente</span>
+                    <span style={{fontFamily:C.mono,color:C.green}}>~$51 USD/mes</span>
+                  </div>
+
+                  <div style={{marginTop:14}}>
+                    <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>Impacto proyectado</p>
+                    {[
+                      {label:"Altas extra/mes (resp. inmediata)", val:"+54",    color:C.green},
+                      {label:"Ahorro RRHH WSP",                   val:"$1.5M ARS",color:C.blue},
+                      {label:"Beneficio neto mensual",            val:"+$3.16M",color:C.green},
+                      {label:"Payback",                           val:"8 días", color:C.teal},
+                    ].map((k,i)=>(
+                      <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:11}}>
+                        <span style={{color:C.text2}}>{k.label}</span>
+                        <span style={{fontFamily:C.mono,fontWeight:600,color:k.color}}>{k.val}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Ins type="i" html="Sin API ISPCube: la IA cierra y el operador solo registra. <strong>Con API: 100% automático</strong> — ese es el objetivo de fase 2."/>
+                </div>
+              </div>
+            </Card>
+
           </div>
         )}
 
-        {/* ═══ PLAN DE MEJORAS ══════════════════════════════════════ */}
         {tab==="plan"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
