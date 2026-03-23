@@ -41,12 +41,17 @@ const D = {
   ARPU:22447, CPL_ARS:15926, CPL_USD:13.27, LTV_CAC:56.8, PAYBACK_DIAS:18,
   ALTAS:270, CHURN_PCT:2.9, CHURN_ABS:123, NETO:134, CLIENTES:4088,
   // Costos
+  // P&L valores exactos validados
   CJ_LABS:["Oct 25","Nov 25","Dic 25","Ene 26","Feb 26"],
-  CJ_INGS:[78.04,86.25,92.64,95.51,95.38],
-  CJ_OPEX:[147.55,135.87,171.65,146.63,146.63],
-  CJ_CAPEX:[0,0,0,28.72,36.72],
-  CJ_TOTAL:[147.55,135.87,171.65,175.35,183.35],
-  CJ_RESS:[-69.51,-49.62,-79.01,-79.84,-88.13],
+  CJ_LABS_FULL:["Oct 25 corregido","Nov 25","Dic 25 SAC","Ene 26","Feb 26"],
+  CJ_INGS: [78.0,  86.3,  92.6,  95.5,  95.4],
+  CJ_OPEX: [147.5, 135.9, 171.6, 150.3, 150.3],
+  CJ_CAPEX:[0,     0,     0.1,   25.0,  33.0],
+  CJ_TOTAL:[147.5, 135.9, 171.7, 175.3, 183.3],
+  CJ_RESS: [-69.5, -49.6, -78.9, -54.8, -54.9],
+  CJ_RATIO:[1.89,  1.58,  1.85,  1.57,  1.57],
+  // Steady state
+  SS_ING:95.4, SS_OPEX:150.3, SS_CAPEX:29.0, SS_RES:-54.9, SS_RATIO:1.57,
   CAPEX_OBRA:40, CAPEX_MESES:6,
   // Red AB — parámetros reales
   RED_CAJAS_HOY:1000, RED_CAP_CAJA:10.5, RED_TASA_HOY:2.0, RED_TASA_OBJ:5.0,
@@ -255,7 +260,17 @@ export default function App() {
   const cityCobroData = D.CITIES.map((c,i)=>({city:c,cobrado:D.CITY_COBRO[i],mora:D.CITY_MORA[i]}));
   const vendData = D.VEND_LABS.map((l,i)=>({vend:l,val:D.VEND_VALS[i]}));
   const altasData = D.ALTAS_M.map((m,i)=>({mes:m,altas:D.ALTAS_V[i],churns:D.CHURNS_V[i],neto:D.ALTAS_V[i]-D.CHURNS_V[i]}));
-  const plData = D.CJ_LABS.map((l,i)=>({mes:l,cobrado:D.CJ_INGS[i],opex:D.CJ_OPEX[i],capex:D.CJ_CAPEX[i],total:D.CJ_TOTAL[i],res:D.CJ_RESS[i]}));
+  const plData = D.CJ_LABS_FULL.map((l,i)=>({
+    mes:l, cobrado:D.CJ_INGS[i], opex:D.CJ_OPEX[i],
+    capex:D.CJ_CAPEX[i], total:D.CJ_TOTAL[i],
+    res:D.CJ_RESS[i], ratio:D.CJ_RATIO[i]
+  }));
+  // Agregar fila Mar 26 en curso y Steady state para la tabla
+  const plDataTabla = [
+    ...plData,
+    {mes:"Mar 26 en curso", cobrado:93.9, opex:null, capex:null, total:null, res:null, ratio:null, parcial:true},
+    {mes:"Steady state (ene-feb)", cobrado:D.SS_ING, opex:D.SS_OPEX, capex:D.SS_CAPEX, total:D.SS_ING+D.SS_OPEX+D.SS_CAPEX, res:D.SS_RES, ratio:D.SS_RATIO, steady:true},
+  ];
   const opexStackData = D.CJ_LABS.map((l,i)=>{
     const row={mes:l};
     D.OPEX_CATS.forEach(cat=>{ row[cat]=(D.OPEX_DATA[cat]||[])[i]||0; });
