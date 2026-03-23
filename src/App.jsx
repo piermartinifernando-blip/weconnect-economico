@@ -89,8 +89,8 @@ const D = {
   },
   // Clientes
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [283,256,368,247,238,257,195,259],
-  CHURNS_V:[82,72,74,46,35,21,14,9],
+  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 259],  // altas brutas reales
+  CHURNS_V:[102, 107, 111, 119, 122, 126, 129, 131],  // 2.9% sobre base activa c/mes
   // Churn
   COHORTS:[
     {c:"Antiguo 2024 H2 (+18m)",pct:35.4,inact:605,color:C.red  },
@@ -140,7 +140,22 @@ const Tip = ({ active, payload, label }) => {
       <p style={{ color:C.text2, fontSize:10, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em", fontWeight:600 }}>{label}</p>
       {payload.map((p,i) => (
         <p key={i} style={{ color:p.color||C.navy, margin:"2px 0", fontFamily:C.mono, fontWeight:600 }}>
-          {p.name}: {typeof p.value==="number" ? (Math.abs(p.value)<500 ? `${p.value.toFixed(1)}M` : p.value.toLocaleString("es-AR")) : p.value}
+          {p.name}: {typeof p.value==="number" ? (Math.abs(p.value)<500 ? `$${p.value.toFixed(1)}M` : p.value.toLocaleString("es-AR")) : p.value}
+        </p>
+      ))}
+    </div>
+  );
+};
+
+// Tooltip para cantidades (clientes, altas, churns — sin formato $)
+const TipCant = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ background:C.bg2, border:`1px solid ${C.bdr}`, borderRadius:8, padding:"10px 14px", boxShadow:"0 4px 16px rgba(13,27,42,0.12)", fontSize:12 }}>
+      <p style={{ color:C.text2, fontSize:10, marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em", fontWeight:600 }}>{label}</p>
+      {payload.map((p,i) => (
+        <p key={i} style={{ color:p.color||C.navy, margin:"2px 0", fontFamily:C.mono, fontWeight:600 }}>
+          {p.name}: {typeof p.value==="number" ? p.value.toLocaleString("es-AR") : p.value}
         </p>
       ))}
     </div>
@@ -474,12 +489,12 @@ export default function App() {
                   <ComposedChart data={altasData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                     <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                    <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                    <Tooltip content={<Tip/>}/>
+                    <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} label={{value:"clientes",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
+                    <Tooltip content={<TipCant/>}/>
                     <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                    <Bar dataKey="altas"  name="Altas"  fill={C.green}                    radius={[3,3,0,0]}/>
-                    <Bar dataKey="churns" name="Churns" fill="rgba(209,48,48,.55)"        radius={[3,3,0,0]}/>
-                    <Line type="monotone" dataKey="neto" name="Neto" stroke={C.blue} strokeWidth={2.5} dot={{r:4,fill:C.blue}}/>
+                    <Bar dataKey="altas"  name="Altas brutas"  fill={C.green}              radius={[3,3,0,0]}/>
+                    <Bar dataKey="churns" name="Churns (2.9%)" fill="rgba(209,48,48,.55)" radius={[3,3,0,0]}/>
+                    <Line type="monotone" dataKey="neto" name="Neto mensual" stroke={C.blue} strokeWidth={2.5} dot={{r:4,fill:C.blue}}/>
                   </ComposedChart>
                 </ResponsiveContainer>
               </Card>
@@ -530,8 +545,8 @@ export default function App() {
                   <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
                   <ReferenceLine yAxisId="left" y={0} stroke={C.navy} strokeDasharray="4 3"/>
                   <Area yAxisId="left"  type="monotone" dataKey="neto"   name="Neto ($M)"  stroke={C.red}   fill="rgba(209,48,48,0.1)" strokeWidth={2}/>
-                  <Bar  yAxisId="right" dataKey="altas"  name="Altas"    fill={C.green}    opacity={0.7}   radius={[3,3,0,0]}/>
-                  <Bar  yAxisId="right" dataKey="bajas"  name="Sin serv." fill={C.amber}   opacity={0.7}   radius={[3,3,0,0]}/>
+                  <Bar  yAxisId="right" dataKey="altas"   name="Altas/mes"       fill={C.green}  opacity={0.7} radius={[3,3,0,0]}/>
+                  <Bar  yAxisId="right" dataKey="churns"  name="Churns/mes (2.9%)" fill={C.red}    opacity={0.5} radius={[3,3,0,0]}/>
                 </ComposedChart>
               </ResponsiveContainer>
             </Card>
