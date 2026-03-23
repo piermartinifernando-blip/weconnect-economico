@@ -850,122 +850,84 @@ export default function App() {
               <KPI label="Altas proyectadas"      value="~600/mes"   sub="Meta+Google+TikTok+Referidos"       type="ok"/>
             </div>
 
-            {/* ── MAPA VISUAL SVG ── */}
-            <Card title="Mapa actual vs propuesto — canales · IA · flujo completo" style={{marginBottom:14}}>
-              <svg width="100%" viewBox="0 0 680 634" style={{display:"block"}}>
-                <defs>
-                  <marker id="arrowC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </marker>
-                </defs>
+            {/* ── MAPA VISUAL — mismo estilo dashboard ── */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
 
-                {/* ══ ESTADO ACTUAL ══ */}
-                <text fontFamily="DM Sans,sans-serif" fontSize="14" fontWeight="500" fill="var(--color-text-primary)" x="340" y="24" textAnchor="middle">Estado actual</text>
-                <text fontFamily="DM Sans,sans-serif" fontSize="12" fill="var(--color-text-secondary)" x="340" y="40" textAnchor="middle">Fragmentado · manual · sin IA</text>
+              {/* ACTUAL */}
+              <Card title="Estado actual — fragmentado · manual · sin IA">
+                {/* Canales */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:10}}>
+                  {[
+                    {label:"Meta Ads",sub:"$1.500 USD/mes",color:C.amber,bg:C.amberP,tc:"#7A4C00"},
+                    {label:"Google",  sub:"sin pauta",     color:C.bdrM, bg:C.bg3,   tc:C.text3},
+                    {label:"TikTok",  sub:"sin pauta",     color:C.bdrM, bg:C.bg3,   tc:C.text3},
+                  ].map((c,i)=>(
+                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
+                      <p style={{fontSize:10,color:c.tc,marginTop:2}}>{c.sub}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
+                {/* 4 WSP */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                  {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
+                    <div key={i} style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:C.red}}>{w}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
+                {/* 4 operadores */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                  {["Operador · responde manual","Operador · responde manual","Operador · responde manual","Operador · responde manual"].map((o,i)=>(
+                    <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
+                      <p style={{fontSize:10,color:C.text2}}>{o}</p>
+                    </div>
+                  ))}
+                </div>
+                <Ins type="d" html="Sin visibilidad unificada · leads se pierden fuera de horario · sin métricas · sin IA"/>
+              </Card>
 
-                {/* Canales actuales */}
-                {[
-                  {x:60, label:"Meta Ads", sub:"$1.500 USD/mes", fill:"#FEF6DC", stroke:"#C47A00", tc:"#7A4C00"},
-                  {x:220,label:"Google",   sub:"sin pauta",       fill:"#EEF1F5", stroke:"#C5CED9", tc:"#5A6A7A"},
-                  {x:380,label:"TikTok",   sub:"sin pauta",       fill:"#EEF1F5", stroke:"#C5CED9", tc:"#5A6A7A"},
-                ].map((c,i)=>(
-                  <g key={i}>
-                    <rect x={c.x} y="55" width="140" height="44" rx="8" fill={c.fill} stroke={c.stroke} strokeWidth="0.5"/>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="12" fontWeight="500" fill={c.stroke} x={c.x+70} y="73" textAnchor="middle" dominantBaseline="central">{c.label}</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill={c.tc} x={c.x+70} y="89" textAnchor="middle" dominantBaseline="central">{c.sub}</text>
-                  </g>
-                ))}
-
-                {/* Flecha Meta → */}
-                <line x1="130" y1="99" x2="130" y2="128" stroke="#C47A00" strokeWidth="1" markerEnd="url(#arrowC)"/>
-
-                {/* 4 números WSP */}
-                {[
-                  {x:40, label:"WSP #1", sub:"Ventas"},
-                  {x:180,label:"WSP #2", sub:"Soporte"},
-                  {x:320,label:"WSP #3", sub:"Cobranza"},
-                  {x:460,label:"WSP #4+",sub:"Reclamos/bajas"},
-                ].map((w,i)=>(
-                  <g key={i}>
-                    <rect x={w.x} y="130" width="130" height="44" rx="8" fill="#FEE9E9" stroke="#D13030" strokeWidth="0.5"/>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="12" fontWeight="500" fill="#D13030" x={w.x+65} y="148" textAnchor="middle" dominantBaseline="central">{w.label}</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="#891515" x={w.x+65} y="164" textAnchor="middle" dominantBaseline="central">{w.sub}</text>
-                  </g>
-                ))}
-
-                {/* Flechas WSP → Operadores */}
-                {[105,245,385,525].map((x,i)=>(
-                  <line key={i} x1={x} y1="174" x2={x} y2="203" stroke="#9AACBC" strokeWidth="1" markerEnd="url(#arrowC)"/>
-                ))}
-
-                {/* Operadores */}
-                {[40,180,320,460].map((x,i)=>(
-                  <g key={i}>
-                    <rect x={x} y="205" width="130" height="44" rx="8" fill="#EEF1F5" stroke="#C5CED9" strokeWidth="0.5"/>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="12" fontWeight="500" fill="#5A6A7A" x={x+65} y="223" textAnchor="middle" dominantBaseline="central">Operador</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="#9AACBC" x={x+65} y="239" textAnchor="middle" dominantBaseline="central">responde manual</text>
-                  </g>
-                ))}
-
-                {/* Box de problemas */}
-                <rect x="40" y="270" width="550" height="44" rx="8" fill="#FEE9E9" stroke="#D13030" strokeWidth="0.5"/>
-                <text fontFamily="DM Sans,sans-serif" fontSize="11" fontWeight="500" fill="#D13030" x="315" y="288" textAnchor="middle" dominantBaseline="central">Sin visibilidad unificada · leads se pierden fuera de horario · sin métricas</text>
-                <text fontFamily="DM Sans,sans-serif" fontSize="10" fill="#891515" x="315" y="304" textAnchor="middle" dominantBaseline="central">cada operador responde diferente · no hay dashboard · sin IA</text>
-
-                {/* ══ DIVISOR ══ */}
-                <line x1="40" y1="342" x2="270" y2="342" stroke="#DDE3EC" strokeWidth="0.5" strokeDasharray="6 4"/>
-                <line x1="370" y1="342" x2="640" y2="342" stroke="#DDE3EC" strokeWidth="0.5" strokeDasharray="6 4"/>
-                <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="#9AACBC" x="315" y="342" textAnchor="middle" dominantBaseline="central">propuesta con IA</text>
-
-                {/* ══ ESTADO PROPUESTO ══ */}
-                <text fontFamily="DM Sans,sans-serif" fontSize="14" fontWeight="500" fill="var(--color-text-primary)" x="340" y="366" textAnchor="middle">Estado propuesto</text>
-                <text fontFamily="DM Sans,sans-serif" fontSize="12" fill="var(--color-text-secondary)" x="340" y="382" textAnchor="middle">Unificado · IA 24/7 · multi-canal · dashboard en tiempo real</text>
-
-                {/* 4 canales propuestos */}
-                {[
-                  {x:40, label:"Meta Ads",    sub:"$3.000 USD/mes", fill:"#FEF6DC", stroke:"#C47A00", tc:"#7A4C00"},
-                  {x:180,label:"Google Ads",  sub:"$1.000 USD/mes", fill:"#E6EFFE", stroke:"#1A5FBF", tc:"#103B8A"},
-                  {x:320,label:"TikTok Ads",  sub:"$800 USD/mes",   fill:"#EDE9FE", stroke:"#8B5CF6", tc:"#4C1D95"},
-                  {x:460,label:"Referidos",   sub:"+105 altas/mes", fill:"#E3F4F4", stroke:"#0D7377", tc:"#065457"},
-                ].map((c,i)=>(
-                  <g key={i}>
-                    <rect x={c.x} y="395" width="130" height="44" rx="8" fill={c.fill} stroke={c.stroke} strokeWidth="0.5"/>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="12" fontWeight="500" fill={c.stroke} x={c.x+65} y="413" textAnchor="middle" dominantBaseline="central">{c.label}</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill={c.tc} x={c.x+65} y="429" textAnchor="middle" dominantBaseline="central">{c.sub}</text>
-                  </g>
-                ))}
-
-                {/* Flechas → hub */}
-                {[105,245,385,525].map((x,i)=>(
-                  <line key={i} x1={x} y1="439" x2={x} y2="468" stroke="#0D7377" strokeWidth="1" markerEnd="url(#arrowC)"/>
-                ))}
-
+              {/* PROPUESTO */}
+              <Card title="Estado propuesto — unificado · IA 24/7 · multi-canal">
+                {/* 4 canales */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                  {[
+                    {label:"Meta Ads",   sub:"$3.000 USD/mes", color:C.amber,   bg:C.amberP, tc:"#7A4C00"},
+                    {label:"Google Ads", sub:"$1.000 USD/mes", color:C.blue,    bg:C.blueP,  tc:"#103B8A"},
+                    {label:"TikTok Ads", sub:"$800 USD/mes",   color:"#8B5CF6", bg:"#EDE9FE", tc:"#4C1D95"},
+                    {label:"Referidos",  sub:"+105 altas/mes", color:C.teal,    bg:C.tealP,  tc:"#065457"},
+                  ].map((c,i)=>(
+                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
+                      <p style={{fontSize:10,color:c.tc,marginTop:2}}>{c.sub}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{textAlign:"center",color:C.teal,fontSize:13,marginBottom:6}}>↓</div>
                 {/* Hub IA */}
-                <rect x="40" y="470" width="550" height="52" rx="8" fill="#E3F4F4" stroke="#0D7377" strokeWidth="0.5"/>
-                <text fontFamily="DM Sans,sans-serif" fontSize="13" fontWeight="500" fill="#0D7377" x="315" y="490" textAnchor="middle" dominantBaseline="central">Hub unificado · IA responde en &lt;3 seg · 24/7 · 1 número</text>
-                <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="#065457" x="315" y="510" textAnchor="middle" dominantBaseline="central">Ventas · Soporte · Cobranza · Reclamos — mismo canal, mismo histórico</text>
-
-                {/* Flechas hub → 3 salidas */}
-                <line x1="175" y1="522" x2="135" y2="556" stroke="#0D7377" strokeWidth="1" markerEnd="url(#arrowC)"/>
-                <line x1="315" y1="522" x2="315" y2="556" stroke="#0D7377" strokeWidth="1" markerEnd="url(#arrowC)"/>
-                <line x1="455" y1="522" x2="495" y2="556" stroke="#0D7377" strokeWidth="1" markerEnd="url(#arrowC)"/>
-
+                <div style={{background:C.tealP,border:`0.5px solid ${C.teal}`,borderRadius:8,padding:"10px 12px",textAlign:"center",marginBottom:10}}>
+                  <p style={{fontSize:12,fontWeight:600,color:C.teal}}>Hub IA unificado · 1 número · Claude API</p>
+                  <p style={{fontSize:10,color:"#065457",marginTop:3}}>Ventas · Soporte · Cobranza · Reclamos — mismo canal, mismo histórico</p>
+                </div>
+                <div style={{textAlign:"center",color:C.teal,fontSize:13,marginBottom:6}}>↓</div>
                 {/* 3 salidas */}
-                {[
-                  {x:40, label:"IA cierra venta",   sub1:"70% sin operador",   sub2:"alta en ISPCube auto", fill:"#E5F5EC", stroke:"#1A7A3C", tc:"#0F5226"},
-                  {x:220,label:"Escala a humano",   sub1:"30% con contexto",   sub2:"operador ve historial",fill:"#EDE9FE", stroke:"#8B5CF6", tc:"#4C1D95"},
-                  {x:400,label:"Dashboard live",    sub1:"conv · tasa cierre", sub2:"por canal · por hora",  fill:"#E6EFFE", stroke:"#1A5FBF", tc:"#103B8A"},
-                ].map((s,i)=>(
-                  <g key={i}>
-                    <rect x={s.x} y="558" width="220" height="56" rx="8" fill={s.fill} stroke={s.stroke} strokeWidth="0.5"/>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="12" fontWeight="500" fill={s.stroke} x={s.x+110} y="576" textAnchor="middle" dominantBaseline="central">{s.label}</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill={s.tc} x={s.x+110} y="592" textAnchor="middle" dominantBaseline="central">{s.sub1}</text>
-                    <text fontFamily="DM Sans,sans-serif" fontSize="11" fill={s.tc} x={s.x+110} y="606" textAnchor="middle" dominantBaseline="central">{s.sub2}</text>
-                  </g>
-                ))}
-
-              </svg>
-            </Card>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
+                  {[
+                    {label:"IA cierra",  sub:"70% sin operador",  color:C.green,   bg:C.greenP,  tc:"#0F5226"},
+                    {label:"Escala",     sub:"30% con contexto",  color:"#8B5CF6", bg:"#EDE9FE", tc:"#4C1D95"},
+                    {label:"Dashboard",  sub:"métricas live",     color:C.blue,    bg:C.blueP,   tc:"#103B8A"},
+                  ].map((s,i)=>(
+                    <div key={i} style={{background:s.bg,border:`0.5px solid ${s.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
+                      <p style={{fontSize:11,fontWeight:600,color:s.color}}>{s.label}</p>
+                      <p style={{fontSize:10,color:s.tc,marginTop:2}}>{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
+                <Ins type="g" html="1 número · IA responde en &lt;3 seg · 24/7 · dashboard en tiempo real"/>
+              </Card>
+            </div>
 
             {/* ── ESTADO ACTUAL vs PROPUESTO — diagrama ── */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
