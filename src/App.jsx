@@ -238,7 +238,8 @@ const TABS = [
   {id:"be",       label:"📈 Break-even" },
   {id:"rrss",     label:"📣 Canales + IA"},
 
-  {id:"objetivos",label:"🎯 Objetivos"  },
+  {id:"recupero",  label:"📦 Recupero AB"},
+  {id:"objetivos", label:"🎯 Objetivos"  },
 ];
 
 /* ═══ MAIN ═══════════════════════════════════════════════════════ */
@@ -1126,7 +1127,178 @@ export default function App() {
           </div>
         )}
 
-        {tab==="objetivos"&&(
+        {tab==="recupero"&&(
+          <div>
+            {/* KPIs principales */}
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
+              <KPI label="ONUs pendientes AB"    value="497"      sub="64% del backlog total"              type="dn"/>
+              <KPI label="Valor neto recuperable" value="$25.5M"  sub="497 × $51.408 neto · ARS"           type="ok"/>
+              <KPI label="Costo fijo mensual"     value="$2.25M"  sub="salario + cargas · sin movilidad"   type="nv"/>
+              <KPI label="ROI peor caso"          value="1.42x"   sub="positivo desde el día 1"            type="ok"/>
+            </div>
+
+            <Ins type="i" html="<strong>Área nueva:</strong> Retiro / Recupero de Equipos — Almirante Brown · 1 persona con vehículo propio · Combustible incluido en salario · TC $1.450 ARS/USD · ONU: USD 35 + IVA = $61.408 ARS"/>
+
+            {/* Estructura del puesto + comisiones */}
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,margin:"12px 0"}}>
+              <Card title="Estructura del puesto">
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                  <thead>
+                    <tr style={{background:C.bg3}}>
+                      {["Concepto","Importe","Nota"].map(h=>(
+                        <th key={h} style={{padding:"7px 10px",textAlign:h==="Importe"?"right":"left",color:C.text2,fontSize:10,textTransform:"uppercase",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {c:"Salario bruto",      v:"$1.500.000", n:"Incluye combustible"},
+                      {c:"Cargas sociales (50%)",v:"$750.000",  n:"Jubilación, ART, etc."},
+                      {c:"Movilidad extra",    v:"$0",         n:"Vehículo propio"},
+                    ].map((r,i)=>(
+                      <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`}}>
+                        <td style={{padding:"7px 10px",color:C.text}}>{r.c}</td>
+                        <td style={{padding:"7px 10px",textAlign:"right",fontFamily:C.mono,fontWeight:600,color:C.navy}}>{r.v}</td>
+                        <td style={{padding:"7px 10px",color:C.text2,fontSize:11}}>{r.n}</td>
+                      </tr>
+                    ))}
+                    <tr style={{background:C.bg3,fontWeight:700}}>
+                      <td style={{padding:"7px 10px",fontWeight:700,color:C.navy}}>COSTO FIJO TOTAL</td>
+                      <td style={{padding:"7px 10px",textAlign:"right",fontFamily:C.mono,fontWeight:700,color:C.navy}}>$2.250.000</td>
+                      <td style={{padding:"7px 10px",color:C.text2,fontSize:11}}>por mes</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Card>
+
+              <Card title="Estructura de comisiones">
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                  <thead>
+                    <tr style={{background:C.bg3}}>
+                      {["Actividad","Comisión","Cuándo cobra","Margen empresa"].map(h=>(
+                        <th key={h} style={{padding:"7px 10px",textAlign:"left",color:C.text2,fontSize:10,textTransform:"uppercase",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {a:"Retiro de ONU",            c:"$10.000",  t:"Al cerrar ticket",     m:"$51.408"},
+                      {a:"Cliente activado — Mod. A", c:"$15.000", t:"Cobro único al activar",m:"$23.375"},
+                      {a:"Cliente — Mod. B cuota 1",  c:"$7.500",  t:"Al firmar acuerdo",     m:"—"},
+                      {a:"Cliente — Mod. B cuota 2",  c:"$7.500",  t:"Al cobrar 2da cuota",   m:"$23.375"},
+                    ].map((r,i)=>(
+                      <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`}}>
+                        <td style={{padding:"7px 10px",color:C.text,fontSize:11}}>{r.a}</td>
+                        <td style={{padding:"7px 10px",fontFamily:C.mono,fontWeight:600,color:C.green}}>{r.c}</td>
+                        <td style={{padding:"7px 10px",color:C.text2,fontSize:11}}>{r.t}</td>
+                        <td style={{padding:"7px 10px",fontFamily:C.mono,color:C.blue,fontSize:11}}>{r.m}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <Ins type="i" html="El recurso siempre cobra <strong>$15.000 por cliente activado</strong> sin importar si paga todo o en cuotas. Mod. B incentiva seguimiento hasta la 2da cuota."/>
+              </Card>
+            </div>
+
+            {/* Tabla 4 escenarios */}
+            <Card title="Distribución mensual — 4 escenarios · persona vs empresa" style={{marginBottom:12}}>
+              <div style={{overflowX:"auto"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:mob?600:0}}>
+                <thead>
+                  <tr style={{background:C.bg3}}>
+                    <th style={{padding:"8px 12px",textAlign:"left",color:C.text2,fontSize:10,textTransform:"uppercase",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>Concepto</th>
+                    {[
+                      {label:"Peor absoluto",color:C.red},
+                      {label:"Peor realista",color:C.amber},
+                      {label:"Base",        color:C.blue},
+                      {label:"Bueno ⭐",    color:C.green},
+                    ].map((h,i)=>(
+                      <th key={i} style={{padding:"8px 12px",textAlign:"right",color:h.color,fontSize:10,textTransform:"uppercase",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {grupo:"ACTIVIDAD", rows:[
+                      {c:"ONUs retiradas/mes",            v:["66","86","108","132"]},
+                      {c:"Clientes recuperados/mes",      v:["2","3","5","7"]},
+                      {c:"Planes de pago/mes",            v:["3","5","8","12"]},
+                    ]},
+                    {grupo:"INGRESOS EMPRESA", rows:[
+                      {c:"Retiro de ONUs",                v:["$4.05M","$5.28M","$6.63M","$8.11M"], bold:true},
+                      {c:"Recupero clientes (ARPU)",      v:["$53k","$79k","$131k","$184k"]},
+                      {c:"Planes de pago cobrados",       v:["$115k","$192k","$307k","$460k"]},
+                      {c:"TOTAL INGRESOS",                v:["$4.22M","$5.55M","$7.07M","$8.75M"], total:true},
+                    ]},
+                    {grupo:"EMPRESA RETIENE", rows:[
+                      {c:"Costo fijo (sal+cargas)",       v:["-$2.25M","-$2.25M","-$2.25M","-$2.25M"], neg:true},
+                      {c:"Comisiones pagadas",            v:["-$712k","-$942k","-$1.22M","-$1.51M"], neg:true},
+                      {c:"RESULTADO NETO EMPRESA",        v:["$1.26M","$2.36M","$3.61M","$4.99M"], total:true, ok:true},
+                      {c:"ROI",                           v:["1.42x","1.74x","2.04x","2.32x"], roi:true},
+                    ]},
+                  ].map((grupo,gi)=>(
+                    <>
+                      <tr key={`g${gi}`} style={{background:C.bg3}}>
+                        <td colSpan={5} style={{padding:"6px 12px",fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.06em"}}>▸ {grupo.grupo}</td>
+                      </tr>
+                      {grupo.rows.map((r,ri)=>(
+                        <tr key={`r${gi}${ri}`} style={{borderBottom:`0.5px solid ${C.bdr}`,background:r.total?C.bg3:"transparent"}}>
+                          <td style={{padding:"7px 12px",color:r.total?C.navy:C.text,fontWeight:r.total?700:400}}>{r.c}</td>
+                          {r.v.map((v,vi)=>(
+                            <td key={vi} style={{padding:"7px 12px",textAlign:"right",fontFamily:C.mono,fontWeight:r.total?700:r.roi?600:400,
+                              color:r.ok?[C.red,C.amber,C.blue,C.green][vi]:r.neg?C.red:r.roi?[C.red,C.amber,C.blue,C.green][vi]:C.text}}>{v}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+            </Card>
+
+            {/* Timeline + KPIs semáforo */}
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12}}>
+              <Card title="Timeline recupero backlog — 497 ONUs">
+                {[
+                  {tiempo:"8 meses",ritmo:"5 visitas/día · 60% éxito",onus:"66 ONUs/mes",color:C.red},
+                  {tiempo:"6 meses",ritmo:"6 visitas/día · 65% éxito",onus:"86 ONUs/mes",color:C.amber},
+                  {tiempo:"5 meses",ritmo:"7 visitas/día · 70% éxito",onus:"108 ONUs/mes",color:C.green},
+                ].map((t,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",marginBottom:8,background:C.bg3,borderRadius:8,border:`0.5px solid ${C.bdr}`,borderLeft:`3px solid ${t.color}`}}>
+                    <div>
+                      <p style={{fontSize:13,fontWeight:600,color:t.color}}>{t.tiempo}</p>
+                      <p style={{fontSize:11,color:C.text2,marginTop:2}}>{t.ritmo}</p>
+                    </div>
+                    <span style={{fontFamily:C.mono,fontWeight:700,fontSize:12,color:t.color}}>{t.onus}</span>
+                  </div>
+                ))}
+                <Ins type="g" html="Escenario base: <strong>108 ONUs/mes = 5 meses</strong> para liquidar el backlog completo"/>
+              </Card>
+
+              <Card title="KPIs del área — semáforos operativos">
+                {[
+                  {label:"ONUs retiradas esta semana", meta:"27+", actual:"—", color:C.text3},
+                  {label:"Backlog pendiente total",     meta:"<400", actual:"497", color:C.red},
+                  {label:"Recuperos este mes",          meta:"5+",  actual:"—", color:C.text3},
+                  {label:"Tiempo coord → visita (días)",meta:"<2",  actual:"—", color:C.text3},
+                ].map((k,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 0",borderBottom:`0.5px solid ${C.bdr}`}}>
+                    <span style={{fontSize:11,color:C.text2}}>{k.label}</span>
+                    <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                      <span style={{fontSize:10,color:C.text3}}>Meta: {k.meta}</span>
+                      <span style={{fontFamily:C.mono,fontWeight:600,fontSize:12,color:k.color,background:`${k.color}18`,padding:"2px 8px",borderRadius:9}}>{k.actual}</span>
+                    </div>
+                  </div>
+                ))}
+                <Ins type="w" html="KPIs pendientes de datos reales · actualizar cuando arranque el área"/>
+              </Card>
+            </div>
+
+          </div>
+        )}
+
+                {tab==="objetivos"&&(
           <div>
 
             {/* Header mes */}
