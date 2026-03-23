@@ -7,6 +7,17 @@ import {
   ResponsiveContainer, Legend, ReferenceLine
 } from "recharts";
 
+/* ─── MOBILE HOOK ───────────────────────────────────────────────── */
+const useIsMobile = () => {
+  const [mob, setMob] = useState(typeof window !== "undefined" ? window.innerWidth < 768 : false);
+  useEffect(() => {
+    const fn = () => setMob(window.innerWidth < 768);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
+  return mob;
+};
+
 /* ─── TOKENS ────────────────────────────────────────────────────── */
 const C = {
   navy:"#0D1B2A", navyM:"#1B2E45", red:"#D13030", redP:"#FEE9E9",
@@ -232,6 +243,7 @@ const TABS = [
 
 /* ═══ MAIN ═══════════════════════════════════════════════════════ */
 export default function App() {
+  const mob                      = useIsMobile();
   const [tab,setTab]             = useState("negocio");
   const [cobranza,setCobranza]   = useState([]);
   const [egresos,setEgresos]     = useState([]);
@@ -297,7 +309,12 @@ export default function App() {
         *{box-sizing:border-box;margin:0;padding:0}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
         ::-webkit-scrollbar{height:4px;width:4px}::-webkit-scrollbar-thumb{background:${C.bdrM};border-radius:4px}
+        @media(max-width:768px){
+          body{font-size:13px}
+          table{font-size:11px}
+        }
       `}</style>
+      {/* viewport meta via useEffect */}
 
       <div style={{maxWidth:1240,margin:"0 auto",padding:"16px 14px 40px"}}>
 
@@ -327,12 +344,12 @@ export default function App() {
           <div style={{display:"flex",gap:2,background:C.bg3,borderRadius:10,padding:3,width:"max-content",minWidth:"100%",border:`0.5px solid ${C.bdr}`}}>
             {TABS.map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)} style={{
-                fontSize:12,padding:"7px 13px",borderRadius:7,border:"none",cursor:"pointer",fontFamily:C.sans,
+                fontSize:mob?11:12,padding:mob?"7px 8px":"7px 13px",borderRadius:7,border:"none",cursor:"pointer",fontFamily:C.sans,
                 fontWeight:tab===t.id?600:500,whiteSpace:"nowrap",transition:"all .15s",
                 background:tab===t.id?C.navy:"transparent",
                 color:tab===t.id?"#fff":C.text2,
                 boxShadow:tab===t.id?"0 2px 6px rgba(13,27,42,.28)":"none",
-              }}>{t.label}</button>
+              }}>{mob ? t.label.split(" ")[0] : t.label}</button>
             ))}
           </div>
         </div>
@@ -340,14 +357,14 @@ export default function App() {
         {/* ═══ NEGOCIO ═══════════════════════════════════════════════ */}
         {tab==="negocio"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Cobranza Dic 2025" value="$92.6M" sub="▲ +7.4% vs noviembre" type="ok"/>
               <KPI label="Cobranza Ene 2026" value="$95.5M" sub="▲ +3.1% vs diciembre" type="ok"/>
               <KPI label="Cobranza Feb 2026" value="$95.4M" sub="mes completo · datos frescos" type="ok"/>
               <KPI label="Cobro Mar 2026"    value="$94.0M" sub="al 23/03 · SIRO 10.2% y subiendo" type="ok"/>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Cobrado vs facturado mensual ($M) — jul 24 → mar 26">
                 <div style={{display:"flex",gap:16,marginBottom:10}}>
                   {[{color:C.blue,label:"Cobrado"},{color:"rgba(26,95,191,.3)",label:"Facturado"}].map((l,i)=>(
@@ -396,7 +413,7 @@ export default function App() {
               </Card>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Cobranza 2026 acumulada por ciudad ($M)">
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={cityCobroData} layout="vertical">
@@ -422,7 +439,7 @@ export default function App() {
               </Card>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
               <KPI label="Tasa cobranza mar-26" value="85%"       sub="$94M cobrado / $110M facturado" type="wr"/>
               <KPI label="SIRO Mar 26"               value="$9.57M"    sub="▲ desde $0 oct 25 · 10.2% del cobro" type="ok"/>
@@ -437,7 +454,7 @@ export default function App() {
             <div style={{background:C.blueP,border:`0.5px solid ${C.blue}`,borderRadius:8,padding:"9px 14px",marginBottom:14,fontSize:12,color:"#103B8A"}}>
               Egresos reales oct 2025–feb 2026. Marzo en curso. CAPEX separado. Datos ISP CUBE al {new Date().toLocaleDateString("es-AR")}.
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="OPEX steady state"    value="$150.3M"  sub="ARS/mes · ene-feb 2026"                  type="dn"/>
               <KPI label="Déficit mensual"      value="−$42.5M"  sub="4.106 cli × $26.254 = $107.8M"           type="dn"/>
               <KPI label="Clientes para BE"     value="5.725"    sub="faltan 1.619 · ARPU $26.254"              type="wr"/>
@@ -494,7 +511,7 @@ export default function App() {
             </Card>
 
             {/* Gráficos */}
-            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Ingresos vs OPEX ($M)">
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={plData} barGap={4}>
@@ -534,7 +551,7 @@ export default function App() {
               </ResponsiveContainer>
             </Card>
 
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginTop:12}}>
               <KPI label="RRHH ene-feb"     value="$67.2M"  sub="45% OPEX · dic $85.9M (SAC atípico)"    type="dn"/>
               <KPI label="CAPEX obra total" value="~$240M"  sub="$40M × 6 meses · abr-sep 26"            type="wr"/>
               <KPI label="Ingreso marginal" value="$26.254" sub="ARS por cada cliente nuevo"              type="nv"/>
@@ -544,14 +561,14 @@ export default function App() {
 
         {tab==="clientes"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Total padrón"          value="5.960"   sub="desde agosto 2024"                   type="nv"/>
               <KPI label="Habilitados Mar 26"    value="4.088"   sub="68.6% del padrón · dato real"         type="ok"/>
               <KPI label="Bloqueados"            value="327"     sub="en campaña de recupero · con deuda"   type="wr"/>
               <KPI label="Sin servicio"          value="1.545"   sub="nunca regularizaron · $59.1M deuda"   type="dn"/>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Altas, churns y crecimiento neto mensual">
                 <ResponsiveContainer width="100%" height={240}>
                   <ComposedChart data={altasData}>
@@ -626,7 +643,7 @@ export default function App() {
                   <Bar yAxisId="right" dataKey="churns" name="Churns reales (2.9%)" fill={C.red}   opacity={0.4} radius={[3,3,0,0]}/>
                 </ComposedChart>
               </ResponsiveContainer>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginTop:10}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:8,marginTop:10}}>
                 {[
                   {mes:"Ene 26",nota:"CAPEX OLT $25M → neto cae a −$104M",color:C.amber},
                   {mes:"Feb 26",nota:"CAPEX obra $33M → neto mín −$121M",color:C.red},
@@ -645,14 +662,14 @@ export default function App() {
         {/* ═══ CHURN ═════════════════════════════════════════════════ */}
         {tab==="churn"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Churn acumulado"       value="28.6%"    sub="1.682 de 5.876 inactivos"   type="dn"/>
               <KPI label="Tasa mensual prom."    value="2.9%"     sub="122 clientes/mes"            type="dn"/>
               <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3 / año"           type="wr"/>
               <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Tasa de churn mensual (%)">
                 <ResponsiveContainer width="100%" height={220}>
                   <LineChart data={D.CHURN_MENS}>
@@ -686,14 +703,14 @@ export default function App() {
               </Card>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:12}}>
               <KPI label="Churnan antes del mes 3"  value="30.7%" sub="problema de onboarding"      type="dn"/>
               <KPI label="Churnan entre mes 3–6"   value="38.8%" sub="primera renovación"           type="wr"/>
               <KPI label="Más de 12 meses activos" value="8.2%"  sub='los clientes "fieles"'        type="ok"/>
             </div>
 
             <Card title="Causas del churn y palancas de retención">
-              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(5,1fr)",gap:10}}>
                 {[
                   {causa:"Mora pasiva / olvido", pct:"~45%",accion:"IA cobranza D5/15/25",color:C.red  },
                   {causa:"Soporte sin respuesta",pct:"~22%",accion:"Bot soporte 24/7",    color:C.amber},
@@ -718,14 +735,14 @@ export default function App() {
         {/* ═══ MORA ══════════════════════════════════════════════════ */}
         {tab==="mora"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Deuda total cartera"  value="$88.0M"  sub="total adeudado Mar 26"                       type="dn"/>
               <KPI label="Deuda vencida"        value="$72.1M"  sub="1.545 clientes sin servicio + 327 bloqueados" type="dn"/>
               <KPI label="Deuda sin servicio"   value="$59.1M"  sub="difícil recupero · nunca regularizaron"      type="dn"/>
               <KPI label="Deuda en recupero"    value="$10.8M"  sub="327 bloqueados · campaña activa"              type="wr"/>
             </div>
 
-            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
               <Card title="Deuda vencida por ciudad ($M ARS)">
                 <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={cityCobroData} layout="vertical">
@@ -784,7 +801,7 @@ export default function App() {
         {/* ═══ BREAK-EVEN ════════════════════════════════════════════ */}
         {tab==="be"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Break-even"          value="Oct 26"  sub="Mes 7 · fin CAPEX obra · +$25.8M" type="ok"/>
               <KPI label="Altas/mes hoy (AB)"  value="274"     sub="2% × 10.500 cap · 1.000 cajas"   type="ok"/>
               <KPI label="Altas/mes oct 26"    value="746"     sub="3.2% × 21.525 cap · 2.050 cajas" type="ok"/>
@@ -843,7 +860,7 @@ export default function App() {
           <div>
 
             {/* ── KPIs de adquisición ── */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Inversión pauta total"  value="$4.800 USD" sub="Meta $3k + Google $1k + TikTok $800" type="nv"/>
               <KPI label="CPL real corregido"     value="$13.27 USD" sub="$15.926 ARS · validado"             type="ok"/>
               <KPI label="LTV / CAC"              value="59.5x"      sub="muy bueno · payback 17 días"        type="ok"/>
@@ -851,7 +868,7 @@ export default function App() {
             </div>
 
             {/* ── MAPA VISUAL — mismo estilo dashboard ── */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
 
               {/* ACTUAL */}
               <Card title="Estado actual — fragmentado · manual · sin IA">
@@ -870,7 +887,7 @@ export default function App() {
                 </div>
                 <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
                 {/* 4 WSP */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
                   {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
                     <div key={i} style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
                       <p style={{fontSize:11,fontWeight:600,color:C.red}}>{w}</p>
@@ -879,7 +896,7 @@ export default function App() {
                 </div>
                 <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
                 {/* 4 operadores */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
                   {["Operador · responde manual","Operador · responde manual","Operador · responde manual","Operador · responde manual"].map((o,i)=>(
                     <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
                       <p style={{fontSize:10,color:C.text2}}>{o}</p>
@@ -892,7 +909,7 @@ export default function App() {
               {/* PROPUESTO */}
               <Card title="Estado propuesto — unificado · IA 24/7 · multi-canal">
                 {/* 4 canales */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
+                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
                   {[
                     {label:"Meta Ads",   sub:"$3.000 USD/mes", color:C.amber,   bg:C.amberP, tc:"#7A4C00"},
                     {label:"Google Ads", sub:"$1.000 USD/mes", color:C.blue,    bg:C.blueP,  tc:"#103B8A"},
@@ -930,7 +947,7 @@ export default function App() {
             </div>
 
             {/* ── ESTADO ACTUAL vs PROPUESTO — diagrama ── */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
 
               {/* ACTUAL */}
               <Card title="Estado actual — fragmentado · manual · sin IA">
@@ -955,7 +972,7 @@ export default function App() {
                 {/* Flecha */}
                 <div style={{textAlign:"center",fontSize:16,color:C.text3,margin:"4px 0"}}>↓</div>
                 {/* 4 números separados */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:8}}>
                   {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
                     <div key={i} style={{background:"#FEE9E9",border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",fontSize:10,color:"#891515",textAlign:"center",fontWeight:600}}>{w}</div>
                   ))}
@@ -975,7 +992,7 @@ export default function App() {
                   1 número · IA responde en &lt;3 seg · 24/7 · dashboard en tiempo real
                 </div>
                 {/* 4 canales */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:8}}>
                   {[
                     {label:"Meta Ads",   val:"$3.000 USD",  color:C.amber,  bg:C.amberP,  tc:"#7A4C00"},
                     {label:"Google Ads", val:"$1.000 USD",  color:C.blue,   bg:C.blueP,   tc:"#103B8A"},
@@ -1015,7 +1032,7 @@ export default function App() {
 
             {/* ── SIMULADOR DE CANALES ── */}
             <Card title="Simulador de canales — altas y CPL por escenario">
-              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
                 {[
                   {esc:"Solo Meta $1.5k",  altas:107, cpl:14.0, inv:1500, color:C.text2},
                   {esc:"Meta $3k",         altas:214, cpl:14.0, inv:3000, color:C.amber},
@@ -1039,7 +1056,7 @@ export default function App() {
 
             {/* ── IA VENTAS — MAQUETA DE PRODUCCIÓN ── */}
             <Card title="IA ventas WSP — maqueta de producción · Claude API + Make.com">
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>
 
                 {/* Flujo de implementación */}
                 <div>
