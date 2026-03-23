@@ -860,336 +860,139 @@ export default function App() {
         {tab==="rrss"&&(
           <div>
 
-            {/* ── KPIs de adquisición ── */}
-            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Inversión pauta total"  value="$4.800 USD" sub="Meta $3k + Google $1k + TikTok $800" type="nv"/>
-              <KPI label="CPL real corregido"     value="$13.27 USD" sub="$15.926 ARS · validado"             type="ok"/>
-              <KPI label="LTV / CAC"              value="59.5x"      sub="muy bueno · payback 17 días"        type="ok"/>
-              <KPI label="Altas proyectadas"      value="~600/mes"   sub="Meta+Google+TikTok+Referidos"       type="ok"/>
+            {/* ── KPIs ── */}
+            <Ins type="i" html="CPL <strong>corregido</strong>: Meta $1.8M ARS + Equipo ventas $2.5M ARS = $4.3M ARS total · 259 altas/mes · CPL = <strong>$15.926 ARS ($13.27 USD)</strong>"/>
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,margin:"12px 0 18px"}}>
+              <KPI label="Inversión adquisición" value="$4.3M ARS" sub="Meta $1.8M + equipo WSP $2.5M" type="nv"/>
+              <KPI label="CPL real corregido"    value="$15.926 ARS" sub="$13.27 USD · validado mar 26" type="wr"/>
+              <KPI label="LTV / CAC"             value="59.5x"     sub="sigue siendo muy bueno"      type="ok"/>
+              <KPI label="Payback"               value="17 días"   sub="0.58 meses"                  type="ok"/>
             </div>
 
-            {/* ── MAPA VISUAL — mismo estilo dashboard ── */}
-            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
+            {/* ── META ADS ── */}
+            <p style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:10}}>📘 Meta Ads — Facebook e Instagram</p>
+            <Ins type="i" html="Meta <strong>interrumpe</strong> — el cliente no estaba buscando, pero el algoritmo lo encuentra porque tiene el perfil exacto: vive en la zona, es jefe de hogar, usa internet. Es el canal de generación de demanda."/>
 
-              {/* ACTUAL */}
-              <Card title="Estado actual — fragmentado · manual · sin IA">
-                {/* Canales */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:10}}>
-                  {[
-                    {label:"Meta Ads",sub:"$1.500 USD/mes",color:C.amber,bg:C.amberP,tc:"#7A4C00"},
-                    {label:"Google",  sub:"sin pauta",     color:C.bdrM, bg:C.bg3,   tc:C.text3},
-                    {label:"TikTok",  sub:"sin pauta",     color:C.bdrM, bg:C.bg3,   tc:C.text3},
-                  ].map((c,i)=>(
-                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
-                      <p style={{fontSize:10,color:c.tc,marginTop:2}}>{c.sub}</p>
-                    </div>
-                  ))}
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:10,margin:"12px 0"}}>
+              {[
+                {t:"1 · Targeting geográfico exacto",
+                 d:"Meta permite delimitar la pauta por el <strong>polígono KML exacto</strong> de cobertura. Cada peso llega solo a zonas donde WeConnect tiene fibra tendida.",
+                 box:"Universo AB + CS: <strong>~280.000 personas</strong> · CPM bajo · sin competir por audiencias masivas · Mínimo efectivo: $300 USD/mes"},
+                {t:"2 · Segmentos de hogar",
+                 d:"Meta tiene segmentos de <strong>recién mudados, inquilinos, primera vivienda y jefes de hogar</strong>. El que se muda cambia de proveedor en el 78% de los casos en los primeros 30 días.",
+                 box:"~15.000 usuarios 'recién mudados' en AB solo · <strong>Nadie busca internet si ya tiene</strong> — Meta llega antes de que busquen"},
+                {t:"3 · Lookalike de clientes actuales",
+                 d:"Subir la base de <strong>4.088 clientes reales</strong> a Meta genera una audiencia 'parecida' de 200k-500k personas. El algoritmo optimiza hacia quienes más se parecen a quienes ya convirtieron.",
+                 box:"Lookalike 1% reduce el CPL un <strong>35–40%</strong> vs audiencia fría · WeConnect ya tiene el activo — sin usarlo están pagando de más"},
+              ].map((c,i)=>(
+                <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.blue}`,borderRadius:10,padding:"14px 16px"}}>
+                  <p style={{fontSize:10,fontWeight:600,color:C.blue,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>{c.t}</p>
+                  <p style={{fontSize:12,color:C.text,lineHeight:1.75,marginBottom:8}} dangerouslySetInnerHTML={{__html:c.d}}/>
+                  <div style={{background:C.bg3,borderRadius:8,padding:"9px 11px",fontSize:11,color:C.text2,lineHeight:1.75}} dangerouslySetInnerHTML={{__html:c.box}}/>
                 </div>
-                <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
-                {/* 4 WSP */}
-                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
-                  {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
-                    <div key={i} style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:C.red}}>{w}</p>
-                    </div>
-                  ))}
-                </div>
-                <div style={{textAlign:"center",color:C.text3,fontSize:13,marginBottom:6}}>↓</div>
-                {/* 4 operadores */}
-                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
-                  {["Operador · responde manual","Operador · responde manual","Operador · responde manual","Operador · responde manual"].map((o,i)=>(
-                    <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
-                      <p style={{fontSize:10,color:C.text2}}>{o}</p>
-                    </div>
-                  ))}
-                </div>
-                <Ins type="d" html="Sin visibilidad unificada · leads se pierden fuera de horario · sin métricas · sin IA"/>
-              </Card>
-
-              {/* PROPUESTO */}
-              <Card title="Estado propuesto — unificado · IA 24/7 · multi-canal">
-                {/* 4 canales */}
-                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:10}}>
-                  {[
-                    {label:"Meta Ads",   sub:"$3.000 USD/mes", color:C.amber,   bg:C.amberP, tc:"#7A4C00"},
-                    {label:"Google Ads", sub:"$1.000 USD/mes", color:C.blue,    bg:C.blueP,  tc:"#103B8A"},
-                    {label:"TikTok Ads", sub:"$800 USD/mes",   color:"#8B5CF6", bg:"#EDE9FE", tc:"#4C1D95"},
-                    {label:"Referidos",  sub:"+105 altas/mes", color:C.teal,    bg:C.tealP,  tc:"#065457"},
-                  ].map((c,i)=>(
-                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
-                      <p style={{fontSize:10,color:c.tc,marginTop:2}}>{c.sub}</p>
-                    </div>
-                  ))}
-                </div>
-                <div style={{textAlign:"center",color:C.teal,fontSize:13,marginBottom:6}}>↓</div>
-                {/* Hub IA */}
-                <div style={{background:C.tealP,border:`0.5px solid ${C.teal}`,borderRadius:8,padding:"10px 12px",textAlign:"center",marginBottom:10}}>
-                  <p style={{fontSize:12,fontWeight:600,color:C.teal}}>Hub IA unificado · 1 número · Claude API</p>
-                  <p style={{fontSize:10,color:"#065457",marginTop:3}}>Ventas · Soporte · Cobranza · Reclamos — mismo canal, mismo histórico</p>
-                </div>
-                <div style={{textAlign:"center",color:C.teal,fontSize:13,marginBottom:6}}>↓</div>
-                {/* 3 salidas */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
-                  {[
-                    {label:"IA cierra",  sub:"70% sin operador",  color:C.green,   bg:C.greenP,  tc:"#0F5226"},
-                    {label:"Escala",     sub:"30% con contexto",  color:"#8B5CF6", bg:"#EDE9FE", tc:"#4C1D95"},
-                    {label:"Dashboard",  sub:"métricas live",     color:C.blue,    bg:C.blueP,   tc:"#103B8A"},
-                  ].map((s,i)=>(
-                    <div key={i} style={{background:s.bg,border:`0.5px solid ${s.color}`,borderRadius:8,padding:"8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:s.color}}>{s.label}</p>
-                      <p style={{fontSize:10,color:s.tc,marginTop:2}}>{s.sub}</p>
-                    </div>
-                  ))}
-                </div>
-                <Ins type="g" html="1 número · IA responde en &lt;3 seg · 24/7 · dashboard en tiempo real"/>
-              </Card>
+              ))}
             </div>
 
-            {/* ── ESTADO ACTUAL vs PROPUESTO — diagrama ── */}
-            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
-
-              {/* ACTUAL */}
-              <Card title="Estado actual — fragmentado · manual · sin IA">
-                <div style={{marginBottom:10,padding:"7px 10px",background:C.redP,borderRadius:6,border:`0.5px solid ${C.red}`,fontSize:11,color:"#891515"}}>
-                  3+ números de WSP · sin IA · solo Meta $1.500 USD · sin dashboard
-                </div>
-                {/* Canal único */}
-                <div style={{display:"flex",gap:8,marginBottom:8}}>
-                  <div style={{flex:1,background:C.amberP,border:`0.5px solid ${C.amber}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                    <p style={{fontSize:11,fontWeight:600,color:C.amber}}>Meta Ads</p>
-                    <p style={{fontSize:10,color:"#7A4C00"}}>$1.500 USD/mes</p>
-                  </div>
-                  <div style={{flex:1,background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                    <p style={{fontSize:11,fontWeight:600,color:C.text3}}>Google</p>
-                    <p style={{fontSize:10,color:C.text3}}>sin pauta</p>
-                  </div>
-                  <div style={{flex:1,background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                    <p style={{fontSize:11,fontWeight:600,color:C.text3}}>TikTok</p>
-                    <p style={{fontSize:10,color:C.text3}}>sin pauta</p>
-                  </div>
-                </div>
-                {/* Flecha */}
-                <div style={{textAlign:"center",fontSize:16,color:C.text3,margin:"4px 0"}}>↓</div>
-                {/* 4 números separados */}
-                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:8}}>
-                  {["WSP #1 · Ventas","WSP #2 · Soporte","WSP #3 · Cobranza","WSP #4 · Reclamos"].map((w,i)=>(
-                    <div key={i} style={{background:"#FEE9E9",border:`0.5px solid ${C.red}`,borderRadius:6,padding:"6px 8px",fontSize:10,color:"#891515",textAlign:"center",fontWeight:600}}>{w}</div>
-                  ))}
-                </div>
-                {/* Flecha */}
-                <div style={{textAlign:"center",fontSize:16,color:C.text3,margin:"4px 0"}}>↓</div>
-                {/* Operadores */}
-                <div style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                  <p style={{fontSize:11,fontWeight:600,color:C.text2}}>4 operadores responden manualmente</p>
-                  <p style={{fontSize:10,color:C.text3,marginTop:2}}>sin historial unificado · sin métricas · leads se pierden de noche</p>
-                </div>
-              </Card>
-
-              {/* PROPUESTO */}
-              <Card title="Estado propuesto — unificado · IA 24/7 · multi-canal">
-                <div style={{marginBottom:10,padding:"7px 10px",background:C.greenP,borderRadius:6,border:`0.5px solid ${C.green}`,fontSize:11,color:"#0F5226"}}>
-                  1 número · IA responde en &lt;3 seg · 24/7 · dashboard en tiempo real
-                </div>
-                {/* 4 canales */}
-                <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:6,marginBottom:8}}>
-                  {[
-                    {label:"Meta Ads",   val:"$3.000 USD",  color:C.amber,  bg:C.amberP,  tc:"#7A4C00"},
-                    {label:"Google Ads", val:"$1.000 USD",  color:C.blue,   bg:C.blueP,   tc:"#103B8A"},
-                    {label:"TikTok Ads", val:"$800 USD",    color:"#8B5CF6",bg:"#EDE9FE",  tc:"#4C1D95"},
-                    {label:"Referidos",  val:"+105 altas",  color:C.teal,   bg:C.tealP,   tc:"#065457"},
-                  ].map((c,i)=>(
-                    <div key={i} style={{background:c.bg,border:`0.5px solid ${c.color}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:c.color}}>{c.label}</p>
-                      <p style={{fontSize:10,color:c.tc}}>{c.val}</p>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:10,marginBottom:18}}>
+              {[
+                {t:"4 · Remarketing de visitantes web",
+                 d:"Quien visita weconnect.com.ar y no convierte recibe un anuncio recordatorio. La decisión de cambiar de ISP es lenta — el cliente compara, espera, se olvida.",
+                 extra:true},
+                {t:"5 · Video corto en Reels e Instagram",
+                 d:"Un video de 15 segundos con un speedtest de 300 Mbps en un hogar de la zona convierte <strong>2.3x más</strong> que imagen estática. No requiere agencia — solo el celular.",
+                 box:"CPM de Reels es <strong>40% más bajo</strong> que feed de Facebook · Contenido fácil: speedtest real, instalación, cliente satisfecho · 3 videos/mes alcanza"},
+              ].map((c,i)=>(
+                <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.blue}`,borderRadius:10,padding:"14px 16px"}}>
+                  <p style={{fontSize:10,fontWeight:600,color:C.blue,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>{c.t}</p>
+                  <p style={{fontSize:12,color:C.text,lineHeight:1.75,marginBottom:c.extra?8:0}} dangerouslySetInnerHTML={{__html:c.d}}/>
+                  {c.extra && (
+                    <div style={{display:"flex",gap:10,marginTop:8}}>
+                      <div style={{flex:1,background:C.redP,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                        <p style={{fontSize:10,color:C.text2}}>Conversión fría</p>
+                        <p style={{fontSize:18,fontWeight:600,color:C.red}}>1–2%</p>
+                      </div>
+                      <div style={{flex:1,background:C.greenP,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                        <p style={{fontSize:10,color:C.text2}}>Conversión remarketing</p>
+                        <p style={{fontSize:18,fontWeight:600,color:C.green}}>4–8%</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
+                  {c.box && <div style={{background:C.bg3,borderRadius:8,padding:"9px 11px",fontSize:11,color:C.text2,lineHeight:1.75,marginTop:8}} dangerouslySetInnerHTML={{__html:c.box}}/>}
                 </div>
-                {/* Flecha */}
-                <div style={{textAlign:"center",fontSize:16,color:C.green,margin:"4px 0"}}>↓</div>
-                {/* Hub IA */}
-                <div style={{background:C.tealP,border:`0.5px solid ${C.teal}`,borderRadius:8,padding:"8px 10px",textAlign:"center",marginBottom:8}}>
-                  <p style={{fontSize:11,fontWeight:600,color:C.teal}}>Hub IA unificado · 1 número · Claude API</p>
-                  <p style={{fontSize:10,color:"#065457",marginTop:2}}>Ventas · Soporte · Cobranza · Reclamos — mismo canal</p>
-                </div>
-                {/* Flecha */}
-                <div style={{textAlign:"center",fontSize:16,color:C.green,margin:"4px 0"}}>↓</div>
-                {/* 3 salidas */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
-                  {[
-                    {label:"IA cierra",  sub:"70% sin operador", color:C.green, bg:C.greenP, tc:"#0F5226"},
-                    {label:"Escala",     sub:"30% con contexto", color:"#7B5EA7",bg:"#EDE9FE",tc:"#4C1D95"},
-                    {label:"Dashboard",  sub:"métricas live",    color:C.blue,  bg:C.blueP,  tc:"#103B8A"},
-                  ].map((s,i)=>(
-                    <div key={i} style={{background:s.bg,border:`0.5px solid ${s.color}`,borderRadius:6,padding:"6px 8px",textAlign:"center"}}>
-                      <p style={{fontSize:11,fontWeight:600,color:s.color}}>{s.label}</p>
-                      <p style={{fontSize:10,color:s.tc,marginTop:2}}>{s.sub}</p>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+              ))}
             </div>
 
-            {/* ── SIMULADOR DE CANALES ── */}
-            <Card title="Simulador de canales — altas brutas · churn · neto mensual">
+            {/* ── GOOGLE ADS ── */}
+            <p style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:10}}>🔍 Google Ads — Search, Display y Performance Max</p>
+            <Ins type="g" html="Google <strong>captura intención</strong> — cuando alguien escribe 'internet fibra Almirante Brown' ya tomó la decisión de buscar. No hay que convencerlo. Es el canal de conversión de demanda existente."/>
 
-              {/* Leyenda criterio */}
-              <div style={{display:"flex",gap:16,marginBottom:12,flexWrap:"wrap",fontSize:11}}>
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:10,margin:"12px 0"}}>
+              {[
+                {t:"1 · Search — captura intención exacta",
+                 d:"Quien busca en Google ya decidió que quiere internet. Tasa de conversión <strong>15–22%</strong> vs 1–2% de Meta frío. Cada click es un lead calificado.",
+                 box:"Keywords: "internet fibra almirante brown" · "cambiar proveedor internet glew" · "precio internet 100mb capitan sarmiento" · <strong>~2.400 búsquedas/mes</strong> en zona",
+                 cpc:"CPC estimado: $1.20–2.50 USD/click"},
+                {t:"2 · Keywords de competencia",
+                 d:'Pujar por <strong>"telecentro no funciona"</strong>, "baja telecentro glew", "alternativa fibertel zona sur" captura clientes activamente frustrados.',
+                 box:"~800 búsquedas/mes · Conversión: <strong>20–30%</strong> — ya están enojados con el competidor · CPC: $1.80–3.20 USD",
+                 ins:"Son los leads más calificados del mercado local."},
+                {t:"3 · Long-tail de barrio",
+                 d:'Keywords ultra específicas como <strong>"internet fibra Longchamps"</strong> o "proveedor internet Ministro Rivadavia" — nadie más las puja. WeConnect debería dominarlas al 100%.',
+                 box:""internet burzaco fibra" · "wifi glew instalacion" · "fibra optica longchamps precio"",
+                 cpc:"CPC: $0.40–0.80 USD · Conversión: 25–35%"},
+              ].map((c,i)=>(
+                <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.green}`,borderRadius:10,padding:"14px 16px"}}>
+                  <p style={{fontSize:10,fontWeight:600,color:C.green,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>{c.t}</p>
+                  <p style={{fontSize:12,color:C.text,lineHeight:1.75,marginBottom:8}} dangerouslySetInnerHTML={{__html:c.d}}/>
+                  <div style={{background:C.bg3,borderRadius:8,padding:"9px 11px",fontSize:11,color:C.text2,lineHeight:1.75,marginBottom:c.cpc?7:0}} dangerouslySetInnerHTML={{__html:c.box}}/>
+                  {c.cpc && <div style={{display:"flex",justifyContent:"space-between",fontSize:11,fontWeight:600,marginTop:7}}><span style={{color:C.text2}}>CPC estimado</span><span style={{color:C.green}}>{c.cpc.replace("CPC estimado: ","")}</span></div>}
+                  {c.ins && <Ins type="g" html={c.ins}/>}
+                </div>
+              ))}
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:10,marginBottom:18}}>
+              {[
+                {t:"4 · Google Display — remarketing en toda la web",
+                 d:"Después de visitar weconnect.com.ar, el cliente ve banners de WeConnect en noticias, YouTube, Gmail. Mantiene la marca presente durante todo el proceso de decisión.",
+                 box:"Alcanza al <strong>80% de los usuarios</strong> de internet en Argentina · CPC Display: $0.15–0.40 USD · Conversión: 3–6%"},
+                {t:"5 · Performance Max — el algoritmo hace el trabajo",
+                 d:"Combina Search + Display + YouTube + Gmail automáticamente con un solo presupuesto. Google distribuye hacia donde hay más conversiones.",
+                 box:"CPC efectivo <strong>20–30% menor</strong> que campañas manuales · Requiere: pixel instalado + conversiones configuradas en el sitio"},
+              ].map((c,i)=>(
+                <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.green}`,borderRadius:10,padding:"14px 16px"}}>
+                  <p style={{fontSize:10,fontWeight:600,color:C.green,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>{c.t}</p>
+                  <p style={{fontSize:12,color:C.text,lineHeight:1.75,marginBottom:8}} dangerouslySetInnerHTML={{__html:c.d}}/>
+                  <div style={{background:C.bg3,borderRadius:8,padding:"9px 11px",fontSize:11,color:C.text2,lineHeight:1.75}} dangerouslySetInnerHTML={{__html:c.box}}/>
+                </div>
+              ))}
+            </div>
+
+            {/* ── FUNNEL COMPLETO ── */}
+            <p style={{fontSize:14,fontWeight:600,color:C.text,marginBottom:10}}>🔄 Por qué los dos juntos — el funnel completo</p>
+            <div style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderRadius:12,overflow:"hidden",marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr 1fr":"repeat(4,1fr)"}}>
                 {[
-                  {color:C.green, label:"Altas brutas (pauta + orgánico)"},
-                  {color:C.red,   label:"Churn −131/mes ($3.6M ARS)"},
-                  {color:C.blue,  label:"Neto mensual real"},
-                ].map((l,i)=>(
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
-                    <div style={{width:10,height:10,borderRadius:2,background:l.color}}/>
-                    <span style={{color:C.text2}}>{l.label}</span>
+                  {etapa:"Awareness",  icon:"📘", canal:"Meta",          desc:"Interrumpe · muestra · genera conocimiento de marca en zona"},
+                  {etapa:"Intención",  icon:"🔍", canal:"Google Search",  desc:"Captura cuando ya están buscando · 15–22% conversión"},
+                  {etapa:"Decisión",   icon:"🎯", canal:"Remarketing",    desc:"Meta + Display Google · acompañan hasta el cierre · 4–8%"},
+                  {etapa:"Conversión", icon:"🤖", canal:"Bot WSP IA",     desc:"Cierra 24/7 · responde en 3 seg · vende cuando el lead está caliente"},
+                ].map((f,i)=>(
+                  <div key={i} style={{padding:"12px 14px",borderRight:i<3?`0.5px solid ${C.bdr}`:"none",borderBottom:mob&&i<2?`0.5px solid ${C.bdr}`:"none",textAlign:"center"}}>
+                    <p style={{fontSize:10,color:C.text2,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>{f.etapa}</p>
+                    <p style={{fontSize:20,marginBottom:5}}>{f.icon}</p>
+                    <p style={{fontSize:12,fontWeight:600,color:C.navy}}>{f.canal}</p>
+                    <p style={{fontSize:11,color:C.text2,marginTop:4,lineHeight:1.6}}>{f.desc}</p>
                   </div>
                 ))}
               </div>
-
-              {/* Escenarios */}
-              <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                {[
-                  {esc:"Base orgánica",               inv:0,    extra:0,  total:239, neto:108, color:C.text2,  star:false, actual:false, nota:"Sin pauta · referidos + boca a boca"},
-                  {esc:"Solo Meta $1.5k",              inv:1500, extra:20, total:259, neto:128, color:C.amber,  star:false, actual:true,  nota:"Estado actual validado · mar 26"},
-                  {esc:"Meta $3k",                    inv:3000, extra:41, total:280, neto:149, color:C.blue,   star:false, actual:false, nota:"Duplicar Meta · +21 altas vs hoy"},
-                  {esc:"Meta $3k + Google $1k",       inv:4000, extra:63, total:302, neto:171, color:C.teal,   star:false, actual:false, nota:"Google Search captura intención activa"},
-                  {esc:"Meta + Google + TikTok $800", inv:4800, extra:77, total:316, neto:185, color:C.green,  star:true,  actual:false, nota:"Stack completo · recomendado"},
-                ].map((e,i)=>{
-                  const CHURN=131;
-                  const pctTotal = Math.round(e.total/316*100);
-                  return (
-                    <div key={i} style={{
-                      background:e.star?C.greenP:e.actual?"#FEF6DC":C.bg3,
-                      border:`0.5px solid ${e.star?C.green:e.actual?C.amber:C.bdr}`,
-                      borderRadius:10, padding:"12px 14px",
-                      borderLeft:`3px solid ${e.color}`,
-                    }}>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-                        <div>
-                          <div style={{display:"flex",alignItems:"center",gap:6}}>
-                            <p style={{fontSize:12,fontWeight:600,color:e.color}}>{e.esc}</p>
-                            {e.actual && <span style={{background:C.amberP,color:C.amber,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:9}}>ACTUAL</span>}
-                            {e.star   && <span style={{background:C.greenP,color:C.green,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:9}}>⭐ RECOMENDADO</span>}
-                          </div>
-                          <p style={{fontSize:10,color:C.text3,marginTop:2}}>{e.nota} · Inv: ${e.inv.toLocaleString("es-AR")} USD/mes</p>
-                        </div>
-                        <div style={{textAlign:"right"}}>
-                          <p style={{fontSize:10,color:C.text3}}>neto mensual</p>
-                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:e.color}}>+{e.neto}</p>
-                        </div>
-                      </div>
-
-                      {/* Barra visual altas / churn / neto */}
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                        {/* Altas brutas */}
-                        <div style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                          <p style={{fontSize:9,color:C.text3,marginBottom:3}}>ALTAS BRUTAS</p>
-                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:C.green}}>{e.total}</p>
-                          <p style={{fontSize:9,color:C.text3,marginTop:1}}>+{e.extra} por pauta</p>
-                          <div style={{height:3,background:C.bg3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
-                            <div style={{width:`${pctTotal}%`,height:"100%",background:C.green,borderRadius:2}}/>
-                          </div>
-                        </div>
-                        {/* Churn */}
-                        <div style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                          <p style={{fontSize:9,color:"#891515",marginBottom:3}}>CHURN (-)</p>
-                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:C.red}}>−{CHURN}</p>
-                          <p style={{fontSize:9,color:"#891515",marginTop:1}}>$3.6M ARS perdidos</p>
-                          <div style={{height:3,background:"rgba(209,48,48,0.2)",borderRadius:2,marginTop:5,overflow:"hidden"}}>
-                            <div style={{width:"100%",height:"100%",background:C.red,borderRadius:2}}/>
-                          </div>
-                        </div>
-                        {/* Neto */}
-                        <div style={{background:e.color==="#9AACBC"?C.bg3:`${e.color}12`,border:`0.5px solid ${e.color}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
-                          <p style={{fontSize:9,color:C.text3,marginBottom:3}}>NETO</p>
-                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:e.color}}>+{e.neto}</p>
-                          <p style={{fontSize:9,color:C.text3,marginTop:1}}>${(e.neto*27425/1e6).toFixed(1)}M ARS</p>
-                          <div style={{height:3,background:C.bg3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
-                            <div style={{width:`${Math.round(e.neto/185*100)}%`,height:"100%",background:e.color,borderRadius:2}}/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div style={{borderTop:`0.5px solid ${C.bdr}`,padding:"10px 14px",display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:10}}>
+                <Ins type="d" html="Sin Meta solo: capturás intención existente pero no generás demanda nueva. El volumen de altas tiene techo."/>
+                <Ins type="d" html="Sin Google solo: generás demanda pero perdés los leads que van a buscar a Google antes de decidir — y hay competidores ahí."/>
               </div>
+            </div>
 
-              <div style={{marginTop:10,padding:"8px 12px",background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <p style={{fontSize:11,color:C.red,fontWeight:600}}>⚠ Churn consume 131 clientes/mes = $3.6M ARS independientemente de la pauta</p>
-                <p style={{fontSize:11,color:"#891515",fontFamily:C.mono,fontWeight:700}}>Reducir churn 2.9→1.5% libera +$1.9M/mes adicionales</p>
-              </div>
-            </Card>
-
-            {/* ── IA VENTAS — MAQUETA DE PRODUCCIÓN ── */}
-            <Card title="IA ventas WSP — maqueta de producción · Claude API + Make.com">
-              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>
-
-                {/* Flujo de implementación */}
-                <div>
-                  <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Flujo técnico · Make.com · sin programador</p>
-                  {[
-                    {n:"1",label:"WA Business API",sub:"trigger: mensaje entrante",color:C.green},
-                    {n:"2",label:"Verificar cobertura",sub:"consulta KML de la zona",color:C.teal},
-                    {n:"3",label:"Claude API",sub:"genera respuesta personalizada",color:C.blue},
-                    {n:"4",label:"Responde al cliente",sub:"en &lt;3 seg · lenguaje natural",color:C.blue},
-                    {n:"5",label:"¿Cierra venta?",sub:"sí → ISPCube · no → operador",color:"#7B5EA7"},
-                    {n:"6",label:"Dashboard actualiza",sub:"conv · canal · tasa cierre",color:C.amber},
-                  ].map((s,i)=>(
-                    <div key={i}>
-                      <div style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 0"}}>
-                        <div style={{width:22,height:22,borderRadius:"50%",background:`${s.color}20`,border:`1px solid ${s.color}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                          <span style={{fontSize:10,fontWeight:600,color:s.color}}>{s.n}</span>
-                        </div>
-                        <div>
-                          <p style={{fontSize:12,fontWeight:600,color:C.text}}>{s.label}</p>
-                          <p style={{fontSize:10,color:C.text2}} dangerouslySetInnerHTML={{__html:s.sub}}/>
-                        </div>
-                      </div>
-                      {i<5 && <div style={{marginLeft:11,width:1,height:8,background:C.bdr}}/>}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Costos y KPIs */}
-                <div>
-                  <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Costos mensuales · opción A (para arrancar)</p>
-                  {[
-                    {item:"Make.com (automatización)",  costo:"$9 USD/mes"},
-                    {item:"Claude API (Anthropic)",      costo:"~$8 USD/mes"},
-                    {item:"WA Business API",             costo:"~$34 USD/mes"},
-                    {item:"Configuración inicial",       costo:"$500–1.000 USD única vez"},
-                  ].map((c,i)=>(
-                    <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:11}}>
-                      <span style={{color:C.text2}}>{c.item}</span>
-                      <span style={{fontFamily:C.mono,fontWeight:600,color:C.navy}}>{c.costo}</span>
-                    </div>
-                  ))}
-                  <div style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderTop:`1px solid ${C.navy}`,marginTop:4,fontSize:12,fontWeight:600}}>
-                    <span style={{color:C.navy}}>Total recurrente</span>
-                    <span style={{fontFamily:C.mono,color:C.green}}>~$51 USD/mes</span>
-                  </div>
-
-                  <div style={{marginTop:14}}>
-                    <p style={{fontSize:10,color:C.text2,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>Impacto proyectado</p>
-                    {[
-                      {label:"Altas extra/mes (resp. inmediata)", val:"+54",    color:C.green},
-                      {label:"Ahorro RRHH WSP",                   val:"$1.5M ARS",color:C.blue},
-                      {label:"Beneficio neto mensual",            val:"+$3.16M",color:C.green},
-                      {label:"Payback",                           val:"8 días", color:C.teal},
-                    ].map((k,i)=>(
-                      <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:11}}>
-                        <span style={{color:C.text2}}>{k.label}</span>
-                        <span style={{fontFamily:C.mono,fontWeight:600,color:k.color}}>{k.val}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Ins type="i" html="Sin API ISPCube: la IA cierra y el operador solo registra. <strong>Con API: 100% automático</strong> — ese es el objetivo de fase 2."/>
-                </div>
-              </div>
-            </Card>
+            {/* ── SIMULADOR DE CANALES ── */}
 
           </div>
         )}
