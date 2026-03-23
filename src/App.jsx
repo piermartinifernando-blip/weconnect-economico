@@ -227,7 +227,7 @@ const TABS = [
   {id:"be",       label:"📈 Break-even" },
   {id:"rrss",     label:"📣 Canales + IA"},
 
-  {id:"plan",     label:"🚀 Plan"       },
+  {id:"objetivos",label:"🎯 Objetivos"  },
 ];
 
 /* ═══ MAIN ═══════════════════════════════════════════════════════ */
@@ -1109,56 +1109,180 @@ export default function App() {
           </div>
         )}
 
-        {tab==="plan"&&(
+        {tab==="objetivos"&&(
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Potencial win-back + retención" value="+$7–16M/mes" sub="sin inversión adicional"             type="ok"/>
-              <KPI label="Meta churn 6 meses"            value="2.9% → 1.5%" sub="+63 retenidos/mes = +$1.73M"        type="ok"/>
-              <KPI label="Bloqueador principal"          value="ISP CUBE"    sub="sin API = sin IA operativa"           type="dn"/>
-            </div>
 
-            {[
-              { fase:"Fase 1 · Esta semana", sub:"Sin desarrollo · Solo configuración", color:C.green, items:[
-                {accion:"Duplicar Meta ($3k) + Google ($1k)", detalle:"CPL $13.27 USD sigue siendo bajo. +80 altas/mes inmediatas.", tipo:"solo presupuesto"},
-                {accion:"Programa de referidos",              detalle:"4.194 activos × 2.5% = +105 altas/mes sin pauta adicional.", tipo:"sin desarrollo"},
-                {accion:"Secuencia WSP cobro D5/15/25/30",    detalle:"Hoy: 1 campaña masiva. Con secuencia: 3× efectividad en recupero.", tipo:"sin desarrollo"},
-                {accion:"Win-back 1.682 inactivos",           detalle:"30% reactivación = +504 clientes = +$12.1M/mes.", tipo:"solo CSV"},
-                {accion:"Onboarding WSP D0/2/7/30",           detalle:"30.7% churnea antes del mes 3. Secuencia automática reduce churn temprano 40%.", tipo:"sin desarrollo"},
-              ]},
-              { fase:"Fase 2 · Mes 1–2", sub:"Desbloquear el cuello de botella", color:C.amber, items:[
-                {accion:"Desbloquear ISP CUBE",               detalle:"A: reclamo API. B: CSV nightly. C: scraping portal. Sin esto, Fase 3 no existe.", tipo:"técnico 1–2 días"},
-                {accion:"IA ventas WSP (Typebot + Claude)",    detalle:"Responde en <3s, 24/7. +54 altas/mes + ahorra $1.5M ARS en equipo.", tipo:"~$600 USD mes 1"},
-                {accion:"Migrar a débito automático SIRO",     detalle:"Meta: 40% cartera. Incentivo 5% descuento. SIRO ya en 9.8% — escalar.", tipo:"gestión comercial"},
-                {accion:"Upsell 30/50 MB → 100 MB",           detalle:"511 clientes en bajo ARPU. Campaña WSP con oferta especial = +$4.1M/mes.", tipo:"campaña WSP"},
-                {accion:"Early warning automático D20",        detalle:"Sin pago en día 20 → WSP automático → escala operador si no responde.", tipo:"requiere API CUBE"},
-              ]},
-              { fase:"Fase 3 · Mes 2–5", sub:"IA + automatización completa", color:C.blue, items:[
-                {accion:"Bot WSP completo (ventas+soporte+cobros)", detalle:"Atiende 24/7 sin operador en 70% de casos. El 30% escala con contexto.", tipo:"3–5 semanas dev"},
-                {accion:"Score de riesgo de churn",            detalle:"Historial pagos + plan + antigüedad = score mensual. Alto riesgo → atención proactiva.", tipo:"modelo simple ML"},
-                {accion:"Dashboard operativo en tiempo real",  detalle:"Cobranza del día, churns, clientes en riesgo. Sin exportar nada manualmente.", tipo:"4–6 semanas dev"},
-                {accion:"Expansión Glew + Florencio Varela",   detalle:"Diversificar riesgo. AB = 53% clientes y 72% deuda. Zonas nuevas <6% mora.", tipo:"inversión en campo"},
-              ]},
-            ].map((f,fi)=>(
-              <div key={fi} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderRadius:12,overflow:"hidden",marginBottom:12}}>
-                <div style={{padding:"12px 16px",background:`${f.color}12`,borderBottom:`0.5px solid ${f.color}30`,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <div style={{width:8,height:8,borderRadius:"50%",background:f.color}}/>
-                    <p style={{fontSize:13,color:f.color,fontWeight:600}}>{f.fase}</p>
-                  </div>
-                  <p style={{fontSize:11,color:C.text2}}>{f.sub}</p>
-                </div>
-                <div style={{padding:"4px 16px 8px"}}>
-                  {f.items.map((it,ii)=><FaseItem key={ii} {...it} color={f.color}/>)}
-                </div>
+            {/* Header mes */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div>
+                <p style={{fontSize:13,color:C.text2}}>Progreso mensual · <strong style={{color:C.text}}>Marzo 2026</strong> · se actualiza con cada bajada de CSV</p>
               </div>
-            ))}
-
-            <div style={{padding:"14px 16px",background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:12}}>
-              <p style={{fontSize:13,color:C.red,fontWeight:600,marginBottom:4}}>🔒 ISPCube es el único bloqueador real de toda la agenda de IA</p>
-              <p style={{fontSize:12,color:"#891515",lineHeight:1.6}}>
-                Resolverlo (API / CSV / scraping) activa la Fase 3 completa en 4–6 semanas y libera <strong>+$3M ARS/mes</strong> de beneficio inmediato. Sin esto, la IA opera con datos de 24hs de retraso.
-              </p>
+              <div style={{display:"flex",gap:16,fontSize:11}}>
+                {[
+                  {color:"#1A7A3C",bg:"#E5F5EC",label:"En objetivo >80%"},
+                  {color:"#C47A00",bg:"#FEF6DC",label:"En progreso 50-80%"},
+                  {color:"#D13030",bg:"#FEE9E9",label:"Requiere acción <50%"},
+                ].map((s,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
+                    <div style={{width:10,height:10,borderRadius:"50%",background:s.color}}/>
+                    <span style={{color:C.text2}}>{s.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* Grid de objetivos */}
+            {[
+              {
+                area:"Ventas",
+                icono:"📈",
+                nombre:"Altas del mes",
+                actual:259, meta:420, unidad:"altas",
+                pct:61.7,
+                fuente:"CSV ISPCube · fecha alta mar 26",
+                contexto:"Meta plan completo: 420/mes · orgánico actual: 195/mes",
+                accion:"Activar Meta+Google+TikTok y IA ventas WSP",
+                historico:[195,257,259],
+                labHist:["Ene","Feb","Mar"],
+              },
+              {
+                area:"Atención al cliente",
+                icono:"💬",
+                nombre:"Reducción de churn",
+                actual:2.9, meta:1.5, unidad:"%",
+                pct:48.3,
+                inverso:true,
+                fuente:"CSV ISPCube · 2.9% base activa",
+                contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
+                accion:"IA WSP cobranza D5/15/25 · onboarding automático",
+                historico:[3.0,2.9,2.9],
+                labHist:["Ene","Feb","Mar"],
+              },
+              {
+                area:"Operaciones · Red",
+                icono:"📦",
+                nombre:"Cajas instaladas",
+                actual:150, meta:150, unidad:"cajas",
+                pct:100.0,
+                fuente:"Declarado · equipo técnico",
+                contexto:"1.000 cajas acum. → objetivo 3.000 en 13 meses",
+                accion:"Mantener ritmo · 3.000 cajas = red AB completa may 27",
+                historico:[150,150,150],
+                labHist:["Ene","Feb","Mar"],
+              },
+              {
+                area:"Operaciones · Clientes",
+                icono:"🔧",
+                nombre:"Instalaciones clientes",
+                actual:259, meta:420, unidad:"instalac.",
+                pct:61.7,
+                fuente:"CSV ISPCube · altas habilitadas mar 26",
+                contexto:"Cada alta = 1 instalación técnica realizada",
+                accion:"Más altas → más instalaciones · ligado a ventas",
+                historico:[195,257,259],
+                labHist:["Ene","Feb","Mar"],
+              },
+              {
+                area:"Soporte técnico",
+                icono:"🛠️",
+                nombre:"Tickets resueltos",
+                actual:null, meta:null, unidad:"tickets",
+                pct:null,
+                fuente:"No disponible en CSV ISPCube actual",
+                contexto:"Requiere módulo soporte ISPCube o sistema externo",
+                accion:"Habilitar módulo tickets · o integrar Mesa de Ayuda",
+                historico:[null,null,null],
+                labHist:["Ene","Feb","Mar"],
+                sinDatos:true,
+              },
+              {
+                area:"Cobranza",
+                icono:"💳",
+                nombre:"Migración a SIRO",
+                actual:10.2, meta:40.0, unidad:"% cartera",
+                pct:25.5,
+                fuente:"CSV caja · $9.57M / $94M mar 26",
+                contexto:"SIRO: $0 oct 25 → 10.2% mar 26 · crecimiento mensual",
+                accion:"Campaña WSP incentivo 5% descuento · meta 40%",
+                historico:[1.4,6.1,10.2],
+                labHist:["Ene","Feb","Mar"],
+              },
+            ].map((obj,i)=>{
+              const pct  = obj.pct;
+              const rojo   = "#D13030", rP = "#FEE9E9";
+              const ambar  = "#C47A00", aP = "#FEF6DC";
+              const verde  = "#1A7A3C", vP = "#E5F5EC";
+              const col  = obj.sinDatos ? C.text3 : pct >= 80 ? verde : pct >= 50 ? ambar : rojo;
+              const bgC  = obj.sinDatos ? C.bg3   : pct >= 80 ? vP    : pct >= 50 ? aP    : rP;
+              const etiq = obj.sinDatos ? "Sin datos" : pct >= 80 ? "En objetivo" : pct >= 50 ? "En progreso" : "Requiere acción";
+
+              return (
+                <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderRadius:12,padding:"16px 18px",marginBottom:12,borderLeft:`3px solid ${col}`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                    <div>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                        <span style={{fontSize:14}}>{obj.icono}</span>
+                        <span style={{fontSize:10,color:C.text3,textTransform:"uppercase",letterSpacing:"0.07em",fontWeight:600}}>{obj.area}</span>
+                      </div>
+                      <p style={{fontSize:14,fontWeight:600,color:C.text}}>{obj.nombre}</p>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <span style={{background:bgC,color:col,padding:"3px 10px",borderRadius:20,fontSize:10,fontWeight:700}}>{etiq}</span>
+                      {!obj.sinDatos && (
+                        <p style={{fontSize:22,fontFamily:C.mono,fontWeight:700,color:col,marginTop:4}}>
+                          {pct}%
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Barra de progreso */}
+                  {!obj.sinDatos && (
+                    <div style={{marginBottom:10}}>
+                      <div style={{height:8,background:C.bg3,borderRadius:4,overflow:"hidden",border:`0.5px solid ${C.bdr}`,marginBottom:6}}>
+                        <div style={{width:`${Math.min(pct,100)}%`,height:"100%",background:col,borderRadius:4,transition:"width 0.5s"}}/>
+                      </div>
+                      <div style={{display:"flex",justifyContent:"space-between",fontSize:11}}>
+                        <span style={{color:C.text2,fontFamily:C.mono}}>
+                          {obj.inverso
+                            ? `Actual: ${obj.actual}${obj.unidad} → Meta: ${obj.meta}${obj.unidad}`
+                            : `Actual: ${obj.actual?.toLocaleString("es-AR")} ${obj.unidad}`}
+                        </span>
+                        <span style={{color:col,fontFamily:C.mono,fontWeight:600}}>
+                          Meta: {obj.meta?.toLocaleString("es-AR")} {obj.unidad}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Histórico mini */}
+                  {!obj.sinDatos && (
+                    <div style={{display:"flex",gap:6,marginBottom:10}}>
+                      {obj.historico.map((v,j)=>(
+                        <div key={j} style={{flex:1,background:C.bg3,borderRadius:6,padding:"5px 6px",textAlign:"center",border:`0.5px solid ${C.bdr}`}}>
+                          <p style={{fontSize:9,color:C.text3}}>{obj.labHist[j]}</p>
+                          <p style={{fontSize:11,fontFamily:C.mono,fontWeight:600,color:j===obj.historico.length-1?col:C.text2,marginTop:1}}>
+                            {v != null ? `${v}${typeof v==='number'&&v<10&&obj.unidad==="%" ? "%" : ""}` : "—"}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Footer */}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",borderTop:`0.5px solid ${C.bdr}`,paddingTop:8}}>
+                    <div>
+                      <p style={{fontSize:10,color:C.text3,marginBottom:2}}>Fuente: {obj.fuente}</p>
+                      <p style={{fontSize:11,color:C.text2}}>{obj.contexto}</p>
+                    </div>
+                    <div style={{background:`${col}12`,borderRadius:6,padding:"5px 10px",maxWidth:"40%",textAlign:"right"}}>
+                      <p style={{fontSize:10,color:col,fontWeight:600}}>▶ {obj.accion}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
           </div>
         )}
 
