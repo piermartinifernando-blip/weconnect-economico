@@ -930,15 +930,15 @@ export default function App() {
               {[
                 {t:"1 · Search — captura intención exacta",
                  d:"Quien busca en Google ya decidió que quiere internet. Tasa de conversión <strong>15–22%</strong> vs 1–2% de Meta frío. Cada click es un lead calificado.",
-                 box:"Keywords: "internet fibra almirante brown" · "cambiar proveedor internet glew" · "precio internet 100mb capitan sarmiento" · <strong>~2.400 búsquedas/mes</strong> en zona",
+                 box:"Keywords: 'internet fibra almirante brown' · 'cambiar proveedor internet glew' · 'precio internet 100mb capitan sarmiento' · <strong>~2.400 búsquedas/mes</strong> en zona",
                  cpc:"CPC estimado: $1.20–2.50 USD/click"},
                 {t:"2 · Keywords de competencia",
-                 d:'Pujar por <strong>"telecentro no funciona"</strong>, "baja telecentro glew", "alternativa fibertel zona sur" captura clientes activamente frustrados.',
+                 d:"Pujar por <strong>'telecentro no funciona'</strong>, 'baja telecentro glew', 'alternativa fibertel zona sur' captura clientes activamente frustrados.",
                  box:"~800 búsquedas/mes · Conversión: <strong>20–30%</strong> — ya están enojados con el competidor · CPC: $1.80–3.20 USD",
                  ins:"Son los leads más calificados del mercado local."},
                 {t:"3 · Long-tail de barrio",
-                 d:'Keywords ultra específicas como <strong>"internet fibra Longchamps"</strong> o "proveedor internet Ministro Rivadavia" — nadie más las puja. WeConnect debería dominarlas al 100%.',
-                 box:""internet burzaco fibra" · "wifi glew instalacion" · "fibra optica longchamps precio"",
+                 d:"Keywords ultra específicas como <strong>'internet fibra Longchamps'</strong> o 'proveedor internet Ministro Rivadavia' — nadie más las puja. WeConnect debería dominarlas al 100%.",
+                 box:"'internet burzaco fibra' · 'wifi glew instalacion' · 'fibra optica longchamps precio'",
                  cpc:"CPC: $0.40–0.80 USD · Conversión: 25–35%"},
               ].map((c,i)=>(
                 <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.green}`,borderRadius:10,padding:"14px 16px"}}>
