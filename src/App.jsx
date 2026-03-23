@@ -852,7 +852,7 @@ export default function App() {
 
             {/* ── MAPA VISUAL SVG ── */}
             <Card title="Mapa actual vs propuesto — canales · IA · flujo completo" style={{marginBottom:14}}>
-              <svg width="100%" viewBox="0 0 680 700" style={{display:"block"}}>
+              <svg width="100%" viewBox="0 0 680 634" style={{display:"block"}}>
                 <defs>
                   <marker id="arrowC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                     <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
