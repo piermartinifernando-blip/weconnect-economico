@@ -8,11 +8,11 @@ import {
 
 /* ─── TOKENS ────────────────────────────────────────────────────── */
 const C = {
-  bg:"#06080d", surf:"#0b0f18", card:"#0f1520", cardHi:"#141c2a",
-  b1:"#1a2540", b2:"#243050",
-  cyan:"#00c2ff", green:"#00e5a0", red:"#ff3d6e", amber:"#ffb800",
-  purple:"#a78bfa", blue:"#3b82f6",
-  txt:"#eef2ff", sub:"#8899bb", muted:"#445577",
+  bg:"#0f1117", surf:"#161b27", card:"#1c2333", cardHi:"#222b3d",
+  b1:"#2a3650", b2:"#334266",
+  cyan:"#38bdf8", green:"#34d399", red:"#f87171", amber:"#fbbf24",
+  purple:"#c084fc", blue:"#60a5fa",
+  txt:"#f1f5f9", sub:"#94a3b8", muted:"#64748b",
   mono:"'JetBrains Mono', monospace", sans:"'Outfit', sans-serif",
 };
 
