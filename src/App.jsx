@@ -679,18 +679,14 @@ export default function App() {
                   <ComposedChart data={D.CHURN_MENS}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                     <XAxis dataKey="mes" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} interval={3}/>
-                    <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,4]}
-                      label={{value:"%",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
-                    <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
-                      label={{value:"clientes",angle:90,position:"insideRight",fill:C.text2,fontSize:9}}/>
+                    <YAxis yAxisId="left" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,4]}/>
+                    <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
                     <Tooltip content={<TipCant/>}/>
                     <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                    <ReferenceLine yAxisId="left" y={2.9} stroke={C.amber} strokeDasharray="4 3"
-                      label={{value:"Prom 2.9%",fill:C.amber,fontSize:10,position:"right"}}/>
-                    <ReferenceLine yAxisId="left" y={1.5} stroke={C.green} strokeDasharray="4 3"
-                      label={{value:"Meta 1.5%",fill:C.green,fontSize:10,position:"right"}}/>
+                    <ReferenceLine yAxisId="left" y={2.9} stroke={C.amber} strokeDasharray="4 3" label={{value:"Prom 2.9%",fill:C.amber,fontSize:10,position:"right"}}/>
+                    <ReferenceLine yAxisId="left" y={1.5} stroke={C.green} strokeDasharray="4 3" label={{value:"Meta 1.5%",fill:C.green,fontSize:10,position:"right"}}/>
                     <Bar  yAxisId="right" dataKey="cant" name="Clientes perdidos" fill={C.red} opacity={0.25} radius={[2,2,0,0]}/>
-                    <Line yAxisId="left"  type="monotone" dataKey="pct"  name="Churn %" stroke={C.red} strokeWidth={2.5} dot={false}/>
+                    <Line yAxisId="left"  type="monotone" dataKey="pct" name="Churn %" stroke={C.red} strokeWidth={2.5} dot={false}/>
                   </ComposedChart>
                 </ResponsiveContainer>
               </Card>
