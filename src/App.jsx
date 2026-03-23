@@ -22,7 +22,7 @@ const C = {
 const D = {
   // Negocio
   LABELS:["24/07","24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
-  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.04,86.25,92.64,95.51,95.38,94.03],
+  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.04,86.25,92.64,95.51,95.38,94.03], // verificado CSV
   BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,66.98,101.95,95.30,108.15,87.52,115.07,114.5,110.0],
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
   MP8:  [56.26,61.28,60.42,66.93,74.19,66.81,71.70,64.28],
@@ -31,10 +31,10 @@ const D = {
   PF8:  [4.13, 4.52, 4.71, 6.22, 4.64, 4.77, 4.00, 4.70],
   CAJA8:[3.15, 3.61, 3.72, 3.26, 3.56, 3.72, 3.39, 3.75],
   GAL8: [2.09, 2.20, 2.20, 1.61, 1.41,10.53, 2.40, 1.51],
-  COBROS_M8:[70.46,77.64,78.04,86.25,92.64,95.51,95.38,93.88],
+  COBROS_M8:[70.46,77.64,78.04,86.25,92.64,95.51,95.38,94.03],
   CITIES:["Almirante Brown","Cap. Sarmiento","Minist. Rivadavia","Glew","Florencio Varela","Longchamps","Burzaco"],
   CITY_COBRO:[152.7,93.31,11.3,9.02,3.12,3.0,1.15],
-  CITY_MORA: [62.87,14.74,1.43,1.95,1.27,0.5,0.15],
+  CITY_MORA: [55.91,12.24,1.42,1.11,0.91,0.35,0.13], // deuda vencida real Mar 26
   CITY_CLI:  [3128,1727,388,382,93,146,48],
   VEND_LABS:["Alfredo Blockl","Netsharing SA","Local CS","M. Shanahan","I. Rodriguez","Espinel Gaspar"],
   VEND_VALS:[69.45,33.62,19.32,19.29,17.37,13.73],
@@ -318,7 +318,7 @@ export default function App() {
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
-              <Card title="Cobrado vs facturado mensual ($M)">
+              <Card title="Cobrado vs facturado mensual ($M) — jul 24 → mar 26">
                 <div style={{display:"flex",gap:16,marginBottom:10}}>
                   {[{color:C.blue,label:"Cobrado"},{color:"rgba(26,95,191,.3)",label:"Facturado"}].map((l,i)=>(
                     <span key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:C.text2}}>
@@ -328,7 +328,7 @@ export default function App() {
                   ))}
                 </div>
                 <ResponsiveContainer width="100%" height={220}>
-                  <AreaChart data={cobVsFac.slice(-16)}>
+                  <AreaChart data={cobVsFac}>
                     <defs>
                       <linearGradient id="gCob" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={C.blue} stopOpacity={0.15}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/>
@@ -394,8 +394,8 @@ export default function App() {
 
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
-              <KPI label="Tasa cobranza ene-26" value="83%"       sub="$95.5M cobrado / $115M facturado" type="wr"/>
-              <KPI label="Crecimiento ago-24→ene-26" value="+1.590%" sub="$5.7M → $95.5M" type="ok"/>
+              <KPI label="Tasa cobranza mar-26" value="85%"       sub="$94M cobrado / $110M facturado" type="wr"/>
+              <KPI label="SIRO Mar 26"               value="$9.57M"    sub="▲ desde $0 oct 25 · 10.2% del cobro" type="ok"/>
             </div>
           </div>
         )}
@@ -462,10 +462,10 @@ export default function App() {
         {tab==="clientes"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Clientes totales"    value="5.960"    sub="desde agosto 2024"               type="nv"/>
-              <KPI label="Habilitados / activos" value="4.088" sub="68.6% del padrón"                type="ok"/>
-              <KPI label="Mejor mes de altas"  value="354"      sub="enero 2026 ▲"                   type="ok"/>
-              <KPI label="Promedio altas/mes"  value="259"      sub={`mar-26 · neto <strong style='color:${C.green}'>+250</strong>/mes tras churn 2.9%`} type="ok"/>
+              <KPI label="Total padrón"          value="5.960"   sub="desde agosto 2024"                   type="nv"/>
+              <KPI label="Habilitados Mar 26"    value="4.088"   sub="68.6% del padrón · dato real"         type="ok"/>
+              <KPI label="Bloqueados"            value="327"     sub="en campaña de recupero · con deuda"   type="wr"/>
+              <KPI label="Sin servicio"          value="1.545"   sub="nunca regularizaron · $59.1M deuda"   type="dn"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -520,7 +520,7 @@ export default function App() {
                   {mes:"Dic 25",cobrado:92.87,egresos:171.65,neto:-78.78,altas:238,bajas:59},
                   {mes:"Ene 26",cobrado:95.98,egresos:175.34,neto:-79.36,altas:257,bajas:41},
                   {mes:"Feb 26",cobrado:95.21,egresos:183.34,neto:-88.13,altas:195,bajas:22},
-                  {mes:"Mar 26",cobrado:94.03,egresos:183.34,neto:-89.31,altas:259,bajas:9},
+                  {mes:"Mar 26",cobrado:94.03,egresos:183.34,neto:-89.31,altas:259,bajas:9}, // mes completo
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
@@ -615,10 +615,10 @@ export default function App() {
         {tab==="mora"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Deuda total cartera" value="$82.9M"  sub="total adeudado"            type="dn"/>
-              <KPI label="Deuda vencida"       value="$24.6M"  sub="1.041 morosos"             type="dn"/>
-              <KPI label="% cartera con mora"  value="18%"     sub="activos con deuda vencida" type="wr"/>
-              <KPI label="Deuda prom./moroso"  value="~$39.3k" sub="1.4 meses de ARPU"         type="wr"/>
+              <KPI label="Deuda total cartera"  value="$88.0M"  sub="total adeudado Mar 26"                       type="dn"/>
+              <KPI label="Deuda vencida"        value="$72.1M"  sub="1.545 clientes sin servicio + 327 bloqueados" type="dn"/>
+              <KPI label="Deuda sin servicio"   value="$59.1M"  sub="difícil recupero · nunca regularizaron"      type="dn"/>
+              <KPI label="Deuda en recupero"    value="$10.8M"  sub="327 bloqueados · campaña activa"              type="wr"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -639,7 +639,7 @@ export default function App() {
 
               <Card title="Causa raíz — medios de pago declarados">
                 {[
-                  {medio:"Caja / efectivo",   cant:"5.041",pct:86,color:C.red  },
+                  {medio:"Caja / efectivo",   cant:"5.108",pct:85.7,color:C.red  },
                   {medio:"Débito/crédito",    cant:"438",  pct:7, color:C.green},
                   {medio:"Cobranzas domicil.",cant:"332",  pct:6, color:C.blue },
                 ].map((m,i)=>(
