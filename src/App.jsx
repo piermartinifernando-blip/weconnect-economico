@@ -433,40 +433,94 @@ export default function App() {
         {/* ═══ COSTOS ════════════════════════════════════════════════ */}
         {tab==="costos"&&(
           <div>
+            {/* KPIs exactos del HTML viejo */}
+            <div style={{background:C.blueP,border:`0.5px solid ${C.blue}`,borderRadius:8,padding:"9px 14px",marginBottom:14,fontSize:12,color:"#103B8A"}}>
+              Egresos reales oct 2025–feb 2026. Marzo en curso. CAPEX separado. Datos ISP CUBE al {new Date().toLocaleDateString("es-AR")}.
+            </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="OPEX base (sin CAPEX)" value="$146.6M" sub="steady state ene-feb 26"           type="dn"/>
-              <KPI label="OPEX + CAPEX Feb 26" value="$183.3M" sub="CAPEX obra $36.7M incluido"          type="dn"/>
-              <KPI label="Déficit Feb 26"     value="−$88.1M" sub="cobrado $95.2M − total $183.3M"      type="dn"/>
-              <KPI label="CAPEX obra estimado" value="$40M/mes" sub="6 meses · abr–sep 26 · ~$240M total" type="wr"/>
+              <KPI label="OPEX steady state"    value="$150.3M"  sub="ARS/mes · ene-feb 2026"                  type="dn"/>
+              <KPI label="Déficit mensual"      value="−$42.5M"  sub="4.106 cli × $26.254 = $107.8M"           type="dn"/>
+              <KPI label="Clientes para BE"     value="5.725"    sub="faltan 1.619 · ARPU $26.254"              type="wr"/>
+              <KPI label="CAPEX red AB ($M)"    value="$58.2M"   sub="OLT + Construcción · no recurrente"       type="nv"/>
             </div>
 
+            {/* Tabla P&L exacta */}
+            <Card title="P&L mensual real — CAPEX separado ($M ARS)" style={{marginBottom:12}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                <thead>
+                  <tr style={{background:C.bg3}}>
+                    {["Mes","Ingresos","OPEX","CAPEX","Resultado","Ratio"].map(h=>(
+                      <th key={h} style={{padding:"9px 12px",textAlign:h==="Mes"?"left":"right",color:C.text2,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {mes:"Oct 2025 corregido", ing:78.0,  opex:147.5, capex:0,    res:-69.5, ratio:1.89, note:""},
+                    {mes:"Nov 2025",           ing:86.3,  opex:135.9, capex:0,    res:-49.6, ratio:1.58, note:""},
+                    {mes:"Dic 2025 SAC",       ing:92.6,  opex:171.6, capex:0.1,  res:-78.9, ratio:1.85, note:""},
+                    {mes:"Ene 2026",           ing:95.5,  opex:150.3, capex:25.0, res:-54.8, ratio:1.57, note:""},
+                    {mes:"Feb 2026",           ing:95.4,  opex:150.3, capex:33.0, res:-54.9, ratio:1.57, note:""},
+                  ].map((r,i)=>(
+                    <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`}}>
+                      <td style={{padding:"9px 12px",color:C.text,fontWeight:600}}>{r.mes}</td>
+                      <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.blue,fontWeight:600}}>${r.ing}M</td>
+                      <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.red}}>${r.opex}M</td>
+                      <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.amber}}>{r.capex>0?`$${r.capex}M`:"$0"}</td>
+                      <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,fontWeight:700,color:C.red}}>${r.res}M</td>
+                      <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.text2}}>{r.ratio}x</td>
+                    </tr>
+                  ))}
+                  {/* Mar 26 en curso */}
+                  <tr style={{borderBottom:`0.5px solid ${C.bdr}`,background:C.amberP}}>
+                    <td style={{padding:"9px 12px",fontWeight:600}}>
+                      Mar 2026 en curso <span style={{fontSize:10,color:C.amber,fontWeight:400}}>en curso</span>
+                    </td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.amber,fontWeight:600}}>$93.9M <span style={{fontSize:9,color:C.amber}}>(al 22/3, oficial ISP CUBE)</span></td>
+                    <td colSpan={3} style={{padding:"9px 12px",textAlign:"center",color:C.text2,fontSize:11}}>Egresos pendientes · mes en curso</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",color:C.text3}}>—</td>
+                  </tr>
+                  {/* Steady state */}
+                  <tr style={{background:C.blueP,fontWeight:700}}>
+                    <td style={{padding:"9px 12px",color:C.blue,fontWeight:700}}>Steady state (ene-feb)</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.blue,fontWeight:700}}>$95.4M</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.red, fontWeight:700}}>$150.3M</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.amber,fontWeight:700}}>$29.0M</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.red, fontWeight:700}}>−$54.9M</td>
+                    <td style={{padding:"9px 12px",textAlign:"right",fontFamily:C.mono,color:C.text2,fontWeight:700}}>1.57x</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Card>
+
+            {/* Gráficos */}
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
-              <Card title="P&L mensual real — CAPEX separado ($M ARS)">
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={plData} barGap={3}>
+              <Card title="Ingresos vs OPEX ($M)">
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={plData} barGap={4}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
-                    <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
+                    <XAxis dataKey="mes" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
                     <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
                     <Tooltip content={<Tip/>}/>
                     <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
                     <Bar dataKey="cobrado" name="Ingresos" fill={C.blue}  radius={[3,3,0,0]}/>
-                    <Bar dataKey="opex"    name="OPEX"     fill={C.red}   radius={[3,3,0,0]}/>
-                    <Bar dataKey="capex"   name="CAPEX"    fill={C.amber} radius={[3,3,0,0]}/>
+                    <Bar dataKey="opex"    name="OPEX"     stackId="c" fill={C.red}   radius={[0,0,0,0]}/>
+                    <Bar dataKey="capex"   name="CAPEX"    stackId="c" fill={C.amber} radius={[3,3,0,0]}/>
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
 
               <Card title="Estructura OPEX — prom 5 meses">
                 {D.OPEX_CATS.map((cat,i)=>{
-                  const avg=(D.OPEX_DATA[cat]||[]).reduce((a,b)=>a+b,0)/(D.OPEX_DATA[cat]||[1]).length;
-                  const max=63.24;
-                  return <Prog key={i} label={cat} value={avg} max={max} display={fM(avg)} color={D.OPEX_COLORS[i]}/>;
+                  const vals = D.OPEX_DATA[cat]||[];
+                  const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+                  return <Prog key={i} label={cat} value={avg} max={63.24} display={fM(avg)} color={D.OPEX_COLORS[i]}/>;
                 })}
               </Card>
             </div>
 
             <Card title="OPEX apilado por categoría — 5 meses ($M)">
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={opexStackData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
@@ -481,14 +535,13 @@ export default function App() {
             </Card>
 
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginTop:12}}>
-              <KPI label="RRHH ene-feb"     value="$67.2M"  sub="45% del OPEX base"            type="dn"/>
-              <KPI label="CAPEX obra total" value="~$240M"  sub="$40M × 6 meses abr-sep 26"    type="wr"/>
-              <KPI label="Ingreso marginal" value="$27.425" sub="ARS por cada cliente nuevo"   type="nv"/>
+              <KPI label="RRHH ene-feb"     value="$67.2M"  sub="45% OPEX · dic $85.9M (SAC atípico)"    type="dn"/>
+              <KPI label="CAPEX obra total" value="~$240M"  sub="$40M × 6 meses · abr-sep 26"            type="wr"/>
+              <KPI label="Ingreso marginal" value="$26.254" sub="ARS por cada cliente nuevo"              type="nv"/>
             </div>
           </div>
         )}
 
-        {/* ═══ CLIENTES ══════════════════════════════════════════════ */}
         {tab==="clientes"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}}>
