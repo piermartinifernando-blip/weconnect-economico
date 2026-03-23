@@ -116,11 +116,11 @@ const D = {
     {c:"Muy reciente 2026 (0-3m)",pct:10.6,inact:87,color:C.green},
   ],
   CHURN_MENS:[
-    {mes:"Sep 24",pct:2.1},{mes:"Oct 24",pct:2.3},{mes:"Nov 24",pct:2.0},{mes:"Dic 24",pct:1.9},
-    {mes:"Ene 25",pct:2.2},{mes:"Feb 25",pct:2.4},{mes:"Mar 25",pct:2.6},{mes:"Abr 25",pct:2.8},
-    {mes:"May 25",pct:2.7},{mes:"Jun 25",pct:2.9},{mes:"Jul 25",pct:3.1},{mes:"Ago 25",pct:3.0},
-    {mes:"Sep 25",pct:2.9},{mes:"Oct 25",pct:2.8},{mes:"Nov 25",pct:2.6},{mes:"Dic 25",pct:2.7},
-    {mes:"Ene 26",pct:2.5},{mes:"Feb 26",pct:2.4},{mes:"Mar 26",pct:2.3},
+    {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
+    {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
+    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:118},
+    {mes:"Sep 25",pct:2.9,cant:115},{mes:"Oct 25",pct:2.8,cant:112},{mes:"Nov 25",pct:2.6,cant:105},{mes:"Dic 25",pct:2.7,cant:109},
+    {mes:"Ene 26",pct:2.5,cant:102},{mes:"Feb 26",pct:2.4,cant:98}, {mes:"Mar 26",pct:2.3,cant:94},
   ],
   // Mora
   MORA_TOTAL:82.9, MORA_VENC:24.6, MORA_MOROSOS:1041, MORA_PCT:18,
@@ -671,16 +671,24 @@ export default function App() {
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
-              <Card title="Tasa de churn mensual (%)">
-                <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={D.CHURN_MENS}>
+              <Card title="Tasa de churn mensual — % y cantidad de clientes">
+                <ResponsiveContainer width="100%" height={240}>
+                  <ComposedChart data={D.CHURN_MENS}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                     <XAxis dataKey="mes" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} interval={3}/>
-                    <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,5]}/>
-                    <Tooltip content={<Tip/>}/>
-                    <ReferenceLine y={2.9} stroke={C.amber} strokeDasharray="4 3" label={{value:"Prom 2.9%",fill:C.amber,fontSize:10,position:"right"}}/>
-                    <Line type="monotone" dataKey="pct" name="Churn %" stroke={C.red} strokeWidth={2} dot={false}/>
-                  </LineChart>
+                    <YAxis yAxisId="left"  tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`${v}%`} domain={[0,4]}
+                      label={{value:"%",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
+                    <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
+                      label={{value:"clientes",angle:90,position:"insideRight",fill:C.text2,fontSize:9}}/>
+                    <Tooltip content={<TipCant/>}/>
+                    <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
+                    <ReferenceLine yAxisId="left" y={2.9} stroke={C.amber} strokeDasharray="4 3"
+                      label={{value:"Prom 2.9%",fill:C.amber,fontSize:10,position:"right"}}/>
+                    <ReferenceLine yAxisId="left" y={1.5} stroke={C.green} strokeDasharray="4 3"
+                      label={{value:"Meta 1.5%",fill:C.green,fontSize:10,position:"right"}}/>
+                    <Bar  yAxisId="right" dataKey="cant" name="Clientes perdidos" fill={C.red} opacity={0.25} radius={[2,2,0,0]}/>
+                    <Line yAxisId="left"  type="monotone" dataKey="pct"  name="Churn %" stroke={C.red} strokeWidth={2.5} dot={false}/>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </Card>
 
