@@ -1032,27 +1032,94 @@ export default function App() {
             </div>
 
             {/* ── SIMULADOR DE CANALES ── */}
-            <Card title="Simulador de canales — altas y CPL por escenario">
-              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
+            <Card title="Simulador de canales — altas brutas · churn · neto mensual">
+
+              {/* Leyenda criterio */}
+              <div style={{display:"flex",gap:16,marginBottom:12,flexWrap:"wrap",fontSize:11}}>
                 {[
-                  {esc:"Solo Meta $1.5k",  altas:107, cpl:14.0, inv:1500, color:C.text2},
-                  {esc:"Meta $3k",         altas:214, cpl:14.0, inv:3000, color:C.amber},
-                  {esc:"Meta+Google",      altas:270, cpl:13.3, inv:4000, color:C.blue},
-                  {esc:"Meta+G+TikTok ⭐", altas:340, cpl:12.4, inv:4800, color:C.green},
-                ].map((e,i)=>(
-                  <div key={i} style={{background:i===3?C.greenP:C.bg3,border:`0.5px solid ${i===3?C.green:C.bdr}`,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
-                    <p style={{fontSize:10,color:C.text2,marginBottom:6,fontWeight:600}}>{e.esc}</p>
-                    <p style={{fontSize:22,fontFamily:C.mono,fontWeight:600,color:e.color}}>{e.altas}</p>
-                    <p style={{fontSize:10,color:C.text2,margin:"4px 0"}}>altas/mes</p>
-                    <div style={{background:`${e.color}18`,borderRadius:6,padding:"4px 6px",marginTop:6}}>
-                      <p style={{fontSize:11,color:e.color,fontWeight:600,fontFamily:C.mono}}>CPL ${e.cpl} USD</p>
-                    </div>
-                    <p style={{fontSize:9,color:C.text3,marginTop:4}}>Inv: ${e.inv.toLocaleString("es-AR")} USD/mes</p>
+                  {color:C.green, label:"Altas brutas (pauta + orgánico)"},
+                  {color:C.red,   label:"Churn −131/mes ($3.6M ARS)"},
+                  {color:C.blue,  label:"Neto mensual real"},
+                ].map((l,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:5}}>
+                    <div style={{width:10,height:10,borderRadius:2,background:l.color}}/>
+                    <span style={{color:C.text2}}>{l.label}</span>
                   </div>
                 ))}
               </div>
-              <Ins type="g" html="Con Meta+Google+TikTok: <strong>340 altas/mes</strong> · CPL $12.4 USD · LTV/CAC 96x · payback 13 días"/>
-              <Ins type="i" html="TikTok agrega +70 altas/mes con CPM 40% más bajo que Meta feed · ideal para awareness en zonas nuevas"/>
+
+              {/* Escenarios */}
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {[
+                  {esc:"Base orgánica",               inv:0,    extra:0,  total:239, neto:108, color:C.text2,  star:false, actual:false, nota:"Sin pauta · referidos + boca a boca"},
+                  {esc:"Solo Meta $1.5k",              inv:1500, extra:20, total:259, neto:128, color:C.amber,  star:false, actual:true,  nota:"Estado actual validado · mar 26"},
+                  {esc:"Meta $3k",                    inv:3000, extra:41, total:280, neto:149, color:C.blue,   star:false, actual:false, nota:"Duplicar Meta · +21 altas vs hoy"},
+                  {esc:"Meta $3k + Google $1k",       inv:4000, extra:63, total:302, neto:171, color:C.teal,   star:false, actual:false, nota:"Google Search captura intención activa"},
+                  {esc:"Meta + Google + TikTok $800", inv:4800, extra:77, total:316, neto:185, color:C.green,  star:true,  actual:false, nota:"Stack completo · recomendado"},
+                ].map((e,i)=>{
+                  const CHURN=131;
+                  const pctTotal = Math.round(e.total/316*100);
+                  return (
+                    <div key={i} style={{
+                      background:e.star?C.greenP:e.actual?"#FEF6DC":C.bg3,
+                      border:`0.5px solid ${e.star?C.green:e.actual?C.amber:C.bdr}`,
+                      borderRadius:10, padding:"12px 14px",
+                      borderLeft:`3px solid ${e.color}`,
+                    }}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+                        <div>
+                          <div style={{display:"flex",alignItems:"center",gap:6}}>
+                            <p style={{fontSize:12,fontWeight:600,color:e.color}}>{e.esc}</p>
+                            {e.actual && <span style={{background:C.amberP,color:C.amber,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:9}}>ACTUAL</span>}
+                            {e.star   && <span style={{background:C.greenP,color:C.green,fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:9}}>⭐ RECOMENDADO</span>}
+                          </div>
+                          <p style={{fontSize:10,color:C.text3,marginTop:2}}>{e.nota} · Inv: ${e.inv.toLocaleString("es-AR")} USD/mes</p>
+                        </div>
+                        <div style={{textAlign:"right"}}>
+                          <p style={{fontSize:10,color:C.text3}}>neto mensual</p>
+                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:e.color}}>+{e.neto}</p>
+                        </div>
+                      </div>
+
+                      {/* Barra visual altas / churn / neto */}
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                        {/* Altas brutas */}
+                        <div style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                          <p style={{fontSize:9,color:C.text3,marginBottom:3}}>ALTAS BRUTAS</p>
+                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:C.green}}>{e.total}</p>
+                          <p style={{fontSize:9,color:C.text3,marginTop:1}}>+{e.extra} por pauta</p>
+                          <div style={{height:3,background:C.bg3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                            <div style={{width:`${pctTotal}%`,height:"100%",background:C.green,borderRadius:2}}/>
+                          </div>
+                        </div>
+                        {/* Churn */}
+                        <div style={{background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                          <p style={{fontSize:9,color:"#891515",marginBottom:3}}>CHURN (-)</p>
+                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:C.red}}>−{CHURN}</p>
+                          <p style={{fontSize:9,color:"#891515",marginTop:1}}>$3.6M ARS perdidos</p>
+                          <div style={{height:3,background:"rgba(209,48,48,0.2)",borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                            <div style={{width:"100%",height:"100%",background:C.red,borderRadius:2}}/>
+                          </div>
+                        </div>
+                        {/* Neto */}
+                        <div style={{background:e.color==="#9AACBC"?C.bg3:`${e.color}12`,border:`0.5px solid ${e.color}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                          <p style={{fontSize:9,color:C.text3,marginBottom:3}}>NETO</p>
+                          <p style={{fontSize:18,fontFamily:C.mono,fontWeight:700,color:e.color}}>+{e.neto}</p>
+                          <p style={{fontSize:9,color:C.text3,marginTop:1}}>${(e.neto*27425/1e6).toFixed(1)}M ARS</p>
+                          <div style={{height:3,background:C.bg3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                            <div style={{width:`${Math.round(e.neto/185*100)}%`,height:"100%",background:e.color,borderRadius:2}}/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{marginTop:10,padding:"8px 12px",background:C.redP,border:`0.5px solid ${C.red}`,borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <p style={{fontSize:11,color:C.red,fontWeight:600}}>⚠ Churn consume 131 clientes/mes = $3.6M ARS independientemente de la pauta</p>
+                <p style={{fontSize:11,color:"#891515",fontFamily:C.mono,fontWeight:700}}>Reducir churn 2.9→1.5% libera +$1.9M/mes adicionales</p>
+              </div>
             </Card>
 
             {/* ── IA VENTAS — MAQUETA DE PRODUCCIÓN ── */}
