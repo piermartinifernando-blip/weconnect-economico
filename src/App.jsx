@@ -813,58 +813,129 @@ export default function App() {
         {/* ═══ BREAK-EVEN ════════════════════════════════════════════ */}
         {tab==="be"&&(
           <div>
+
+            {/* ── KPIs ── */}
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Break-even real"      value="Nov 26"  sub="ARPU cobrado $22.447 · OPEX $150.3M · +$4.8M" type="ok"/>
-              <KPI label="Cobrado hoy"          value="$91.8M"  sub="4.088 cli × $22.447 ARPU cobrado real"        type="dn"/>
-              <KPI label="Costo total hoy"      value="$150.3M" sub="OPEX base sin CAPEX obra"                     type="dn"/>
-              <KPI label="Costo con CAPEX obra" value="$190.3M" sub="abr-sep 26 · $40M CAPEX incluido"             type="dn"/>
+              <KPI label="Break-even proyectado" value="Nov 26"  sub="con implementaciones · +$32.4M"        type="ok"/>
+              <KPI label="Cobrado hoy"           value="$94.0M"  sub="real mar 26 · ARPU cobrado $22.447"    type="dn"/>
+              <KPI label="Costo total hoy"       value="$150.3M" sub="OPEX base sin CAPEX obra"              type="dn"/>
+              <KPI label="Costo con CAPEX obra"  value="$190.3M" sub="abr-sep 26 · $40M CAPEX incluido"     type="dn"/>
             </div>
 
-            <Card title="Proyección: cobrado vs OPEX+CAPEX ($M ARS) — ARPU cobrado real $22.447 · BE: Nov 26" style={{marginBottom:12}}>
-              <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart data={beData}>
+            {/* ── GRÁFICO 1: SITUACIÓN REAL ── */}
+            <Card title="① Situación real — ingresos vs egresos (OPEX + CAPEX) · oct 25 – mar 26" style={{marginBottom:12}}>
+              <div style={{marginBottom:10,padding:"7px 10px",background:C.redP,borderRadius:6,border:`0.5px solid ${C.red}`,fontSize:11,color:"#891515"}}>
+                Datos reales verificados · cobrado de CSV caja · egresos de Excel mensual · CAPEX separado
+              </div>
+              <ResponsiveContainer width="100%" height={260}>
+                <ComposedChart data={[
+                  {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
+                  {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
+                  {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
+                  {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
+                  {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
+                  {mes:"Mar 26", cobrado:94.0,  opex:150.3, capex:0,    costo:150.3, neto:-56.3},
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
+                  <XAxis dataKey="mes" tick={{fontSize:11,fill:C.text2}} stroke={C.bdr}/>
+                  <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
+                  <Tooltip content={<Tip/>}/>
+                  <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
+                  <Bar dataKey="opex"    name="OPEX"    stackId="costo" fill={C.red}   radius={[0,0,0,0]}/>
+                  <Bar dataKey="capex"   name="CAPEX"   stackId="costo" fill={C.amber} radius={[3,3,0,0]}/>
+                  <Line type="monotone" dataKey="cobrado" name="Ingresos cobrados" stroke={C.blue} strokeWidth={2.5} dot={{r:5,fill:C.blue}}/>
+                  <Line type="monotone" dataKey="neto"    name="Resultado neto"   stroke={C.navy} strokeWidth={1.5} strokeDasharray="4 3" dot={false}/>
+                </ComposedChart>
+              </ResponsiveContainer>
+              {/* Tabla resumen */}
+              <div style={{overflowX:"auto",marginTop:10}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?500:0}}>
+                  <thead>
+                    <tr style={{background:C.bg3}}>
+                      {["Mes","Cobrado","OPEX","CAPEX","Total egresos","Resultado"].map(h=>(
+                        <th key={h} style={{padding:"6px 10px",textAlign:h==="Mes"?"left":"right",color:C.text2,fontSize:9,textTransform:"uppercase",fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
+                      {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
+                      {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9, nota:"SAC"},
+                      {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3, nota:"OLT"},
+                      {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1, nota:"Peor mes"},
+                      {mes:"Mar 26", cobrado:94.0,  opex:150.3, capex:0,    costo:150.3, neto:-56.3, nota:"Sin CAPEX reg."},
+                    ].map((r,i)=>(
+                      <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:i===4?C.redP:"transparent"}}>
+                        <td style={{padding:"6px 10px",fontWeight:600,color:C.text}}>{r.mes} {r.nota&&<span style={{fontSize:9,color:C.amber}}>({r.nota})</span>}</td>
+                        <td style={{padding:"6px 10px",textAlign:"right",fontFamily:C.mono,color:C.blue,fontWeight:600}}>${r.cobrado}M</td>
+                        <td style={{padding:"6px 10px",textAlign:"right",fontFamily:C.mono,color:C.red}}>${r.opex}M</td>
+                        <td style={{padding:"6px 10px",textAlign:"right",fontFamily:C.mono,color:C.amber}}>{r.capex>0?`$${r.capex}M`:"—"}</td>
+                        <td style={{padding:"6px 10px",textAlign:"right",fontFamily:C.mono,color:C.text2}}>${r.costo}M</td>
+                        <td style={{padding:"6px 10px",textAlign:"right",fontFamily:C.mono,fontWeight:700,color:C.red}}>${r.neto}M</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            {/* ── GRÁFICO 2: PROYECCIÓN CON IMPLEMENTACIONES ── */}
+            <Card title="② Proyección con implementaciones — ingresos vs egresos · mar 26 → nov 26 (BE)" style={{marginBottom:12}}>
+              <div style={{marginBottom:10,padding:"7px 10px",background:C.greenP,borderRadius:6,border:`0.5px solid ${C.green}`,fontSize:11,color:"#0F5226"}}>
+                Incluye: IA ventas · migración SIRO · upsell 30/50→100MB · win-back 20% · red AB +150 cajas/mes
+              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <ComposedChart data={[
+                  {mes:"Mar 26", cobrado:94.0,  costo:150.3, neto:-56.3, nota:"Hoy"},
+                  {mes:"Abr 26", cobrado:94.0,  costo:190.3, neto:-96.3, nota:"Inicio CAPEX"},
+                  {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
+                  {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
+                  {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
+                  {mes:"Ago 26", cobrado:132.1, costo:190.3, neto:-58.2, nota:"+Win-back"},
+                  {mes:"Sep 26", cobrado:146.3, costo:190.3, neto:-44.0, nota:"Stack completo"},
+                  {mes:"Oct 26", cobrado:163.1, costo:150.3, neto:12.8,  nota:"Fin CAPEX"},
+                  {mes:"Nov 26", cobrado:182.7, costo:150.3, neto:32.4,  nota:"★ BE"},
+                ]}>
                   <defs>
-                    <linearGradient id="gSin" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C.red} stopOpacity={0.15}/><stop offset="95%" stopColor={C.red} stopOpacity={0}/>
+                    <linearGradient id="gCob" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={C.blue} stopOpacity={0.15}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/>
                     </linearGradient>
-                    <linearGradient id="gCon" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C.green} stopOpacity={0.15}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/>
+                    <linearGradient id="gCos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={C.red} stopOpacity={0.1}/><stop offset="95%" stopColor={C.red} stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
                   <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
-                  <YAxis yAxisId="right" orientation="right" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>v}/>
                   <Tooltip content={<Tip/>}/>
-                  <ReferenceLine y={0} stroke={C.navy} strokeDasharray="4 3" label={{value:"Neto = 0",fill:C.navy,fontSize:10,position:"right"}}/>
-                  <ReferenceLine x="Nov 26" stroke={C.green} strokeWidth={1.5} label={{value:"★ BE Nov 26",fill:C.green,fontSize:10,position:"insideTopLeft"}}/>
-                  <ReferenceLine x="Oct 26" stroke={C.amber} strokeDasharray="4 3" label={{value:"Fin CAPEX obra",fill:C.amber,fontSize:10,position:"insideTopLeft"}}/>
                   <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                  <Area type="monotone" dataKey="cobrado" name="Ingresos cobrados ($M)" stroke={C.blue}  fill="rgba(26,95,191,0.1)" strokeWidth={2} dot={false}/>
-                  <Area type="monotone" dataKey="costo"   name="OPEX + CAPEX ($M)"     stroke={C.red}   fill="rgba(209,48,48,0.08)" strokeWidth={2} dot={false}/>
-                  <Line type="monotone" dataKey="neto"    name="Resultado neto ($M)"   stroke={C.green} strokeWidth={2.5} dot={false} strokeDasharray="4 3"/>
+                  <ReferenceLine y={0} stroke={C.navy} strokeDasharray="3 3"/>
+                  <ReferenceLine x="Oct 26" stroke={C.amber} strokeDasharray="4 3" label={{value:"Fin CAPEX",fill:C.amber,fontSize:10,position:"insideTopLeft"}}/>
+                  <ReferenceLine x="Nov 26" stroke={C.green} strokeWidth={2} label={{value:"★ BE",fill:C.green,fontSize:11,position:"insideTopLeft"}}/>
+                  <Area type="monotone" dataKey="cobrado" name="Ingresos proyectados" stroke={C.blue} fill="url(#gCob)" strokeWidth={2.5} dot={{r:4,fill:C.blue}}/>
+                  <Area type="monotone" dataKey="costo"   name="OPEX + CAPEX"        stroke={C.red}  fill="url(#gCos)" strokeWidth={2}   dot={false}/>
+                  <Line type="monotone" dataKey="neto"    name="Resultado neto"      stroke={C.green} strokeWidth={2} strokeDasharray="4 3" dot={false}/>
                 </ComposedChart>
               </ResponsiveContainer>
-            </Card>
 
-            <Card title="Impacto de cada iniciativa en ingresos" style={{marginBottom:12}}>
-              <div style={{display:"flex",gap:0,flexWrap:"nowrap",overflowX:"auto"}}>
-                {[...D.BE_IMPACTO,{label:"Total proyectado (6m)",val:157,color:C.green,total:true}].map((it,i)=>(
-                  <div key={i} style={{
-                    flex:"0 0 auto",minWidth:130,padding:"12px 14px",textAlign:"center",
-                    background:it.total?C.greenP:C.bg2,
-                    border:`0.5px solid ${it.total?C.green:C.bdr}`,
-                    borderLeft:i>0?"none":"0.5px solid",
-                    borderRadius:i===0?"8px 0 0 8px":it.total?"0 8px 8px 0":"0",
-                  }}>
-                    <p style={{fontSize:9,color:C.text2,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:6}}>{it.label}</p>
-                    <p style={{fontSize:15,fontFamily:C.mono,fontWeight:600,color:it.color}}>
-                      {it.total?`~$${it.val}M`:`+$${it.val}M`}
-                    </p>
+              {/* Hitos de implementación */}
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(4,1fr)",gap:8,marginTop:12}}>
+                {[
+                  {mes:"May 26", accion:"IA ventas WSP",     impacto:"+$2.2M/mes",  color:C.blue},
+                  {mes:"Jun 26", accion:"Migración SIRO",    impacto:"+ARPU $2.2k", color:C.teal},
+                  {mes:"Jul 26", accion:"Upsell 30/50→100MB",impacto:"+$4.1M/mes",  color:C.purple},
+                  {mes:"Ago 26", accion:"Win-back 20%",      impacto:"+$8.1M/mes",  color:C.green},
+                ].map((h,i)=>(
+                  <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"9px 12px",borderLeft:`3px solid ${h.color}`}}>
+                    <p style={{fontSize:9,color:C.text3,marginBottom:3}}>{h.mes}</p>
+                    <p style={{fontSize:11,fontWeight:600,color:C.text}}>{h.accion}</p>
+                    <p style={{fontSize:11,fontFamily:C.mono,color:h.color,fontWeight:600,marginTop:3}}>{h.impacto}</p>
                   </div>
                 ))}
               </div>
             </Card>
+
           </div>
         )}
 
