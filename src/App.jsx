@@ -595,28 +595,49 @@ export default function App() {
             </div>
 
             {/* Curva neto ingreso - egresos */}
-            <Card title="Curva neto: ingresos − egresos · con altas y bajas" style={{marginBottom:12}}>
-              <ResponsiveContainer width="100%" height={220}>
+            <Card title="Curva neto: cobrado − OPEX − CAPEX ($M) · altas y churns reales (eje der.)" style={{marginBottom:12}}>
+              <div style={{fontSize:11,color:C.text2,marginBottom:10,padding:"7px 10px",background:C.bg3,borderRadius:6,border:`0.5px solid ${C.bdr}`}}>
+                <strong>Neto</strong> = cobrado − OPEX − CAPEX (total real por mes) ·
+                <strong> Churns</strong> = 2.9% de base activa de cada mes · Eje izq: $M · Eje der: clientes
+              </div>
+              <ResponsiveContainer width="100%" height={240}>
                 <ComposedChart data={[
-                  {mes:"Oct 25",cobrado:78.08,egresos:147.55,neto:-69.47,altas:368,bajas:98},
-                  {mes:"Nov 25",cobrado:85.40,egresos:135.87,neto:-50.47,altas:247,bajas:58},
-                  {mes:"Dic 25",cobrado:92.87,egresos:171.65,neto:-78.78,altas:238,bajas:59},
-                  {mes:"Ene 26",cobrado:95.98,egresos:175.34,neto:-79.36,altas:257,bajas:41},
-                  {mes:"Feb 26",cobrado:95.21,egresos:183.34,neto:-88.13,altas:195,bajas:22},
-                  {mes:"Mar 26",cobrado:94.03,egresos:183.34,neto:-89.31,altas:259,bajas:9}, // mes completo
+                  {mes:"Oct 25", neto:-69.5,  altas:368, churns:107},
+                  {mes:"Nov 25", neto:-50.5,  altas:247, churns:113},
+                  {mes:"Dic 25", neto:-78.9,  altas:238, churns:119},
+                  {mes:"Ene 26", neto:-104.4, altas:257, churns:122},
+                  {mes:"Feb 26", neto:-121.1, altas:195, churns:126},
+                  {mes:"Mar 26", neto:-89.3,  altas:259, churns:119},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                  <YAxis yAxisId="left"  tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
-                  <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
-                  <Tooltip content={<Tip/>}/>
+                  <YAxis yAxisId="left" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
+                    tickFormatter={v=>`$${v}M`}
+                    label={{value:"$M ARS",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
+                  <YAxis yAxisId="right" orientation="right" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
+                    label={{value:"clientes",angle:90,position:"insideRight",fill:C.text2,fontSize:9}}/>
+                  <Tooltip content={<TipCant/>}/>
                   <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                  <ReferenceLine yAxisId="left" y={0} stroke={C.navy} strokeDasharray="4 3"/>
-                  <Area yAxisId="left"  type="monotone" dataKey="neto"   name="Neto ($M)"  stroke={C.red}   fill="rgba(209,48,48,0.1)" strokeWidth={2}/>
-                  <Bar  yAxisId="right" dataKey="altas"   name="Altas/mes"       fill={C.green}  opacity={0.7} radius={[3,3,0,0]}/>
-                  <Bar  yAxisId="right" dataKey="churns"  name="Churns/mes (2.9%)" fill={C.red}    opacity={0.5} radius={[3,3,0,0]}/>
+                  <ReferenceLine yAxisId="left" y={0} stroke={C.navy} strokeDasharray="4 3"
+                    label={{value:"0",fill:C.navy,fontSize:10}}/>
+                  <Area yAxisId="left" type="monotone" dataKey="neto"
+                    name="Neto financiero ($M)" stroke={C.red} fill="rgba(209,48,48,0.12)" strokeWidth={2.5} dot={{r:4,fill:C.red}}/>
+                  <Bar yAxisId="right" dataKey="altas"  name="Altas brutas"       fill={C.green} opacity={0.7} radius={[3,3,0,0]}/>
+                  <Bar yAxisId="right" dataKey="churns" name="Churns reales (2.9%)" fill={C.red}   opacity={0.4} radius={[3,3,0,0]}/>
                 </ComposedChart>
               </ResponsiveContainer>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginTop:10}}>
+                {[
+                  {mes:"Ene 26",nota:"CAPEX OLT $25M → neto cae a −$104M",color:C.amber},
+                  {mes:"Feb 26",nota:"CAPEX obra $33M → neto mín −$121M",color:C.red},
+                  {mes:"Mar 26",nota:"Sin CAPEX registrado aún · −$89M",color:C.green},
+                ].map((n,i)=>(
+                  <div key={i} style={{background:C.bg3,borderRadius:6,padding:"7px 10px",border:`0.5px solid ${C.bdr}`}}>
+                    <p style={{fontSize:10,fontWeight:600,color:n.color}}>{n.mes}</p>
+                    <p style={{fontSize:10,color:C.text2,marginTop:2}}>{n.nota}</p>
+                  </div>
+                ))}
+              </div>
             </Card>
           </div>
         )}
