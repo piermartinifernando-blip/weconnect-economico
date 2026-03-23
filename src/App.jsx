@@ -913,9 +913,9 @@ export default function App() {
                 <text fontFamily="DM Sans,sans-serif" fontSize="10" fill="#891515" x="315" y="304" textAnchor="middle" dominantBaseline="central">cada operador responde diferente · no hay dashboard · sin IA</text>
 
                 {/* ══ DIVISOR ══ */}
-                <line x1="40" y1="334" x2="640" y2="334" stroke="var(--color-border-secondary)" strokeWidth="0.5" strokeDasharray="6 4"/>
-                <rect x="250" y="325" width="130" height="18" rx="4" fill="var(--color-background-secondary)"/>
-                <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="var(--color-text-secondary)" x="315" y="337" textAnchor="middle" dominantBaseline="central">propuesta con IA</text>
+                <line x1="40" y1="342" x2="270" y2="342" stroke="#DDE3EC" strokeWidth="0.5" strokeDasharray="6 4"/>
+                <line x1="370" y1="342" x2="640" y2="342" stroke="#DDE3EC" strokeWidth="0.5" strokeDasharray="6 4"/>
+                <text fontFamily="DM Sans,sans-serif" fontSize="11" fill="#9AACBC" x="315" y="342" textAnchor="middle" dominantBaseline="central">propuesta con IA</text>
 
                 {/* ══ ESTADO PROPUESTO ══ */}
                 <text fontFamily="DM Sans,sans-serif" fontSize="14" fontWeight="500" fill="var(--color-text-primary)" x="340" y="366" textAnchor="middle">Estado propuesto</text>
