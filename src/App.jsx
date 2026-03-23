@@ -1044,14 +1044,17 @@ export default function App() {
                   tag:"OBJETIVO 6 MESES", tagColor:C.green, tagBg:C.greenP,
                   color:C.green,
                   canales:[
-                    {canal:"Meta Ads",   inv:3000, cpl:13.27, conv:18, leads:226, extra:41, color:C.amber},
-                    {canal:"Google Ads", inv:1000, cpl:11.50, conv:25, leads:87,  extra:22, color:C.blue},
-                    {canal:"TikTok Ads", inv:500,  cpl:8.50,  conv:15, leads:59,  extra:9,  color:"#8B5CF6"},
-                    {canal:"Orgánico",   inv:0,    cpl:0,     conv:0,  leads:0,   extra:239,color:C.text2, org:true},
+                    {canal:"Meta Ads",   inv:3000, cpl:8.23,  conv:21.6,leads:365, extra:79,  color:C.amber,   nota:"CPL −38% con Lookalike + IA conv +20%"},
+                    {canal:"Google Ads", inv:1000, cpl:11.50, conv:30,  leads:87,  extra:26,  color:C.blue,    nota:"Conv +20% con IA WSP respondiendo"},
+                    {canal:"TikTok Ads", inv:500,  cpl:8.50,  conv:18,  leads:59,  extra:11,  color:"#8B5CF6", nota:"Conv +20% con IA · awareness zona nueva"},
+                    {canal:"Remarketing",inv:0,    cpl:4,     conv:6,   leads:286, extra:17,  color:C.teal,    nota:"Leads no conv vuelven · CPL ~$4 USD"},
+                    {canal:"Referidos",  inv:0,    cpl:0,     conv:0,   leads:0,   extra:30,  color:C.text2,   org:true, nota:"Programa activo · 4k+ clientes base"},
+                    {canal:"Orgánico",   inv:0,    cpl:0,     conv:0,   leads:0,   extra:239, color:C.text3,   org:true, nota:"Base calibrada"},
                   ],
-                  altas:311, churn:131, neto:180,
-                  inv_usd:4500, ingreso:8.5, ingreso_neto:4.9, cpa:62.5,
-                  nota:"72 altas extra por pauta · +52 vs Esc 1 · neto +$4.9M ARS/mes",
+                  altas:402, churn:131, neto:271,
+                  inv_usd:4500, ingreso:11.0, ingreso_neto:7.4, cpa:35.4,
+                  nota:"Lookalike + IA + Remarketing + Referidos · modelo realista mes 3+",
+                  detalle:true,
                 },
               ].map((e,ei)=>(
                 <div key={ei} style={{
@@ -1076,27 +1079,32 @@ export default function App() {
                   {/* Desglose por canal */}
                   <div style={{marginBottom:12}}>
                     <p style={{fontSize:9,color:C.text3,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6,fontWeight:600}}>Desglose por canal</p>
-                    <div style={{display:"grid",gridTemplateColumns:mob?"1fr 1fr":"repeat(4,1fr)",gap:6}}>
+                    <div style={{display:"grid",gridTemplateColumns:mob?"1fr 1fr":e.detalle?"repeat(3,1fr)":"repeat(4,1fr)",gap:6}}>
                       {e.canales.map((c,ci)=>(
-                        <div key={ci} style={{background:C.bg3,border:`0.5px solid ${c.off?C.bdr:C.bdr}`,borderRadius:8,padding:"8px 10px",opacity:c.off?0.4:1}}>
+                        <div key={ci} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",opacity:c.off?0.4:1}}>
                           <p style={{fontSize:10,fontWeight:600,color:c.off?C.text3:c.color}}>{c.canal}</p>
                           {c.off ? (
                             <p style={{fontSize:10,color:C.text3,marginTop:3}}>sin pauta</p>
                           ) : c.org ? (
                             <>
-                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>referidos + orgánico</p>
+                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>{c.nota}</p>
                               <p style={{fontSize:12,fontFamily:C.mono,fontWeight:700,color:C.text2,marginTop:3}}>{c.extra} altas</p>
                             </>
                           ) : (
                             <>
-                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>${c.inv.toLocaleString()} USD · CPL ${c.cpl}</p>
-                              <p style={{fontSize:9,color:C.text3}}>{c.leads} leads × {c.conv}%</p>
+                              <p style={{fontSize:9,color:C.text3,margin:"2px 0"}}>{c.inv>0?`$${c.inv.toLocaleString()} USD · CPL $${c.cpl}`:c.nota}</p>
+                              <p style={{fontSize:9,color:C.text3}}>{c.leads>0?`${c.leads} leads × ${c.conv}%`:""}</p>
+                              {c.nota&&c.inv>0&&<p style={{fontSize:9,color:c.color,marginTop:1}}>{c.nota}</p>}
                               <p style={{fontSize:12,fontFamily:C.mono,fontWeight:700,color:C.green,marginTop:3}}>+{c.extra} altas</p>
                             </>
                           )}
                         </div>
                       ))}
                     </div>
+                    {/* Nota aclaratoria Esc 3 */}
+                    {e.detalle&&<div style={{marginTop:8,padding:"8px 10px",background:C.greenP,borderRadius:8,border:`0.5px solid ${C.green}`,fontSize:11,color:"#0F5226"}}>
+                      <strong>Por qué 402 y no 311:</strong> el modelo simple solo cuenta leads directos. Con <strong>Lookalike</strong> (CPL Meta −38%), <strong>IA WSP</strong> (+20% conv), <strong>Remarketing</strong> (+17 altas de leads que vuelven) y <strong>programa de referidos</strong> (+30), el número real en mes 3+ es significativamente mayor.
+                    </div>}
                   </div>
 
                   {/* Resultado: altas / churn / neto */}
