@@ -649,13 +649,7 @@ export default function App() {
               </Card>
 
               <Card title="Distribución de planes">
-                {[
-                  {plan:"100 MB",cli:2303,pct:39.2,color:C.green},
-                  {plan:"300 MB",cli:1370,pct:23.3,color:C.green},
-                  {plan:"50 MB", cli:399, pct:6.8, color:C.amber},
-                  {plan:"30 MB", cli:112, pct:1.9, color:C.amber},
-                  {plan:"600 MB",cli:106, pct:1.8, color:C.green},
-                ].map((p,i)=>(
+                {D.PLANES.map((p,i)=>(
                   <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`0.5px solid ${C.bdr}`}}>
                     <span style={{fontWeight:600,fontSize:12}}>{p.plan}</span>
                     <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -668,8 +662,8 @@ export default function App() {
 
                 <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"14px 0 10px"}}>Distribución geográfica</p>
                 {D.CIUDADES.map((r,i)=>(
-                  <Prog key={i} label={c} value={D.CITY_CLI[i]} max={3128}
-                    display={`${D.CITY_CLI[i].toLocaleString("es-AR")} (${Math.round(D.CITY_CLI[i]/5960*100)}%)`}
+                  <Prog key={i} label={r.ciudad} value={r.habilitados} max={1952}
+                    display={`${r.habilitados.toLocaleString("es-AR")} hab · ${r.total} total`}
                     color={i<2?C.blue:C.green}/>
                 ))}
               </Card>
