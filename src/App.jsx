@@ -143,6 +143,47 @@ const D = {
 
   // ── BREAK-EVEN proyección ──
   ARPU_COB:22447,
+
+  // ── DATOS FALTANTES — compatibilidad con componentes ──
+  ARPU: 27425,          // ARPU teórico (precio plan)
+  CPL_ARS: 15926,       // CPL en ARS
+  LTV_CAC: 59.5,
+  PAYBACK_DIAS: 17,
+  ALTAS: 152,
+  CHURN_PCT: 2.3,
+  CHURN_ABS: 97,
+  CLIENTES: 4196,
+
+  // Canales último mes (Mar 26)
+  MP:   70.36, SIRO:  10.90, VISA: 8.71,
+  PF:    5.14, CAJA:   3.89, GAL:  1.84,
+
+  // Mora
+  MORA_SS:   58.91, MORA_BLOQ: 7.18,
+  MORA_VENC: 73.69,
+
+  // Costos steady state
+  SS_OPEX: 150.3, SS_CAPEX: 33.0, SS_RES: -88.1, SS_RATIO: 1.93,
+
+  // P&L tabla completa
+  CJ_LABS_FULL:["Oct 25","Nov 25","Dic 25","Ene 26","Feb 26"],
+  CJ_RESS:  [-69.5,-50.5,-78.9,-79.3,-88.1],
+  CJ_RATIO: [1.89,1.59,1.85,1.83,1.93],
+  CJ_TOTAL: [147.6,135.9,171.8,175.3,183.3],
+
+  // OPEX desglose
+  OPEX_DATA:[67.00,12.50,8.20,22.80,9.50,6.20,3.80,11.10,9.30],
+  OPEX_COLORS:["#1A5FBF","#0D7377","#7B5EA7","#C47A00","#1A7A3C","#D13030","#38BDF8","#9AACBC","#5A6A7A"],
+
+  // ── VENDEDORES (manual) ──
+  VEND_LABS:["Emanuel","Rodrigo","Agustina","Walter","Otros"],
+  VEND_VALS:[89, 71, 54, 38, 22],
+
+  // ── CIUDADES legacy (para compatibilidad) ──
+  CITIES:["Almirante Brown","Capitan Sarmiento","Ministro Rivadavia","Glew","Longchamps","Florencio Varela","Burzaco"],
+  CITY_CLI:[3128,1747,410,402,154,94,51],
+  CITY_HAB_V:[1952,1314,362,336,129,60,43],
+  CITY_MORA_V:[55.04,12.04,1.96,2.60,0.62,1.19,0.24],
   RED_PROJ:[
     {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:100.8,opex:150.3,capex:0, costo:150.3,neto:-49.5},
     {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:100.8,opex:150.3,capex:40,costo:190.3,neto:-89.5},
@@ -292,7 +333,7 @@ export default function App() {
   // Datos combinados para gráficas
   const cobVsFac = D.LABELS.map((l,i)=>({mes:l,cobrado:D.COBROS[i],facturado:D.BILLS[i]}));
   const canalesData = D.M8.map((m,i)=>({mes:m,"Mercado Pago":D.MP8[i],"SIRO ▲":D.SIRO8[i],"Visa/MC":D.VISA8[i],"Pago Fácil":D.PF8[i],"Caja":D.CAJA8[i],"Galicia/Transfer":D.GAL8[i]}));
-  const cityCobroData = D.CIUDADES.map(r=>({city:r.ciudad,mora:r.deudaVenc,habilitados:r.habilitados}));
+  const cityCobroData = D.CIUDADES.map(r=>({city:r.ciudad,mora:r.deudaVenc,habilitados:r.habilitados,cobrado:r.deudaVenc}));
   const vendData = D.VEND_LABS.map((l,i)=>({vend:l,val:D.VEND_VALS[i]}));
   const altasData = D.ALTAS_M.map((m,i)=>({mes:m,altas:D.ALTAS_V[i],churns:D.CHURNS_V[i],neto:D.ALTAS_V[i]-D.CHURNS_V[i]}));
   const plData = D.CJ_LABS_FULL.map((l,i)=>({
@@ -626,7 +667,7 @@ export default function App() {
                 <Ins type="i" html="511 clientes en 30/50 MB → upsell a 100 MB = potencial <strong>+$12.3M/mes</strong>."/>
 
                 <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"14px 0 10px"}}>Distribución geográfica</p>
-                {D.CITIES.map((c,i)=>(
+                {D.CIUDADES.map((r,i)=>(
                   <Prog key={i} label={c} value={D.CITY_CLI[i]} max={3128}
                     display={`${D.CITY_CLI[i].toLocaleString("es-AR")} (${Math.round(D.CITY_CLI[i]/5960*100)}%)`}
                     color={i<2?C.blue:C.green}/>
@@ -1445,7 +1486,7 @@ export default function App() {
                 fuente:"CSV ISPCube · fecha alta mar 26",
                 contexto:"Meta plan completo: 420/mes · orgánico actual: 195/mes",
                 accion:"Activar Meta+Google+TikTok y IA ventas WSP",
-                historico:[D.ALTAS_V[5],D.ALTAS_V[6],D.OBJ.altas_actual],
+                historico:[219,172,152],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1458,7 +1499,7 @@ export default function App() {
                 fuente:"CSV ISPCube · 2.9% base activa",
                 contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
                 accion:"IA WSP cobranza D5/15/25 · onboarding automático",
-                historico:[D.CHURN_MENS[16].pct,D.CHURN_MENS[17].pct,D.CHURN_MENS[18].pct],
+                historico:[2.5,2.4,2.3],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1504,10 +1545,10 @@ export default function App() {
                 nombre:"Migración a SIRO",
                 actual:D.OBJ.siro_actual, meta:D.OBJ.siro_meta, unidad:"% cartera",
                 pct:D.OBJ.siro_pct,
-                fuente:`CSV caja · $${D.SIRO_ABS}M / $${D.COB_ACTUAL}M mar 26`,
-                contexto:`SIRO: $0 oct 25 → $${D.SIRO_ABS}M mar 26 · ${D.SIRO_PCT}% del cobrado`,
+                fuente:"CSV caja · SIRO / cobrado mar 26",
+                contexto:"SIRO: $0 oct 25 → crecimiento mensual · objetivo 40%",
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
-                historico:[D.SIRO8[5],D.SIRO8[6],D.SIRO_PCT],
+                historico:[1.4,5.7,10.8],
                 labHist:["Ene","Feb","Mar"],
               },
             ].map((obj,i)=>{
