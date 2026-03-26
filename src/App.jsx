@@ -16,6 +16,53 @@ const useIsMobile = () => {
     return () => window.removeEventListener("resize", fn);
   }, []);
   return mob;
+  // ── P&L histórico (manual — viene de Excel egresos) ──
+  PL_HIST:[
+    {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
+    {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
+    {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
+    {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
+    {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
+    {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
+  ],
+
+  // ── Curva neto clientes (altas+churns+neto real) ──
+  NETO_HIST:[
+    {mes:"Oct 25", neto:-69.5,  altas:368, churns:112},
+    {mes:"Nov 25", neto:-50.5,  altas:247, churns:105},
+    {mes:"Dic 25", neto:-78.9,  altas:238, churns:109},
+    {mes:"Ene 26", neto:-79.3,  altas:257, churns:102},
+    {mes:"Feb 26", neto:-88.1,  altas:195, churns:98},
+    {mes:"Mar 26", neto:-49.5,  altas:284, churns:97},
+  ],
+
+  // ── Break-even gráfico ② proyección ──
+  BE_PROJ:[
+    {mes:"Mar 26", cobrado:100.8, costo:150.3, neto:-49.5, nota:"Hoy"},
+    {mes:"Abr 26", cobrado:100.8, costo:190.3, neto:-89.5, nota:"Inicio CAPEX"},
+    {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
+    {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
+    {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
+    {mes:"Ago 26", cobrado:132.1, costo:190.3, neto:-58.2, nota:"+Win-back"},
+    {mes:"Sep 26", cobrado:146.3, costo:190.3, neto:-44.0, nota:"Stack completo"},
+    {mes:"Oct 26", cobrado:163.1, costo:150.3, neto:12.8,  nota:"Fin CAPEX"},
+    {mes:"Nov 26", cobrado:182.7, costo:150.3, neto:32.4,  nota:"★ BE"},
+  ],
+
+  // ── Recupero AB ──
+  RECUPERO:{ onus:497, valor:25.5, costo_fijo:2.25, roi_min:1.42 },
+
+  // ── CPL y canales pauta ──
+  CPL_USD: 13.27, CPL_ARS: 15926, ARPU_USD: 22.45,
+  BASE_ORG: 239,  // altas orgánicas sin pauta
+
+  // ── Obra: cajas y fibra ──
+  OBRA:{
+    inicio:"21/02/26", dias_hab:24,
+    cajas:{ act:156,    total:2800,   meta_dia:16,   esperado:384,   ritmo:6.5,  pct_ritmo:40.6, fin_meta:"12/11/26"},
+    fibra:{ act:110000, total:320000, meta_dia:2000, esperado:48000, ritmo:4583, pct_ritmo:229.2,fin_meta:"29/05/26"},
+  },
+
 };
 
 /* ─── TOKENS ────────────────────────────────────────────────────── */
@@ -71,18 +118,20 @@ const D = {
 
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [182, 176, 276, 193, 186, 219, 172, 152],  // altas habilitados por mes
-  CHURNS_V:[104, 107, 109, 114, 116, 118, 121,  97],  // churns estimados
+  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 284],  // mar 26: 284 total (267 hab) verificado
+  CHURNS_V:[118, 115, 112, 105, 109, 102, 98, 97],  // recalculado con base activa real
 
   // ── CHURN: serie mensual ──
-  CHURN_PCT_ACT: 2.3,   // % actual Mar 26
-  CHURN_ABS_ACT:  97,   // clientes/mes Mar 26
+  CHURN_PCT_ACT: 0.38,  // % real mar 26 = 16 nuevos SS / 4196 hab
+  CHURN_ABS_ACT:  16,   // clientes/mes Mar 26 = nuevos Sin servicio
+  // CHURN REAL = nuevos Sin servicio / base habilitados ese mes
   CHURN_MENS:[
     {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
     {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
-    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:119},
-    {mes:"Sep 25",pct:2.9,cant:116},{mes:"Oct 25",pct:2.8,cant:116},{mes:"Nov 25",pct:2.6,cant:107},{mes:"Dic 25",pct:2.7,cant:109},
-    {mes:"Ene 26",pct:2.5,cant:105},{mes:"Feb 26",pct:2.4,cant:101},{mes:"Mar 26",pct:2.3,cant:97},
+    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},
+    {mes:"Ago 25",pct:2.26,cant:89},{mes:"Sep 25",pct:2.01,cant:80},{mes:"Oct 25",pct:1.18,cant:47},
+    {mes:"Nov 25",pct:0.87,cant:35},{mes:"Dic 25",pct:0.87,cant:35},{mes:"Ene 26",pct:0.76,cant:31},
+    {mes:"Feb 26",pct:0.64,cant:26},{mes:"Mar 26",pct:0.38,cant:16},
   ],
 
   // ── COHORTS churn acumulado ──
@@ -125,11 +174,11 @@ const D = {
 
   // ── OBJETIVOS: actuales y metas ──
   OBJ:{
-    altas_actual:152,  altas_meta:420,   altas_pct:36.2,
+    altas_actual:267,  altas_meta:420,   altas_pct:63.6,  // 267 hab / meta 420
     siro_actual:10.8,  siro_meta:40.0,   siro_pct:27.0,
-    churn_actual:2.3,  churn_meta:1.5,   churn_pct:20.7, // % reducción lograda
+    churn_actual:0.38, churn_meta:0.5,   churn_pct:76.0, // meta: <0.5% nuevos SS/mes
     cajas_actual:156,  cajas_meta:384,   cajas_pct:40.6,  // obra: 156 inst / esperado 384 (24d×16/día)
-    inst_actual:152,   inst_meta:420,    inst_pct:36.2,
+    inst_actual:267,   inst_meta:420,    inst_pct:63.6,
   },
 
   // ── COSTOS (manual — no viene de CSV) ──
@@ -677,12 +726,7 @@ export default function App() {
               </div>
               <ResponsiveContainer width="100%" height={240}>
                 <ComposedChart data={[
-                  {mes:"Oct 25", neto:-69.5,  altas:368, churns:107},
-                  {mes:"Nov 25", neto:-50.5,  altas:247, churns:113},
-                  {mes:"Dic 25", neto:-78.9,  altas:238, churns:119},
-                  {mes:"Ene 26", neto:-104.4, altas:257, churns:122},
-                  {mes:"Feb 26", neto:-88.1,  altas:195, churns:101},
-                  {mes:"Mar 26", neto:-49.5,  altas:164, churns:97},
+                  ...D.NETO_HIST,
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
@@ -722,7 +766,7 @@ export default function App() {
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Churn acumulado"       value={`${(D.SS/D.TOTAL*100).toFixed(1)}%`} sub={`${D.SS.toLocaleString("es-AR")} de ${D.TOTAL.toLocaleString("es-AR")} inactivos`}   type="dn"/>
-              <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} clientes/mes · mar 26`}            type="dn"/>
+              <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} nuevos SS · mar 26`}            type="dn"/>
               <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3.8 / año"           type="wr"/>
               <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
             </div>
@@ -879,12 +923,7 @@ export default function App() {
               </div>
               <ResponsiveContainer width="100%" height={260}>
                 <ComposedChart data={[
-                  {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
-                  {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
-                  {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
-                  {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
-                  {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
-                  {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
+                  ...D.PL_HIST,
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:11,fill:C.text2}} stroke={C.bdr}/>
@@ -909,12 +948,7 @@ export default function App() {
                   </thead>
                   <tbody>
                     {[
-                      {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
-                      {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
-                      {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9, nota:"SAC"},
-                      {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3, nota:"OLT"},
-                      {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1, nota:"Peor mes"},
-                      {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5, nota:"Mes completo"},
+                      ...D.PL_HIST.map((r,i)=>({...r,nota:[null,null,"SAC","OLT","Peor mes","Mes completo"][i]})),
                     ].map((r,i)=>(
                       <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:i===4?C.redP:"transparent"}}>
                         <td style={{padding:"6px 10px",fontWeight:600,color:C.text}}>{r.mes} {r.nota&&<span style={{fontSize:9,color:C.amber}}>({r.nota})</span>}</td>
@@ -937,15 +971,7 @@ export default function App() {
               </div>
               <ResponsiveContainer width="100%" height={280}>
                 <ComposedChart data={[
-                  {mes:"Mar 26", cobrado:100.8, costo:150.3, neto:-49.5, nota:"Hoy"},
-                  {mes:"Abr 26", cobrado:100.8, costo:190.3, neto:-89.5, nota:"Inicio CAPEX"},
-                  {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
-                  {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
-                  {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
-                  {mes:"Ago 26", cobrado:132.1, costo:190.3, neto:-58.2, nota:"+Win-back"},
-                  {mes:"Sep 26", cobrado:146.3, costo:190.3, neto:-44.0, nota:"Stack completo"},
-                  {mes:"Oct 26", cobrado:163.1, costo:150.3, neto:12.8,  nota:"Fin CAPEX"},
-                  {mes:"Nov 26", cobrado:182.7, costo:150.3, neto:32.4,  nota:"★ BE"},
+                  ...D.BE_PROJ,
                 ]}>
                   <defs>
                     <linearGradient id="gCob" x1="0" y1="0" x2="0" y2="1">
@@ -1480,7 +1506,7 @@ export default function App() {
                 fuente:"CSV ISPCube · fecha alta mar 26",
                 contexto:"Meta plan completo: 420/mes · orgánico actual: 195/mes",
                 accion:"Activar Meta+Google+TikTok y IA ventas WSP",
-                historico:[219,172,152],
+                historico:[219,172,267],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1493,7 +1519,7 @@ export default function App() {
                 fuente:"CSV ISPCube · 2.9% base activa",
                 contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
                 accion:"IA WSP cobranza D5/15/25 · onboarding automático",
-                historico:[2.5,2.4,2.3],
+                historico:[0.76,0.64,0.38],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1518,7 +1544,7 @@ export default function App() {
                 fuente:"CSV ISPCube · altas habilitadas mar 26",
                 contexto:"Cada alta = 1 instalación técnica realizada",
                 accion:"Más altas → más instalaciones · ligado a ventas",
-                historico:[195,257,259],
+                historico:[219,172,267],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1543,7 +1569,7 @@ export default function App() {
                 fuente:"CSV caja · SIRO / cobrado mar 26",
                 contexto:"SIRO: $0 oct 25 → crecimiento mensual · objetivo 40%",
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
-                historico:[1.4,5.7,10.8],
+                historico:[D.SIRO8[5],D.SIRO8[6],D.SIRO_PCT],
                 labHist:["Ene","Feb","Mar"],
               },
             ].map((obj,i)=>{
@@ -1612,10 +1638,10 @@ export default function App() {
                   {obj.obraExtra&&(
                     <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:10}}>
                       {[
-                        {label:"Instaladas",   val:"156",        sub:"acumulado obra",  color:C.blue},
-                        {label:"Esperado hoy", val:"384",        sub:"24d × 16/día",    color:C.amber},
-                        {label:"Ritmo real",   val:"6.5/día",    sub:"vs meta 16/día",  color:C.red},
-                        {label:"Fin obra",     val:"12/11/26",   sub:"si cumple meta",  color:C.green},
+                        {label:"Instaladas",   val:`${D.OBRA.cajas.act}`,        sub:"acumulado obra",  color:C.blue},
+                        {label:"Esperado hoy", val:`${D.OBRA.cajas.esperado}`,   sub:`${D.OBRA.dias_hab}d × ${D.OBRA.cajas.meta_dia}/día`, color:C.amber},
+                        {label:"Ritmo real",   val:`${D.OBRA.cajas.ritmo}/día`,  sub:`vs meta ${D.OBRA.cajas.meta_dia}/día`, color:C.red},
+                        {label:"Fin obra",     val:D.OBRA.cajas.fin_meta,        sub:"si cumple meta",  color:C.green},
                       ].map((k,i)=>(
                         <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
                           <p style={{fontSize:9,color:C.text3,textTransform:"uppercase",marginBottom:3}}>{k.label}</p>
