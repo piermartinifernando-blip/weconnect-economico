@@ -1569,7 +1569,7 @@ export default function App() {
                 fuente:"CSV caja · SIRO / cobrado mar 26",
                 contexto:"SIRO: $0 oct 25 → crecimiento mensual · objetivo 40%",
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
-                historico:[D.SIRO8[5],D.SIRO8[6],D.SIRO_PCT],
+                historico:[1.33, 5.45, 10.8],
                 labHist:["Ene","Feb","Mar"],
               },
             ].map((obj,i)=>{
