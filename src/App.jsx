@@ -128,7 +128,7 @@ const D = {
     altas_actual:152,  altas_meta:420,   altas_pct:36.2,
     siro_actual:10.8,  siro_meta:40.0,   siro_pct:27.0,
     churn_actual:2.3,  churn_meta:1.5,   churn_pct:20.7, // % reducción lograda
-    cajas_actual:150,  cajas_meta:150,   cajas_pct:100.0,
+    cajas_actual:156,  cajas_meta:384,   cajas_pct:40.6,  // obra: 156 inst / esperado 384 (24d×16/día)
     inst_actual:152,   inst_meta:420,    inst_pct:36.2,
   },
 
@@ -1499,14 +1499,15 @@ export default function App() {
               {
                 area:"Operaciones · Red",
                 icono:"📦",
-                nombre:"Cajas instaladas",
-                actual:D.OBJ.cajas_actual, meta:D.OBJ.cajas_meta, unidad:"cajas",
-                pct:D.OBJ.cajas_pct,
-                fuente:"Declarado · equipo técnico",
-                contexto:"1.000 cajas acum. → objetivo 3.000 en 13 meses",
-                accion:"Mantener ritmo · 3.000 cajas = red AB completa may 27",
-                historico:[150,150,150],
-                labHist:["Ene","Feb","Mar"],
+                nombre:"Cajas instaladas — obra AB",
+                actual:156, meta:2800, unidad:"cajas",
+                pct:40.6,
+                fuente:"Obra iniciada 21/02/26 · 24 días hábiles transcurridos",
+                contexto:"Meta: 16 cajas/día hábil · Ritmo real: 6.5/día · Fin si cumple meta: 12/11/26",
+                accion:"Ritmo al 40% del objetivo — requiere acelerar a 16 cajas/día hábil",
+                historico:[0, 84, 156],
+                labHist:["21/02","Mar 1","Hoy"],
+                obraExtra:true,
               },
               {
                 area:"Operaciones · Clientes",
@@ -1602,6 +1603,24 @@ export default function App() {
                           <p style={{fontSize:11,fontFamily:C.mono,fontWeight:600,color:j===obj.historico.length-1?col:C.text2,marginTop:1}}>
                             {v != null ? `${v}${typeof v==='number'&&v<10&&obj.unidad==="%" ? "%" : ""}` : "—"}
                           </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Bloque extra obra */}
+                  {obj.obraExtra&&(
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:10}}>
+                      {[
+                        {label:"Instaladas",   val:"156",        sub:"acumulado obra",  color:C.blue},
+                        {label:"Esperado hoy", val:"384",        sub:"24d × 16/día",    color:C.amber},
+                        {label:"Ritmo real",   val:"6.5/día",    sub:"vs meta 16/día",  color:C.red},
+                        {label:"Fin obra",     val:"12/11/26",   sub:"si cumple meta",  color:C.green},
+                      ].map((k,i)=>(
+                        <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 10px",textAlign:"center"}}>
+                          <p style={{fontSize:9,color:C.text3,textTransform:"uppercase",marginBottom:3}}>{k.label}</p>
+                          <p style={{fontSize:13,fontFamily:C.mono,fontWeight:700,color:k.color}}>{k.val}</p>
+                          <p style={{fontSize:9,color:C.text3,marginTop:2}}>{k.sub}</p>
                         </div>
                       ))}
                     </div>
