@@ -31,49 +31,121 @@ const C = {
 
 /* ─── DATOS VALIDADOS DEL HTML v18 ──────────────────────────────── */
 const D = {
-  // Negocio
-  LABELS:["24/07","24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
-  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.08,85.40,92.87,95.98,95.19,100.83], // verificado CSV
-  BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,63.24,96.19,91.04,103.91,86.50,109.02,61.91,89.45],
+  // ══════════════════════════════════════════════════════════════
+  // FUENTE ÚNICA DE VERDAD — actualizar solo este bloque con CSVs
+  // Última actualización: Mar 26 2026
+  // ══════════════════════════════════════════════════════════════
+
+  // ── NEGOCIO: serie histórica ago24→mar26 ──
+  LABELS:["24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
+  COBROS:[5.66,7.59,12.62,18.00,24.57,30.87,31.64,41.41,44.76,47.42,62.50,64.90,70.20,76.62,78.08,85.40,92.87,95.98,95.19,100.83],
+  BILLS: [5.65,9.97,16.29,22.40,29.73,36.10,38.83,43.76,46.60,54.29,123.43,73.47,63.24,96.19,91.04,103.91,86.50,109.02,61.91,89.45],
+
+  // ── NEGOCIO: últimos 8 meses ──
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  MP8:  [56.26,61.28,60.42,66.93,74.19,66.81,71.73,70.36],
-  SIRO8:[0.00, 0.00, 0.00, 0.45, 0.87, 1.39, 5.45,10.90],
-  VISA8:[4.82, 6.04, 6.98, 7.78, 7.98, 8.29, 8.10, 8.71],
-  PF8:  [4.13, 4.52, 4.71, 6.22, 4.64, 4.77, 4.05, 5.14],
-  CAJA8:[3.15, 3.61, 3.72, 3.26, 3.56, 3.72, 3.37, 3.89],
-  GAL8: [2.09, 2.20, 2.20, 1.61, 1.41,10.53, 2.51, 1.84],
   COBROS_M8:[70.20,76.62,78.08,85.40,92.87,95.98,95.19,100.83],
-  CITIES:["Almirante Brown","Cap. Sarmiento","Minist. Rivadavia","Glew","Florencio Varela","Longchamps","Burzaco"],
-  CITY_COBRO:[152.7,93.31,11.3,9.02,3.12,3.0,1.15],
-  CITY_MORA: [55.91,12.24,1.42,1.11,0.91,0.35,0.13], // deuda vencida real Mar 26
-  CITY_CLI:  [3128,1747,410,402,94,154,51],
-  VEND_LABS:["Alfredo Blockl","Netsharing SA","Local CS","M. Shanahan","I. Rodriguez","Espinel Gaspar"],
-  VEND_VALS:[69.45,33.62,19.32,19.29,17.37,13.73],
-  ARPU:22447, CPL_ARS:15926, CPL_USD:13.27, LTV_CAC:56.8, PAYBACK_DIAS:18,
-  ALTAS:270, CHURN_PCT:2.9, CHURN_ABS:123, NETO:134, CLIENTES:4088,
-  // Costos
-  // P&L valores exactos validados
+
+  // ── CANALES: últimos 8 meses ($M) ──
+  MP8:  [55.96,60.37,60.56,66.35,74.84,66.89,71.73,70.36],
+  SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,10.90],
+  VISA8:[4.82, 6.03, 6.98, 7.78, 7.33, 8.93, 8.10, 8.71],
+  PF8:  [4.16, 4.52, 4.66, 5.87, 4.95, 4.65, 4.05, 5.14],
+  CAJA8:[3.15, 3.59, 3.72, 3.28, 3.56, 3.71, 3.37, 3.89],
+  GAL8: [2.12, 2.11, 2.16, 1.69, 1.37,10.47, 2.51, 1.84],
+
+  // ── MES ACTUAL: Mar 26 ──
+  COB_ACTUAL:  100.83,   // cobrado total
+  COB_PREV:     95.19,   // mes anterior (Feb 26)
+  COB_VAR_PCT:   5.9,    // % variación
+  SIRO_ABS:     10.90,   // SIRO $M
+  SIRO_PCT:     10.8,    // SIRO % del cobrado
+  MP_ABS:       70.36,   // MP $M
+  MP_PCT:       69.8,    // MP %
+  FACT_ACTUAL:  89.45,   // facturado Mar 26
+
+  // ── CLIENTES: estado actual ──
+  HAB:   4196,    // habilitados
+  BLOQ:   234,    // bloqueados
+  SS:    1556,    // sin servicio
+  TOTAL: 5986,    // total padrón
+
+  // ── CLIENTES: altas y churns últimos 8 meses ──
+  ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
+  ALTAS_V: [182, 176, 276, 193, 186, 219, 172, 152],  // altas habilitados por mes
+  CHURNS_V:[104, 107, 109, 114, 116, 118, 121,  97],  // churns estimados
+
+  // ── CHURN: serie mensual ──
+  CHURN_PCT_ACT: 2.3,   // % actual Mar 26
+  CHURN_ABS_ACT:  97,   // clientes/mes Mar 26
+  CHURN_MENS:[
+    {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
+    {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
+    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:119},
+    {mes:"Sep 25",pct:2.9,cant:116},{mes:"Oct 25",pct:2.8,cant:116},{mes:"Nov 25",pct:2.6,cant:107},{mes:"Dic 25",pct:2.7,cant:109},
+    {mes:"Ene 26",pct:2.5,cant:105},{mes:"Feb 26",pct:2.4,cant:101},{mes:"Mar 26",pct:2.3,cant:97},
+  ],
+
+  // ── COHORTS churn acumulado ──
+  COHORTS:[
+    {c:"Cohorte 2024 Q1-Q2 (>18m)",  pct:34.2, inact:312, color:"#D13030"},
+    {c:"Cohorte 2024 Q3-Q4 (12-18m)", pct:28.7, inact:418, color:"#C47A00"},
+    {c:"Cohorte 2025 Q1-Q2 (6-12m)",  pct:18.4, inact:521, color:"#C47A00"},
+    {c:"Cohorte 2025 Q3-Q4 (3-6m)",   pct:10.6, inact:218, color:"#1A7A3C"},
+    {c:"Cohorte 2026 (0-3m)",          pct:4.1,  inact:87,  color:"#1A7A3C"},
+  ],
+
+  // ── PLANES habilitados ──
+  PLANES:[
+    {plan:"100 MB",  cli:2217, pct:52.8, color:"#38BDF8"},
+    {plan:"300 MB",  cli:1379, pct:32.9, color:"#1A7A3C"},
+    {plan:"50 MB",   cli:378,  pct:9.0,  color:"#7B5EA7"},
+    {plan:"600 MB",  cli:110,  pct:2.6,  color:"#C47A00"},
+    {plan:"30 MB",   cli:108,  pct:2.6,  color:"#1A5FBF"},
+  ],
+
+  // ── CIUDADES ──
+  CIUDADES:[
+    {ciudad:"Almirante Brown",    habilitados:1952, total:3128, deudaVenc:55.04},
+    {ciudad:"Capitan Sarmiento",  habilitados:1314, total:1747, deudaVenc:12.04},
+    {ciudad:"Ministro Rivadavia", habilitados:362,  total:410,  deudaVenc:1.96},
+    {ciudad:"Glew",               habilitados:336,  total:402,  deudaVenc:2.60},
+    {ciudad:"Longchamps",         habilitados:129,  total:154,  deudaVenc:0.62},
+    {ciudad:"Florencio Varela",   habilitados:60,   total:94,   deudaVenc:1.19},
+    {ciudad:"Burzaco",            habilitados:43,   total:51,   deudaVenc:0.24},
+  ],
+  CITY_NAMES:["AB","CS","MR","Glew","LCH","FV","Buz"],
+  CITY_HAB:  [1952,1314,362,336,129,60,43],
+  CITY_TOTAL:[3128,1747,410,402,154,94,51],
+  CITY_MORA: [55.04,12.04,1.96,2.60,0.62,1.19,0.24],
+
+  // ── MORA ──
+  MORA_TOTAL:109.13, MORA_VENC:73.69, MORA_SS:58.91, MORA_BLOQ:7.18, MORA_HAB:7.60,
+  MORA_MOROSOS:1790, // ss(1556) + bloq(234)
+  MORA_PCT:29.9,     // morosos / total
+
+  // ── OBJETIVOS: actuales y metas ──
+  OBJ:{
+    altas_actual:152,  altas_meta:420,   altas_pct:36.2,
+    siro_actual:10.8,  siro_meta:40.0,   siro_pct:27.0,
+    churn_actual:2.3,  churn_meta:1.5,   churn_pct:20.7, // % reducción lograda
+    cajas_actual:150,  cajas_meta:150,   cajas_pct:100.0,
+    inst_actual:152,   inst_meta:420,    inst_pct:36.2,
+  },
+
+  // ── COSTOS (manual — no viene de CSV) ──
+  SS_ING:95.19, SS_OPEX:150.3, SS_CAPEX:33.0, SS_RES:-88.1, SS_RATIO:1.93,
+  OPEX_CATS:["RRHH","Alquileres y oficinas","Equipamiento","Red e infraestructura","Comisiones ventas","Comisiones cobranza","Marketing","Impuestos y tasas","Tecnología"],
+  OPEX_VALS:[67.00,12.50,8.20,22.80,9.50,6.20,3.80,11.10,9.30],
   CJ_LABS:["Oct 25","Nov 25","Dic 25","Ene 26","Feb 26"],
-  CJ_LABS_FULL:["Oct 25 corregido","Nov 25","Dic 25 SAC","Ene 26","Feb 26"],
-  CJ_INGS: [78.0,  86.3,  92.6,  95.5,  95.4],
-  CJ_OPEX: [147.5, 135.9, 171.6, 150.3, 150.3],
-  CJ_CAPEX:[0,     0,     0.1,   25.0,  33.0],
-  CJ_TOTAL:[147.5, 135.9, 171.7, 175.3, 183.3],
-  CJ_RESS: [-69.5, -49.6, -78.9, -54.8, -54.9],
-  CJ_RATIO:[1.89,  1.58,  1.85,  1.57,  1.57],
-  // Steady state
-  SS_ING:95.4, SS_OPEX:150.3, SS_CAPEX:29.0, SS_RES:-54.9, SS_RATIO:1.57,
-  CAPEX_OBRA:40, CAPEX_MESES:6,
-  // Red AB — parámetros reales
-  RED_CAJAS_HOY:1000, RED_CAP_CAJA:10.5, RED_TASA_HOY:2.0, RED_TASA_OBJ:5.0,
-  RED_CAJAS_MES:150, RED_CAJAS_OBJ:3000, RED_CHURN_HOY:2.9, RED_CHURN_OBJ:1.5,
-  RED_CLI_OBJ:48000,
-  // Proyección modelo real: tasa 2%→5% en 18m · churn 2.9%→1.5% en 12m · CAPEX obra $40M×6m
-  // cobrado = clientes × ARPU cobrado real $22.447 · costo = OPEX $150.3M + CAPEX obra
-  // BE real: Nov 26 · actualizado con CSV mar 26 (4.196 habilitados)
+  CJ_INGS:[78.08,85.40,92.87,95.98,95.19],
+  CJ_OPEX:[147.6,135.9,171.7,150.3,150.3],
+  CJ_CAPEX:[0,0,0.1,25.0,33.0],
+
+  // ── BREAK-EVEN proyección ──
+  ARPU_COB:22447,
   RED_PROJ:[
     {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:100.8,opex:150.3,capex:0, costo:150.3,neto:-49.5},
-    {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:94.2, opex:150.3,capex:40,costo:190.3,neto:-96.1},
+    {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:100.8,opex:150.3,capex:40,costo:190.3,neto:-89.5},
     {mes:"May 26",cajas:1300,cap:13650,pen:2.3,churn:2.67,altas:378, clientes:4409, cobrado:99.0, opex:150.3,capex:40,costo:190.3,neto:-91.3},
     {mes:"Jun 26",cajas:1450,cap:15225,pen:2.5,churn:2.55,altas:445, clientes:4669, cobrado:104.8,opex:150.3,capex:40,costo:190.3,neto:-85.5},
     {mes:"Jul 26",cajas:1600,cap:16800,pen:2.7,churn:2.43,altas:518, clientes:4995, cobrado:112.1,opex:150.3,capex:40,costo:190.3,neto:-78.2},
@@ -91,58 +163,6 @@ const D = {
     {mes:"Sep 27",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:15111,cobrado:339.2,opex:150.3,capex:0, costo:150.3,neto:188.9},
     {mes:"Dic 27",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:16523,cobrado:370.9,opex:150.3,capex:0, costo:150.3,neto:220.6},
     {mes:"Mar 28",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:17914,cobrado:402.1,opex:150.3,capex:0, costo:150.3,neto:251.8},
-  ],
-  OPEX_CATS:["RRHH","Alquileres y oficinas","Equipamiento","Red e infraestructura","Comisiones ventas","Comisiones cobranza","Marketing","Impuestos y tasas","Tecnología"],
-  OPEX_COLORS:["#D13030","#C47A00","#7B5EA7","#0D7377","#1A5FBF","#1A7A3C","#E07040","#5A6A7A","#3C3489"],
-  OPEX_DATA:{
-    "RRHH":           [63.24,57.94,80.64,67.00,67.00],
-    "Alquileres y oficinas":[19.56,13.69,18.10,15.93,15.93],
-    "Equipamiento":   [15.32,14.87,16.65,12.24,12.24],
-    "Red e infraestructura":[8.29,9.21,7.32,9.22,9.22],
-    "Comisiones ventas":[7.50,7.56,8.17,7.37,7.37],
-    "Comisiones cobranza":[2.39,3.54,6.15,5.54,5.54],
-    "Marketing":      [5.35,4.57,4.64,3.99,3.99],
-    "Impuestos y tasas":[4.84,6.20,3.88,3.61,3.61],
-    "Tecnología":     [1.34,1.36,1.38,2.02,2.02],
-  },
-  // Clientes
-  ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 164],  // altas brutas reales CSV
-  CHURNS_V:[115, 112, 116, 116, 116, 118, 112,  97],  // 2.9% base activa real c/mes
-  // Churn
-  COHORTS:[
-    {c:"Antiguo 2024 H2 (+18m)",pct:35.4,inact:605,color:C.red  },
-    {c:"Maduro 2025 Q1–Q2 (9-15m)",pct:34.6,inact:526,color:C.red  },
-    {c:"Maduro 2025 Q3 (6-9m)",pct:33.2,inact:285,color:C.amber},
-    {c:"Reciente 2025 Q4 (3-6m)",pct:18.1,inact:150,color:C.amber},
-    {c:"Muy reciente 2026 (0-3m)",pct:10.6,inact:87,color:C.green},
-  ],
-  CHURN_MENS:[
-    {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
-    {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
-    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:119},
-    {mes:"Sep 25",pct:2.9,cant:116},{mes:"Oct 25",pct:2.8,cant:116},{mes:"Nov 25",pct:2.6,cant:107},{mes:"Dic 25",pct:2.7,cant:109},
-    {mes:"Ene 26",pct:2.5,cant:105},{mes:"Feb 26",pct:2.4,cant:101},{mes:"Mar 26",pct:2.3,cant:97},
-  ],
-  // Mora
-  MORA_TOTAL:109.13, MORA_VENC:73.69, MORA_MOROSOS:1556, MORA_PCT:37.1,
-  // Break-even
-  BE_RES_SIN:[-51.18,-48.17,-45.25,-42.42,-39.69,-37.02,-34.44,-31.92,-29.47,-27.09,-24.78,-22.53,-20.36,-18.25],
-  BE_RES_CON:[-51.18,-48.17,-37.59,-21.83,-7.22,2.31,11.66,20.79,29.75,38.54,47.15,55.59,63.88,72.0],
-  BE_LABS:["Hoy","Abr 26","Jun 26","Sep 26","Dic 26","Mar 27","Sep 27","Mar 28","Mar 29","Jun 29","Sep 29","Dic 29","Mar 30","Jun 30"],
-  BE_IMPACTO:[
-    {label:"Base feb-26",  val:95.3,  color:C.text2},
-    {label:"+ Win-back 30%",val:13.9,  color:C.green},
-    {label:"+ Upsell →100MB",val:4.1,  color:C.teal},
-    {label:"+ Ventas +500/m",val:10.9,  color:C.blue},
-    {label:"+ Red nueva @5%",val:29.6,  color:C.purple},
-    {label:"+ IA ahorro",    val:3.0,  color:C.amber},
-  ],
-  // RRSS
-  CPL_ESC:[
-    {esc:"Meta $1.5k",altas:270,cpl:13.27,color:C.blue},
-    {esc:"Meta+Google",altas:437,cpl:9.83,color:C.teal},
-    {esc:"Meta+G+Ref",altas:542,cpl:7.93,color:C.green},
   ],
 };
 
@@ -272,7 +292,7 @@ export default function App() {
   // Datos combinados para gráficas
   const cobVsFac = D.LABELS.map((l,i)=>({mes:l,cobrado:D.COBROS[i],facturado:D.BILLS[i]}));
   const canalesData = D.M8.map((m,i)=>({mes:m,"Mercado Pago":D.MP8[i],"SIRO ▲":D.SIRO8[i],"Visa/MC":D.VISA8[i],"Pago Fácil":D.PF8[i],"Caja":D.CAJA8[i],"Galicia/Transfer":D.GAL8[i]}));
-  const cityCobroData = D.CITIES.map((c,i)=>({city:c,cobrado:D.CITY_COBRO[i],mora:D.CITY_MORA[i]}));
+  const cityCobroData = D.CIUDADES.map(r=>({city:r.ciudad,mora:r.deudaVenc,habilitados:r.habilitados}));
   const vendData = D.VEND_LABS.map((l,i)=>({vend:l,val:D.VEND_VALS[i]}));
   const altasData = D.ALTAS_M.map((m,i)=>({mes:m,altas:D.ALTAS_V[i],churns:D.CHURNS_V[i],neto:D.ALTAS_V[i]-D.CHURNS_V[i]}));
   const plData = D.CJ_LABS_FULL.map((l,i)=>({
@@ -362,9 +382,9 @@ export default function App() {
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Cobranza Dic 2025" value="$92.6M" sub="▲ +7.4% vs noviembre" type="ok"/>
-              <KPI label="Cobranza Ene 2026" value="$95.5M" sub="▲ +3.1% vs diciembre" type="ok"/>
+              <KPI label="Cobranza Feb 2026" value={`$${D.COB_PREV}M`} sub="mes completo" type="ok"/>
               <KPI label="Cobranza Feb 2026" value="$95.4M" sub="mes completo · datos frescos" type="ok"/>
-              <KPI label="Cobro Mar 2026"    value="$100.8M" sub="★ primer mes +$100M · SIRO $10.9M · +5.9% vs feb" type="ok"/>
+              <KPI label="Cobro Mar 2026"    value={`$${D.COB_ACTUAL}M`} sub={`★ primer mes +$100M · SIRO $${D.SIRO_ABS}M · +${D.COB_VAR_PCT}% vs feb`} type="ok"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -444,8 +464,8 @@ export default function App() {
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
-              <KPI label="Tasa cobranza mar-26" value="92%"       sub="$100.8M cobrado / $109M facturado" type="wr"/>
-              <KPI label="SIRO Mar 26"               value="$10.90M"   sub="▲ desde $0 oct 25 · 10.8% del cobro" type="ok"/>
+              <KPI label="Tasa cobranza mar-26" value={`${(D.COB_ACTUAL/D.MORA_TOTAL*100).toFixed(0)}%`} sub={`$${D.COB_ACTUAL}M cobrado / $${D.MORA_TOTAL}M facturado`} type="wr"/>
+              <KPI label="SIRO Mar 26"               value={`$${D.SIRO_ABS}M`} sub={`▲ desde $0 oct 25 · ${D.SIRO_PCT}% del cobrado`} type="ok"/>
             </div>
           </div>
         )}
@@ -565,10 +585,10 @@ export default function App() {
         {tab==="clientes"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Total padrón"          value="5.986"   sub="desde agosto 2024"                   type="nv"/>
-              <KPI label="Habilitados"          value="4.196"   sub="70.1% del padrón"                    type="ok"/>
-              <KPI label="Bloqueados"            value="234"     sub="en campaña de recupero · con deuda"   type="wr"/>
-              <KPI label="Sin servicio"          value="1.556"   sub="nunca regularizaron · $58.9M deuda"   type="dn"/>
+              <KPI label="Total padrón"          value={D.TOTAL.toLocaleString("es-AR")} sub="desde agosto 2024"                   type="nv"/>
+              <KPI label="Habilitados"          value={D.HAB.toLocaleString("es-AR")} sub={`${(D.HAB/D.TOTAL*100).toFixed(1)}% del padrón`}                    type="ok"/>
+              <KPI label="Bloqueados"            value={D.BLOQ.toLocaleString("es-AR")} sub="en campaña de recupero · con deuda"   type="wr"/>
+              <KPI label="Sin servicio"          value={D.SS.toLocaleString("es-AR")} sub={`nunca regularizaron · $${D.MORA_SS}M deuda`}   type="dn"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -666,8 +686,8 @@ export default function App() {
         {tab==="churn"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Churn acumulado"       value="26.0%"    sub="1.556 de 5.986 inactivos"   type="dn"/>
-              <KPI label="Tasa mensual prom."    value="2.3%"     sub="97 clientes/mes · mar 26"            type="dn"/>
+              <KPI label="Churn acumulado"       value={`${(D.SS/D.TOTAL*100).toFixed(1)}%`} sub={`${D.SS.toLocaleString("es-AR")} de ${D.TOTAL.toLocaleString("es-AR")} inactivos`}   type="dn"/>
+              <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} clientes/mes · mar 26`}            type="dn"/>
               <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3.8 / año"           type="wr"/>
               <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
             </div>
@@ -743,10 +763,10 @@ export default function App() {
         {tab==="mora"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Deuda total cartera"  value="$109.1M" sub="total adeudado Mar 26"                         type="dn"/>
-              <KPI label="Deuda vencida"        value="$73.7M"  sub="1.556 sin servicio + 234 bloqueados"          type="dn"/>
-              <KPI label="Deuda sin servicio"   value="$58.9M"  sub="difícil recupero · nunca regularizaron"       type="dn"/>
-              <KPI label="Deuda en recupero"    value="$7.2M"   sub="234 bloqueados · campaña activa"               type="wr"/>
+              <KPI label="Deuda total cartera"  value={`$${D.MORA_TOTAL}M`} sub="total adeudado Mar 26"                         type="dn"/>
+              <KPI label="Deuda vencida"        value={`$${D.MORA_VENC}M`} sub={`${D.SS} sin servicio + ${D.BLOQ} bloqueados`}          type="dn"/>
+              <KPI label="Deuda sin servicio"   value={`$${D.MORA_SS}M`} sub="difícil recupero · nunca regularizaron"       type="dn"/>
+              <KPI label="Deuda en recupero"    value={`$${D.MORA_BLOQ}M`} sub={`${D.BLOQ} bloqueados · campaña activa`}               type="wr"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -812,7 +832,7 @@ export default function App() {
             {/* ── KPIs ── */}
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Break-even proyectado" value="Nov 26"  sub="con implementaciones · +$32.4M"        type="ok"/>
-              <KPI label="Cobrado hoy"           value="$100.8M" sub="real mar 26 · ARPU cobrado $24.027"    type="dn"/>
+              <KPI label="Cobrado hoy"           value={`$${D.COB_ACTUAL}M`} sub={`real mar 26 · ARPU cobrado $${D.ARPU_COB.toLocaleString("es-AR")}`}    type="dn"/>
               <KPI label="Costo total hoy"       value="$150.3M" sub="OPEX base sin CAPEX obra"              type="dn"/>
               <KPI label="Costo con CAPEX obra"  value="$190.3M" sub="abr-sep 26 · $40M CAPEX incluido"     type="dn"/>
             </div>
@@ -1420,33 +1440,33 @@ export default function App() {
                 area:"Ventas",
                 icono:"📈",
                 nombre:"Altas del mes",
-                actual:259, meta:420, unidad:"altas",
-                pct:61.7,
+                actual:D.OBJ.altas_actual, meta:D.OBJ.altas_meta, unidad:"altas",
+                pct:D.OBJ.altas_pct,
                 fuente:"CSV ISPCube · fecha alta mar 26",
                 contexto:"Meta plan completo: 420/mes · orgánico actual: 195/mes",
                 accion:"Activar Meta+Google+TikTok y IA ventas WSP",
-                historico:[195,257,259],
+                historico:[D.ALTAS_V[5],D.ALTAS_V[6],D.OBJ.altas_actual],
                 labHist:["Ene","Feb","Mar"],
               },
               {
                 area:"Atención al cliente",
                 icono:"💬",
                 nombre:"Reducción de churn",
-                actual:2.9, meta:1.5, unidad:"%",
-                pct:48.3,
+                actual:D.OBJ.churn_actual, meta:D.OBJ.churn_meta, unidad:"%",
+                pct:D.OBJ.churn_pct,
                 inverso:true,
                 fuente:"CSV ISPCube · 2.9% base activa",
                 contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
                 accion:"IA WSP cobranza D5/15/25 · onboarding automático",
-                historico:[3.0,2.9,2.9],
+                historico:[D.CHURN_MENS[16].pct,D.CHURN_MENS[17].pct,D.CHURN_MENS[18].pct],
                 labHist:["Ene","Feb","Mar"],
               },
               {
                 area:"Operaciones · Red",
                 icono:"📦",
                 nombre:"Cajas instaladas",
-                actual:150, meta:150, unidad:"cajas",
-                pct:100.0,
+                actual:D.OBJ.cajas_actual, meta:D.OBJ.cajas_meta, unidad:"cajas",
+                pct:D.OBJ.cajas_pct,
                 fuente:"Declarado · equipo técnico",
                 contexto:"1.000 cajas acum. → objetivo 3.000 en 13 meses",
                 accion:"Mantener ritmo · 3.000 cajas = red AB completa may 27",
@@ -1457,8 +1477,8 @@ export default function App() {
                 area:"Operaciones · Clientes",
                 icono:"🔧",
                 nombre:"Instalaciones clientes",
-                actual:259, meta:420, unidad:"instalac.",
-                pct:61.7,
+                actual:D.OBJ.inst_actual, meta:D.OBJ.inst_meta, unidad:"instalac.",
+                pct:D.OBJ.inst_pct,
                 fuente:"CSV ISPCube · altas habilitadas mar 26",
                 contexto:"Cada alta = 1 instalación técnica realizada",
                 accion:"Más altas → más instalaciones · ligado a ventas",
@@ -1482,12 +1502,12 @@ export default function App() {
                 area:"Cobranza",
                 icono:"💳",
                 nombre:"Migración a SIRO",
-                actual:10.2, meta:40.0, unidad:"% cartera",
-                pct:25.5,
-                fuente:"CSV caja · $10.9M / $100.8M mar 26",
-                contexto:"SIRO: $0 oct 25 → $10.9M mar 26 · 10.8% del cobrado",
+                actual:D.OBJ.siro_actual, meta:D.OBJ.siro_meta, unidad:"% cartera",
+                pct:D.OBJ.siro_pct,
+                fuente:`CSV caja · $${D.SIRO_ABS}M / $${D.COB_ACTUAL}M mar 26`,
+                contexto:`SIRO: $0 oct 25 → $${D.SIRO_ABS}M mar 26 · ${D.SIRO_PCT}% del cobrado`,
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
-                historico:[1.4,6.1,10.2],
+                historico:[D.SIRO8[5],D.SIRO8[6],D.SIRO_PCT],
                 labHist:["Ene","Feb","Mar"],
               },
             ].map((obj,i)=>{
