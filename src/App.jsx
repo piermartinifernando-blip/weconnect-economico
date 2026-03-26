@@ -16,53 +16,6 @@ const useIsMobile = () => {
     return () => window.removeEventListener("resize", fn);
   }, []);
   return mob;
-  // ── P&L histórico (manual — viene de Excel egresos) ──
-  PL_HIST:[
-    {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
-    {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
-    {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
-    {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
-    {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
-    {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
-  ],
-
-  // ── Curva neto clientes (altas+churns+neto real) ──
-  NETO_HIST:[
-    {mes:"Oct 25", neto:-69.5,  altas:368, churns:112},
-    {mes:"Nov 25", neto:-50.5,  altas:247, churns:105},
-    {mes:"Dic 25", neto:-78.9,  altas:238, churns:109},
-    {mes:"Ene 26", neto:-79.3,  altas:257, churns:102},
-    {mes:"Feb 26", neto:-88.1,  altas:195, churns:98},
-    {mes:"Mar 26", neto:-49.5,  altas:284, churns:97},
-  ],
-
-  // ── Break-even gráfico ② proyección ──
-  BE_PROJ:[
-    {mes:"Mar 26", cobrado:100.8, costo:150.3, neto:-49.5, nota:"Hoy"},
-    {mes:"Abr 26", cobrado:100.8, costo:190.3, neto:-89.5, nota:"Inicio CAPEX"},
-    {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
-    {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
-    {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
-    {mes:"Ago 26", cobrado:132.1, costo:190.3, neto:-58.2, nota:"+Win-back"},
-    {mes:"Sep 26", cobrado:146.3, costo:190.3, neto:-44.0, nota:"Stack completo"},
-    {mes:"Oct 26", cobrado:163.1, costo:150.3, neto:12.8,  nota:"Fin CAPEX"},
-    {mes:"Nov 26", cobrado:182.7, costo:150.3, neto:32.4,  nota:"★ BE"},
-  ],
-
-  // ── Recupero AB ──
-  RECUPERO:{ onus:497, valor:25.5, costo_fijo:2.25, roi_min:1.42 },
-
-  // ── CPL y canales pauta ──
-  CPL_USD: 13.27, CPL_ARS: 15926, ARPU_USD: 22.45,
-  BASE_ORG: 239,  // altas orgánicas sin pauta
-
-  // ── Obra: cajas y fibra ──
-  OBRA:{
-    inicio:"21/02/26", dias_hab:24,
-    cajas:{ act:156,    total:2800,   meta_dia:16,   esperado:384,   ritmo:6.5,  pct_ritmo:40.6, fin_meta:"12/11/26"},
-    fibra:{ act:110000, total:320000, meta_dia:2000, esperado:48000, ritmo:4583, pct_ritmo:229.2,fin_meta:"29/05/26"},
-  },
-
 };
 
 /* ─── TOKENS ────────────────────────────────────────────────────── */
@@ -254,6 +207,54 @@ const D = {
     {mes:"Dic 27",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:16523,cobrado:370.9,opex:150.3,capex:0, costo:150.3,neto:220.6},
     {mes:"Mar 28",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:17914,cobrado:402.1,opex:150.3,capex:0, costo:150.3,neto:251.8},
   ],
+
+  // ── P&L histórico (manual — viene de Excel egresos) ──
+  PL_HIST:[
+    {mes:"Oct 25", cobrado:78.1,  opex:147.6, capex:0,    costo:147.6, neto:-69.5},
+    {mes:"Nov 25", cobrado:85.4,  opex:135.9, capex:0,    costo:135.9, neto:-50.5},
+    {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
+    {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
+    {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
+    {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
+  ],
+
+  // ── Curva neto clientes (altas+churns+neto real) ──
+  NETO_HIST:[
+    {mes:"Oct 25", neto:-69.5,  altas:324, churns:47},
+    {mes:"Nov 25", neto:-50.5,  altas:225, churns:35},
+    {mes:"Dic 25", neto:-78.9,  altas:279, churns:35},
+    {mes:"Ene 26", neto:-79.3,  altas:354, churns:31},
+    {mes:"Feb 26", neto:-88.1,  altas:292, churns:26},
+    {mes:"Mar 26", neto:-49.5,  altas:284, churns:16},
+  ],
+
+  // ── Break-even gráfico ② proyección ──
+  BE_PROJ:[
+    {mes:"Mar 26", cobrado:100.8, costo:150.3, neto:-49.5, nota:"Hoy"},
+    {mes:"Abr 26", cobrado:100.8, costo:190.3, neto:-89.5, nota:"Inicio CAPEX"},
+    {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
+    {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
+    {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
+    {mes:"Ago 26", cobrado:132.1, costo:190.3, neto:-58.2, nota:"+Win-back"},
+    {mes:"Sep 26", cobrado:146.3, costo:190.3, neto:-44.0, nota:"Stack completo"},
+    {mes:"Oct 26", cobrado:163.1, costo:150.3, neto:12.8,  nota:"Fin CAPEX"},
+    {mes:"Nov 26", cobrado:182.7, costo:150.3, neto:32.4,  nota:"★ BE"},
+  ],
+
+  // ── Recupero AB ──
+  RECUPERO:{ onus:497, valor:25.5, costo_fijo:2.25, roi_min:1.42 },
+
+  // ── CPL y canales pauta ──
+  CPL_USD: 13.27, CPL_ARS: 15926, ARPU_USD: 22.45,
+  BASE_ORG: 239,
+
+  // ── Obra: cajas y fibra ──
+  OBRA:{
+    inicio:"21/02/26", dias_hab:24,
+    cajas:{ act:156,    total:2800,   meta_dia:16,   esperado:384,   ritmo:6.5,  pct_ritmo:40.6, fin_meta:"12/11/26"},
+    fibra:{ act:110000, total:320000, meta_dia:2000, esperado:48000, ritmo:4583, pct_ritmo:229.2,fin_meta:"29/05/26"},
+  },
+
 };
 
 /* ─── HELPERS ────────────────────────────────────────────────────── */
