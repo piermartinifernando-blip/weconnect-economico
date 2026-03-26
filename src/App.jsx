@@ -72,7 +72,7 @@ const D = {
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
   ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 284],  // mar 26: 284 total (267 hab) verificado
-  CHURNS_V:[118, 115, 112, 105, 109, 102, 98, 97],  // recalculado con base activa real
+  CHURNS_V:[ 89,  80,  47,  35,  35,  31,  26,  16],  // churn real = nuevos Sin servicio c/mes
 
   // ── CHURN: serie mensual ──
   CHURN_PCT_ACT: 0.38,  // % real mar 26 = 16 nuevos SS / 4196 hab
