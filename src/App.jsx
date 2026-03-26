@@ -72,7 +72,7 @@ const D = {
   // cobrado = clientes × ARPU cobrado real $22.447 · costo = OPEX $150.3M + CAPEX obra
   // BE real: Nov 26 · actualizado con CSV mar 26 (4.196 habilitados)
   RED_PROJ:[
-    {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:94.2, opex:150.3,capex:0, costo:150.3,neto:-56.1},
+    {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:100.8,opex:150.3,capex:0, costo:150.3,neto:-49.5},
     {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:94.2, opex:150.3,capex:40,costo:190.3,neto:-96.1},
     {mes:"May 26",cajas:1300,cap:13650,pen:2.3,churn:2.67,altas:378, clientes:4409, cobrado:99.0, opex:150.3,capex:40,costo:190.3,neto:-91.3},
     {mes:"Jun 26",cajas:1450,cap:15225,pen:2.5,churn:2.55,altas:445, clientes:4669, cobrado:104.8,opex:150.3,capex:40,costo:190.3,neto:-85.5},
@@ -364,7 +364,7 @@ export default function App() {
               <KPI label="Cobranza Dic 2025" value="$92.6M" sub="▲ +7.4% vs noviembre" type="ok"/>
               <KPI label="Cobranza Ene 2026" value="$95.5M" sub="▲ +3.1% vs diciembre" type="ok"/>
               <KPI label="Cobranza Feb 2026" value="$95.4M" sub="mes completo · datos frescos" type="ok"/>
-              <KPI label="Cobro Mar 2026"    value="$94.0M" sub="al 23/03 · SIRO 10.2% y subiendo" type="ok"/>
+              <KPI label="Cobro Mar 2026"    value="$100.8M" sub="mes completo · SIRO $10.9M · +5.9% vs feb" type="ok"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -444,7 +444,7 @@ export default function App() {
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
-              <KPI label="Tasa cobranza mar-26" value="85%"       sub="$94M cobrado / $110M facturado" type="wr"/>
+              <KPI label="Tasa cobranza mar-26" value="92%"       sub="$100.8M cobrado / $109M facturado" type="wr"/>
               <KPI label="SIRO Mar 26"               value="$10.90M"   sub="▲ desde $0 oct 25 · 10.8% del cobro" type="ok"/>
             </div>
           </div>
@@ -627,7 +627,7 @@ export default function App() {
                   {mes:"Dic 25", neto:-78.9,  altas:238, churns:119},
                   {mes:"Ene 26", neto:-104.4, altas:257, churns:122},
                   {mes:"Feb 26", neto:-121.1, altas:195, churns:126},
-                  {mes:"Mar 26", neto:-89.3,  altas:259, churns:119},
+                  {mes:"Mar 26", neto:-82.5,  altas:164, churns:97},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
@@ -650,7 +650,7 @@ export default function App() {
                 {[
                   {mes:"Ene 26",nota:"CAPEX OLT $25M → neto cae a −$104M",color:C.amber},
                   {mes:"Feb 26",nota:"CAPEX obra $33M → neto mín −$121M",color:C.red},
-                  {mes:"Mar 26",nota:"Sin CAPEX registrado aún · −$89M",color:C.green},
+                  {mes:"Mar 26",nota:"Mes completo $100.8M · sin CAPEX registrado",color:C.green},
                 ].map((n,i)=>(
                   <div key={i} style={{background:C.bg3,borderRadius:6,padding:"7px 10px",border:`0.5px solid ${C.bdr}`}}>
                     <p style={{fontSize:10,fontWeight:600,color:n.color}}>{n.mes}</p>
@@ -812,7 +812,7 @@ export default function App() {
             {/* ── KPIs ── */}
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Break-even proyectado" value="Nov 26"  sub="con implementaciones · +$32.4M"        type="ok"/>
-              <KPI label="Cobrado hoy"           value="$94.0M"  sub="real mar 26 · ARPU cobrado $22.447"    type="dn"/>
+              <KPI label="Cobrado hoy"           value="$100.8M" sub="real mar 26 · ARPU cobrado $24.027"    type="dn"/>
               <KPI label="Costo total hoy"       value="$150.3M" sub="OPEX base sin CAPEX obra"              type="dn"/>
               <KPI label="Costo con CAPEX obra"  value="$190.3M" sub="abr-sep 26 · $40M CAPEX incluido"     type="dn"/>
             </div>
@@ -829,7 +829,7 @@ export default function App() {
                   {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
                   {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
                   {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
-                  {mes:"Mar 26", cobrado:94.0,  opex:150.3, capex:0,    costo:150.3, neto:-56.3},
+                  {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:11,fill:C.text2}} stroke={C.bdr}/>
@@ -859,7 +859,7 @@ export default function App() {
                       {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9, nota:"SAC"},
                       {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3, nota:"OLT"},
                       {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1, nota:"Peor mes"},
-                      {mes:"Mar 26", cobrado:94.0,  opex:150.3, capex:0,    costo:150.3, neto:-56.3, nota:"Sin CAPEX reg."},
+                      {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5, nota:"Mes completo"},
                     ].map((r,i)=>(
                       <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:i===4?C.redP:"transparent"}}>
                         <td style={{padding:"6px 10px",fontWeight:600,color:C.text}}>{r.mes} {r.nota&&<span style={{fontSize:9,color:C.amber}}>({r.nota})</span>}</td>
@@ -882,8 +882,8 @@ export default function App() {
               </div>
               <ResponsiveContainer width="100%" height={280}>
                 <ComposedChart data={[
-                  {mes:"Mar 26", cobrado:94.0,  costo:150.3, neto:-56.3, nota:"Hoy"},
-                  {mes:"Abr 26", cobrado:94.0,  costo:190.3, neto:-96.3, nota:"Inicio CAPEX"},
+                  {mes:"Mar 26", cobrado:100.8, costo:150.3, neto:-49.5, nota:"Hoy"},
+                  {mes:"Abr 26", cobrado:100.8, costo:190.3, neto:-89.5, nota:"Inicio CAPEX"},
                   {mes:"May 26", cobrado:98.8,  costo:190.3, neto:-91.5, nota:"+IA ventas"},
                   {mes:"Jun 26", cobrado:108.0, costo:190.3, neto:-82.3, nota:"+SIRO"},
                   {mes:"Jul 26", cobrado:119.7, costo:190.3, neto:-70.6, nota:"+Upsell"},
@@ -1484,8 +1484,8 @@ export default function App() {
                 nombre:"Migración a SIRO",
                 actual:10.2, meta:40.0, unidad:"% cartera",
                 pct:25.5,
-                fuente:"CSV caja · $9.57M / $94M mar 26",
-                contexto:"SIRO: $0 oct 25 → 10.2% mar 26 · crecimiento mensual",
+                fuente:"CSV caja · $10.9M / $100.8M mar 26",
+                contexto:"SIRO: $0 oct 25 → $10.9M mar 26 · 10.8% del cobrado",
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
                 historico:[1.4,6.1,10.2],
                 labHist:["Ene","Feb","Mar"],
