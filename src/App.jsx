@@ -33,16 +33,16 @@ const C = {
 const D = {
   // Negocio
   LABELS:["24/07","24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
-  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.04,86.25,92.64,95.51,95.19,100.83], // Mar 26 COMPLETO
-  BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,66.98,101.95,95.30,108.15,87.52,115.07,109.02,89.45],
+  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.08,85.40,92.87,95.98,95.19,100.83], // verificado CSV
+  BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,63.24,96.19,91.04,103.91,86.50,109.02,61.91,89.45],
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  MP8:  [56.26,61.28,60.42,66.93,74.19,66.81,71.70,64.28],
-  SIRO8:[0.00, 0.00, 0.00, 0.45, 0.87, 1.39, 5.85, 9.57],
-  VISA8:[4.82, 6.04, 6.98, 7.78, 7.98, 8.29, 8.06, 8.74],
-  PF8:  [4.13, 4.52, 4.71, 6.22, 4.64, 4.77, 4.00, 4.70],
-  CAJA8:[3.15, 3.61, 3.72, 3.26, 3.56, 3.72, 3.39, 3.75],
-  GAL8: [2.09, 2.20, 2.20, 1.61, 1.41,10.53, 2.40, 1.51],
-  COBROS_M8:[70.46,77.64,78.04,86.25,92.64,95.51,95.19,100.83],
+  MP8:  [56.26,61.28,60.42,66.93,74.19,66.81,71.73,70.36],
+  SIRO8:[0.00, 0.00, 0.00, 0.45, 0.87, 1.39, 5.45,10.90],
+  VISA8:[4.82, 6.04, 6.98, 7.78, 7.98, 8.29, 8.10, 8.71],
+  PF8:  [4.13, 4.52, 4.71, 6.22, 4.64, 4.77, 4.05, 5.14],
+  CAJA8:[3.15, 3.61, 3.72, 3.26, 3.56, 3.72, 3.37, 3.89],
+  GAL8: [2.09, 2.20, 2.20, 1.61, 1.41,10.53, 2.51, 1.84],
+  COBROS_M8:[70.20,76.62,78.08,85.40,92.87,95.98,95.19,100.83],
   CITIES:["Almirante Brown","Cap. Sarmiento","Minist. Rivadavia","Glew","Florencio Varela","Longchamps","Burzaco"],
   CITY_COBRO:[152.7,93.31,11.3,9.02,3.12,3.0,1.15],
   CITY_MORA: [55.91,12.24,1.42,1.11,0.91,0.35,0.13], // deuda vencida real Mar 26
@@ -107,8 +107,8 @@ const D = {
   },
   // Clientes
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [283, 256, 368, 247, 238, 257, 172, 164],  // mar 26 = 152 hab + 12 otros (CSV completo)
-  CHURNS_V:[102, 107, 111, 119, 122, 126,  98,  97],  // 2.9%→2.4%→2.3% base activa
+  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 164],  // altas brutas reales CSV
+  CHURNS_V:[115, 112, 116, 116, 116, 118, 112,  97],  // 2.9% base activa real c/mes
   // Churn
   COHORTS:[
     {c:"Antiguo 2024 H2 (+18m)",pct:35.4,inact:605,color:C.red  },
@@ -120,9 +120,9 @@ const D = {
   CHURN_MENS:[
     {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
     {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
-    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:118},
-    {mes:"Sep 25",pct:2.9,cant:115},{mes:"Oct 25",pct:2.8,cant:112},{mes:"Nov 25",pct:2.6,cant:105},{mes:"Dic 25",pct:2.7,cant:109},
-    {mes:"Ene 26",pct:2.5,cant:102},{mes:"Feb 26",pct:2.4,cant:98}, {mes:"Mar 26",pct:2.3,cant:94},
+    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},{mes:"Ago 25",pct:3.0,cant:119},
+    {mes:"Sep 25",pct:2.9,cant:116},{mes:"Oct 25",pct:2.8,cant:116},{mes:"Nov 25",pct:2.6,cant:107},{mes:"Dic 25",pct:2.7,cant:109},
+    {mes:"Ene 26",pct:2.5,cant:105},{mes:"Feb 26",pct:2.4,cant:101},{mes:"Mar 26",pct:2.3,cant:97},
   ],
   // Mora
   MORA_TOTAL:109.13, MORA_VENC:73.69, MORA_MOROSOS:1556, MORA_PCT:37.1,
@@ -364,7 +364,7 @@ export default function App() {
               <KPI label="Cobranza Dic 2025" value="$92.6M" sub="▲ +7.4% vs noviembre" type="ok"/>
               <KPI label="Cobranza Ene 2026" value="$95.5M" sub="▲ +3.1% vs diciembre" type="ok"/>
               <KPI label="Cobranza Feb 2026" value="$95.4M" sub="mes completo · datos frescos" type="ok"/>
-              <KPI label="Cobro Mar 2026"    value="$100.8M" sub="mes completo · SIRO $10.9M · +5.9% vs feb" type="ok"/>
+              <KPI label="Cobro Mar 2026"    value="$100.8M" sub="★ primer mes +$100M · SIRO $10.9M · +5.9% vs feb" type="ok"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -626,8 +626,8 @@ export default function App() {
                   {mes:"Nov 25", neto:-50.5,  altas:247, churns:113},
                   {mes:"Dic 25", neto:-78.9,  altas:238, churns:119},
                   {mes:"Ene 26", neto:-104.4, altas:257, churns:122},
-                  {mes:"Feb 26", neto:-121.1, altas:195, churns:126},
-                  {mes:"Mar 26", neto:-82.5,  altas:164, churns:97},
+                  {mes:"Feb 26", neto:-88.1,  altas:195, churns:101},
+                  {mes:"Mar 26", neto:-49.5,  altas:164, churns:97},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
@@ -666,9 +666,9 @@ export default function App() {
         {tab==="churn"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Churn acumulado"       value="28.6%"    sub="1.682 de 5.876 inactivos"   type="dn"/>
-              <KPI label="Tasa mensual prom."    value="2.9%"     sub="122 clientes/mes"            type="dn"/>
-              <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3 / año"           type="wr"/>
+              <KPI label="Churn acumulado"       value="26.0%"    sub="1.556 de 5.986 inactivos"   type="dn"/>
+              <KPI label="Tasa mensual prom."    value="2.3%"     sub="97 clientes/mes · mar 26"            type="dn"/>
+              <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3.8 / año"           type="wr"/>
               <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
             </div>
 
