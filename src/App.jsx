@@ -33,8 +33,8 @@ const C = {
 const D = {
   // Negocio
   LABELS:["24/07","24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
-  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.04,86.25,92.64,95.51,95.38,94.03], // verificado CSV
-  BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,66.98,101.95,95.30,108.15,87.52,115.07,114.5,110.0],
+  COBROS:[0.77,4.91,7.61,12.79,18.69,24.30,30.69,31.86,41.58,45.77,46.53,63.27,63.34,70.46,77.64,78.04,86.25,92.64,95.51,95.19,100.83], // Mar 26 COMPLETO
+  BILLS: [1.93,5.98,11.21,16.85,26.01,30.68,39.12,41.10,47.15,48.24,58.15,130.77,78.15,66.98,101.95,95.30,108.15,87.52,115.07,109.02,89.45],
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
   MP8:  [56.26,61.28,60.42,66.93,74.19,66.81,71.70,64.28],
   SIRO8:[0.00, 0.00, 0.00, 0.45, 0.87, 1.39, 5.85, 9.57],
@@ -42,11 +42,11 @@ const D = {
   PF8:  [4.13, 4.52, 4.71, 6.22, 4.64, 4.77, 4.00, 4.70],
   CAJA8:[3.15, 3.61, 3.72, 3.26, 3.56, 3.72, 3.39, 3.75],
   GAL8: [2.09, 2.20, 2.20, 1.61, 1.41,10.53, 2.40, 1.51],
-  COBROS_M8:[70.46,77.64,78.04,86.25,92.64,95.51,95.38,94.03],
+  COBROS_M8:[70.46,77.64,78.04,86.25,92.64,95.51,95.19,100.83],
   CITIES:["Almirante Brown","Cap. Sarmiento","Minist. Rivadavia","Glew","Florencio Varela","Longchamps","Burzaco"],
   CITY_COBRO:[152.7,93.31,11.3,9.02,3.12,3.0,1.15],
   CITY_MORA: [55.91,12.24,1.42,1.11,0.91,0.35,0.13], // deuda vencida real Mar 26
-  CITY_CLI:  [3128,1727,388,382,93,146,48],
+  CITY_CLI:  [3128,1747,410,402,94,154,51],
   VEND_LABS:["Alfredo Blockl","Netsharing SA","Local CS","M. Shanahan","I. Rodriguez","Espinel Gaspar"],
   VEND_VALS:[69.45,33.62,19.32,19.29,17.37,13.73],
   ARPU:22447, CPL_ARS:15926, CPL_USD:13.27, LTV_CAC:56.8, PAYBACK_DIAS:18,
@@ -69,29 +69,28 @@ const D = {
   RED_CAJAS_MES:150, RED_CAJAS_OBJ:3000, RED_CHURN_HOY:2.9, RED_CHURN_OBJ:1.5,
   RED_CLI_OBJ:48000,
   // Proyección modelo real: tasa 2%→5% en 18m · churn 2.9%→1.5% en 12m · CAPEX obra $40M×6m
-  // cobrado = clientes × ARPU cobrado real $22.447 (no teórico)
-  // costo   = OPEX $150.3M + CAPEX obra $40M (abr-sep 26) juntos
-  // BE real: Nov 26 con ARPU cobrado + OPEX correcto
+  // cobrado = clientes × ARPU cobrado real $22.447 · costo = OPEX $150.3M + CAPEX obra
+  // BE real: Nov 26 · actualizado con CSV mar 26 (4.196 habilitados)
   RED_PROJ:[
-    {mes:"Hoy",    cajas:1000, cap:10500, pen:2.0, churn:2.90, altas:274,  clientes:4088,  cobrado:91.8,  opex:150.3, capex:0,  costo:150.3, neto:-58.5},
-    {mes:"Abr 26", cajas:1150, cap:12075, pen:2.2, churn:2.78, altas:330,  clientes:4088,  cobrado:91.8,  opex:150.3, capex:40, costo:190.3, neto:-98.5},
-    {mes:"May 26", cajas:1300, cap:13650, pen:2.3, churn:2.67, altas:378,  clientes:4304,  cobrado:96.6,  opex:150.3, capex:40, costo:190.3, neto:-93.7},
-    {mes:"Jun 26", cajas:1450, cap:15225, pen:2.5, churn:2.55, altas:445,  clientes:4567,  cobrado:102.5, opex:150.3, capex:40, costo:190.3, neto:-87.8},
-    {mes:"Jul 26", cajas:1600, cap:16800, pen:2.7, churn:2.43, altas:518,  clientes:4896,  cobrado:109.9, opex:150.3, capex:40, costo:190.3, neto:-80.4},
-    {mes:"Ago 26", cajas:1750, cap:18375, pen:2.8, churn:2.32, altas:578,  clientes:5295,  cobrado:118.9, opex:150.3, capex:40, costo:190.3, neto:-71.4},
-    {mes:"Sep 26", cajas:1900, cap:19950, pen:3.0, churn:2.20, altas:662,  clientes:5750,  cobrado:129.1, opex:150.3, capex:40, costo:190.3, neto:-61.2},
-    {mes:"Oct 26", cajas:2050, cap:21525, pen:3.2, churn:2.08, altas:753,  clientes:6286,  cobrado:141.1, opex:150.3, capex:0,  costo:150.3, neto:-9.2},
-    {mes:"Nov 26", cajas:2200, cap:23100, pen:3.3, churn:1.97, altas:826,  clientes:6908,  cobrado:155.1, opex:150.3, capex:0,  costo:150.3, neto:4.8},
-    {mes:"Dic 26", cajas:2350, cap:24675, pen:3.5, churn:1.85, altas:928,  clientes:7598,  cobrado:170.6, opex:150.3, capex:0,  costo:150.3, neto:20.3},
-    {mes:"Ene 27", cajas:2500, cap:26250, pen:3.7, churn:1.73, altas:1035, clientes:8385,  cobrado:188.2, opex:150.3, capex:0,  costo:150.3, neto:37.9},
-    {mes:"Feb 27", cajas:2650, cap:27825, pen:3.8, churn:1.62, altas:1121, clientes:9275,  cobrado:208.2, opex:150.3, capex:0,  costo:150.3, neto:57.9},
-    {mes:"Mar 27", cajas:2800, cap:29400, pen:4.0, churn:1.50, altas:1240, clientes:10246, cobrado:230.0, opex:150.3, capex:0,  costo:150.3, neto:79.7},
-    {mes:"Abr 27", cajas:2950, cap:30975, pen:4.2, churn:1.50, altas:1365, clientes:11332, cobrado:254.4, opex:150.3, capex:0,  costo:150.3, neto:104.1},
-    {mes:"May 27", cajas:3000, cap:31500, pen:4.3, churn:1.50, altas:1418, clientes:12527, cobrado:281.2, opex:150.3, capex:0,  costo:150.3, neto:130.9},
-    {mes:"Jun 27", cajas:3000, cap:31500, pen:4.5, churn:1.50, altas:1482, clientes:13757, cobrado:308.8, opex:150.3, capex:0,  costo:150.3, neto:158.5},
-    {mes:"Sep 27", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:15033, cobrado:337.4, opex:150.3, capex:0,  costo:150.3, neto:187.1},
-    {mes:"Dic 27", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:16447, cobrado:369.2, opex:150.3, capex:0,  costo:150.3, neto:218.9},
-    {mes:"Mar 28", cajas:3000, cap:31500, pen:5.0, churn:1.50, altas:1639, clientes:17839, cobrado:400.4, opex:150.3, capex:0,  costo:150.3, neto:250.1},
+    {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:94.2, opex:150.3,capex:0, costo:150.3,neto:-56.1},
+    {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:94.2, opex:150.3,capex:40,costo:190.3,neto:-96.1},
+    {mes:"May 26",cajas:1300,cap:13650,pen:2.3,churn:2.67,altas:378, clientes:4409, cobrado:99.0, opex:150.3,capex:40,costo:190.3,neto:-91.3},
+    {mes:"Jun 26",cajas:1450,cap:15225,pen:2.5,churn:2.55,altas:445, clientes:4669, cobrado:104.8,opex:150.3,capex:40,costo:190.3,neto:-85.5},
+    {mes:"Jul 26",cajas:1600,cap:16800,pen:2.7,churn:2.43,altas:518, clientes:4995, cobrado:112.1,opex:150.3,capex:40,costo:190.3,neto:-78.2},
+    {mes:"Ago 26",cajas:1750,cap:18375,pen:2.8,churn:2.32,altas:578, clientes:5392, cobrado:121.0,opex:150.3,capex:40,costo:190.3,neto:-69.3},
+    {mes:"Sep 26",cajas:1900,cap:19950,pen:3.0,churn:2.20,altas:662, clientes:5845, cobrado:131.2,opex:150.3,capex:40,costo:190.3,neto:-59.1},
+    {mes:"Oct 26",cajas:2050,cap:21525,pen:3.2,churn:2.08,altas:753, clientes:6378, cobrado:143.2,opex:150.3,capex:0, costo:150.3,neto: -7.1},
+    {mes:"Nov 26",cajas:2200,cap:23100,pen:3.3,churn:1.97,altas:826, clientes:6998, cobrado:157.1,opex:150.3,capex:0, costo:150.3,neto:  6.8},
+    {mes:"Dic 26",cajas:2350,cap:24675,pen:3.5,churn:1.85,altas:928, clientes:7686, cobrado:172.5,opex:150.3,capex:0, costo:150.3,neto: 22.2},
+    {mes:"Ene 27",cajas:2500,cap:26250,pen:3.7,churn:1.73,altas:1035,clientes:8472, cobrado:190.2,opex:150.3,capex:0, costo:150.3,neto: 39.9},
+    {mes:"Feb 27",cajas:2650,cap:27825,pen:3.8,churn:1.62,altas:1121,clientes:9360, cobrado:210.1,opex:150.3,capex:0, costo:150.3,neto: 59.8},
+    {mes:"Mar 27",cajas:2800,cap:29400,pen:4.0,churn:1.50,altas:1240,clientes:10329,cobrado:231.9,opex:150.3,capex:0, costo:150.3,neto: 81.6},
+    {mes:"Abr 27",cajas:2950,cap:30975,pen:4.2,churn:1.50,altas:1365,clientes:11414,cobrado:256.2,opex:150.3,capex:0, costo:150.3,neto:105.9},
+    {mes:"May 27",cajas:3000,cap:31500,pen:4.3,churn:1.50,altas:1418,clientes:12608,cobrado:283.0,opex:150.3,capex:0, costo:150.3,neto:132.7},
+    {mes:"Jun 27",cajas:3000,cap:31500,pen:4.5,churn:1.50,altas:1482,clientes:13837,cobrado:310.6,opex:150.3,capex:0, costo:150.3,neto:160.3},
+    {mes:"Sep 27",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:15111,cobrado:339.2,opex:150.3,capex:0, costo:150.3,neto:188.9},
+    {mes:"Dic 27",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:16523,cobrado:370.9,opex:150.3,capex:0, costo:150.3,neto:220.6},
+    {mes:"Mar 28",cajas:3000,cap:31500,pen:5.0,churn:1.50,altas:1639,clientes:17914,cobrado:402.1,opex:150.3,capex:0, costo:150.3,neto:251.8},
   ],
   OPEX_CATS:["RRHH","Alquileres y oficinas","Equipamiento","Red e infraestructura","Comisiones ventas","Comisiones cobranza","Marketing","Impuestos y tasas","Tecnología"],
   OPEX_COLORS:["#D13030","#C47A00","#7B5EA7","#0D7377","#1A5FBF","#1A7A3C","#E07040","#5A6A7A","#3C3489"],
@@ -108,8 +107,8 @@ const D = {
   },
   // Clientes
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 259],  // altas brutas reales
-  CHURNS_V:[102, 107, 111, 119, 122, 126, 129, 131],  // 2.9% sobre base activa c/mes
+  ALTAS_V: [283, 256, 368, 247, 238, 257, 172, 164],  // mar 26 = 152 hab + 12 otros (CSV completo)
+  CHURNS_V:[102, 107, 111, 119, 122, 126,  98,  97],  // 2.9%→2.4%→2.3% base activa
   // Churn
   COHORTS:[
     {c:"Antiguo 2024 H2 (+18m)",pct:35.4,inact:605,color:C.red  },
@@ -126,7 +125,7 @@ const D = {
     {mes:"Ene 26",pct:2.5,cant:102},{mes:"Feb 26",pct:2.4,cant:98}, {mes:"Mar 26",pct:2.3,cant:94},
   ],
   // Mora
-  MORA_TOTAL:82.9, MORA_VENC:24.6, MORA_MOROSOS:1041, MORA_PCT:18,
+  MORA_TOTAL:109.13, MORA_VENC:73.69, MORA_MOROSOS:1556, MORA_PCT:37.1,
   // Break-even
   BE_RES_SIN:[-51.18,-48.17,-45.25,-42.42,-39.69,-37.02,-34.44,-31.92,-29.47,-27.09,-24.78,-22.53,-20.36,-18.25],
   BE_RES_CON:[-51.18,-48.17,-37.59,-21.83,-7.22,2.31,11.66,20.79,29.75,38.54,47.15,55.59,63.88,72.0],
@@ -446,7 +445,7 @@ export default function App() {
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
               <KPI label="Tasa cobranza mar-26" value="85%"       sub="$94M cobrado / $110M facturado" type="wr"/>
-              <KPI label="SIRO Mar 26"               value="$9.57M"    sub="▲ desde $0 oct 25 · 10.2% del cobro" type="ok"/>
+              <KPI label="SIRO Mar 26"               value="$10.90M"   sub="▲ desde $0 oct 25 · 10.8% del cobro" type="ok"/>
             </div>
           </div>
         )}
@@ -566,10 +565,10 @@ export default function App() {
         {tab==="clientes"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Total padrón"          value="5.960"   sub="desde agosto 2024"                   type="nv"/>
-              <KPI label="Habilitados Mar 26"    value="4.088"   sub="68.6% del padrón · dato real"         type="ok"/>
-              <KPI label="Bloqueados"            value="327"     sub="en campaña de recupero · con deuda"   type="wr"/>
-              <KPI label="Sin servicio"          value="1.545"   sub="nunca regularizaron · $59.1M deuda"   type="dn"/>
+              <KPI label="Total padrón"          value="5.986"   sub="desde agosto 2024"                   type="nv"/>
+              <KPI label="Habilitados"          value="4.196"   sub="70.1% del padrón"                    type="ok"/>
+              <KPI label="Bloqueados"            value="234"     sub="en campaña de recupero · con deuda"   type="wr"/>
+              <KPI label="Sin servicio"          value="1.556"   sub="nunca regularizaron · $58.9M deuda"   type="dn"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -744,10 +743,10 @@ export default function App() {
         {tab==="mora"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Deuda total cartera"  value="$88.0M"  sub="total adeudado Mar 26"                       type="dn"/>
-              <KPI label="Deuda vencida"        value="$72.1M"  sub="1.545 clientes sin servicio + 327 bloqueados" type="dn"/>
-              <KPI label="Deuda sin servicio"   value="$59.1M"  sub="difícil recupero · nunca regularizaron"      type="dn"/>
-              <KPI label="Deuda en recupero"    value="$10.8M"  sub="327 bloqueados · campaña activa"              type="wr"/>
+              <KPI label="Deuda total cartera"  value="$109.1M" sub="total adeudado Mar 26"                         type="dn"/>
+              <KPI label="Deuda vencida"        value="$73.7M"  sub="1.556 sin servicio + 234 bloqueados"          type="dn"/>
+              <KPI label="Deuda sin servicio"   value="$58.9M"  sub="difícil recupero · nunca regularizaron"       type="dn"/>
+              <KPI label="Deuda en recupero"    value="$7.2M"   sub="234 bloqueados · campaña activa"               type="wr"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.5fr 1fr",gap:12,marginBottom:12}}>
@@ -789,9 +788,9 @@ export default function App() {
 
                 <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"14px 0 10px"}}>Escenarios de recupero — win-back 1.682 inactivos</p>
                 {[
-                  {label:"Meta conservadora (20%)",ing:"+$8.1M/mes",cli:"336 clientes"},
-                  {label:"Meta moderada (30%)",    ing:"+$12.1M/mes",cli:"504 clientes"},
-                  {label:"Meta ambiciosa (40%)",   ing:"+$16.2M/mes",cli:"673 clientes"},
+                  {label:"Meta conservadora (20%)",ing:"+$8.7M/mes",cli:"311 clientes"},
+                  {label:"Meta moderada (30%)",    ing:"+$13.1M/mes",cli:"467 clientes"},
+                  {label:"Meta ambiciosa (40%)",   ing:"+$17.5M/mes",cli:"622 clientes"},
                 ].map((e,i)=>(
                   <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:`0.5px solid ${C.bdr}`}}>
                     <span style={{fontSize:11,color:C.text2}}>{e.label}</span>
