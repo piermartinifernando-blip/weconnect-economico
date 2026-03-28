@@ -1821,10 +1821,10 @@ export default function App() {
 
               <Card title="Distribución por rango etario — hab · SS · bloqueados">
                 {(() => {
-                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','76 años o más'];
-                  const hab  = [911,567,619,655,594,416,287,148,17,18];
-                  const ss   = [309,293,274,259,179,148,90,44,9,11];
-                  const bloq = [30,28,30,27,27,10,6,3,0,0];
+                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','Extranjero'];
+                  const hab  = [283,567,619,655,594,416,287,148,17,628];
+                  const ss   = [178,293,274,259,179,148, 90, 44, 9,131];
+                  const bloq = [ 15, 28, 30, 27, 27, 10,  6,  3, 0, 15];
                   const maxVal = Math.max(...hab.map((h,i)=>h+ss[i]+bloq[i]));
                   return (
                     <div>
@@ -1837,10 +1837,15 @@ export default function App() {
                         ))}
                       </div>
                       {rangos.map((r,i)=>(
-                        <div key={i} style={{marginBottom:6}}>
-                          <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
-                            <span style={{fontSize:10,color:C.text2,width:60}}>{r}</span>
-                            <span style={{fontSize:10,color:C.text3,fontFamily:C.mono}}>{hab[i]+ss[i]+bloq[i]}</span>
+                        <div key={i} style={{marginBottom:7}}>
+                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:3}}>
+                            <span style={{fontSize:10,color:C.text2,minWidth:90}}>{r}</span>
+                            <div style={{display:"flex",gap:10,fontSize:10,fontFamily:C.mono}}>
+                              <span style={{color:C.blue}}>Hab: {hab[i]}</span>
+                              <span style={{color:C.red}}>SS: {ss[i]}</span>
+                              <span style={{color:C.amber}}>Bloq: {bloq[i]}</span>
+                              <span style={{color:C.text3,fontWeight:600}}>Tot: {hab[i]+ss[i]+bloq[i]}</span>
+                            </div>
                           </div>
                           <div style={{display:"flex",height:10,borderRadius:4,overflow:"hidden",background:C.bg3}}>
                             <div style={{width:`${hab[i]/maxVal*100}%`,background:C.blue}}/>
@@ -1856,8 +1861,8 @@ export default function App() {
 
               <Card title="Tasa de abandono por rango (% SS sobre total captado)">
                 {(() => {
-                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','76 años o más'];
-                  const pcts   = [24.7,33.0,29.7,27.5,22.4,25.8,23.5,22.6,34.6,37.9];
+                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','Extranjero'];
+                  const pcts   = [37.4,33.0,29.7,27.5,22.4,25.8,23.5,22.6,34.6,16.9];
                   return (
                     <div>
                       <div style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
