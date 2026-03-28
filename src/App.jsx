@@ -653,19 +653,41 @@ export default function App() {
               </Card>
             </div>
 
-            <Card title="OPEX apilado por categoría — 5 meses ($M)">
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={opexStackData}>
+            <Card title="OPEX + CAPEX mensual — últimos 6 meses ($M)">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={[
+                  {mes:"Oct 25", opex:147.6, capex:0,    total:147.6},
+                  {mes:"Nov 25", opex:135.9, capex:0,    total:135.9},
+                  {mes:"Dic 25", opex:171.7, capex:0.1,  total:171.8},
+                  {mes:"Ene 26", opex:150.3, capex:25.0, total:175.3},
+                  {mes:"Feb 26", opex:150.3, capex:33.0, total:183.3},
+                  {mes:"Mar 26", opex:150.3, capex:0,    total:150.3},
+                ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="mes" tick={{fontSize:10,fill:C.text2}} stroke={C.bdr}/>
-                  <YAxis tick={{fontSize:10,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}/>
-                  <Tooltip content={<Tip/>}/>
-                  <Legend formatter={v=><span style={{fontSize:10,color:C.text2}}>{v}</span>}/>
-                  {D.OPEX_CATS.map((cat,i)=>(
-                    <Bar key={cat} dataKey={cat} stackId="a" fill={D.OPEX_COLORS[i]} radius={i===D.OPEX_CATS.length-1?[3,3,0,0]:[0,0,0,0]}/>
-                  ))}
+                  <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr} tickFormatter={v=>`$${v}M`}
+                    domain={[0,220]}/>
+                  <Tooltip formatter={(v,n)=>[`$${v}M`,n]} contentStyle={{fontSize:11,background:C.bg,border:`0.5px solid ${C.bdr}`}}/>
+                  <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
+                  <ReferenceLine y={150.3} stroke={C.text3} strokeDasharray="4 3"
+                    label={{value:"OPEX base $150.3M",position:"right",fill:C.text3,fontSize:9}}/>
+                  <Bar dataKey="opex"  name="OPEX"  stackId="a" fill={C.blue}  radius={[0,0,0,0]}/>
+                  <Bar dataKey="capex" name="CAPEX" stackId="a" fill={C.amber} radius={[3,3,0,0]}/>
                 </BarChart>
               </ResponsiveContainer>
+              <div style={{display:"flex",gap:16,marginTop:10,fontSize:11,flexWrap:"wrap"}}>
+                {[
+                  {mes:"Dic 25", nota:"OPEX alto $171.7M — SAC atípico",    col:C.red},
+                  {mes:"Ene 26", nota:"CAPEX $25M — compra OLT",            col:C.amber},
+                  {mes:"Feb 26", nota:"CAPEX $33M — obra red máx inversión", col:C.amber},
+                  {mes:"Mar 26", nota:"Sin CAPEX — OPEX base $150.3M",       col:C.green},
+                ].map((n,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
+                    <div style={{width:8,height:8,borderRadius:2,background:n.col,flexShrink:0}}/>
+                    <span style={{color:C.text2}}><strong>{n.mes}:</strong> {n.nota}</span>
+                  </div>
+                ))}
+              </div>
             </Card>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginTop:12}}>
