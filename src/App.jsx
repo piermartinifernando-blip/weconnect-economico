@@ -1671,18 +1671,7 @@ export default function App() {
                 labHist:["21/02","Mar 26","Hoy"],
                 obraExtra:true,
               },
-              {
-                area:"Operaciones · Clientes",
-                icono:"🔧",
-                nombre:"Instalaciones clientes",
-                actual:D.OBJ.inst_actual, meta:D.OBJ.inst_meta, unidad:"instalac.",
-                pct:D.OBJ.inst_pct,
-                fuente:"CSV ISPCube · altas habilitadas mar 26",
-                contexto:"Cada alta = 1 instalación técnica realizada",
-                accion:"Más altas → más instalaciones · ligado a ventas",
-                historico:[300,251,287],
-                labHist:["Ene","Feb","Mar"],
-              },
+
               {
                 area:"Soporte técnico",
                 icono:"🛠️",
@@ -2062,6 +2051,71 @@ export default function App() {
                 </tbody>
               </table>
               </div>
+            </Card>
+
+            {/* ── GRÁFICO ALTAS MENSUALES POR CANAL ── */}
+            <Card title="Altas mensuales — real vs meta · evolución por canal de captación">
+              <Ins type="i" html="Altas reales últimos 8 meses vs meta de 420/mes · desglose estimado por canal: orgánico, Meta Ads, Google Ads y TikTok Ads · los canales digitales están en implementación desde feb 26"/>
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:8,marginBottom:14}}>
+                {[
+                  {label:"Meta mensual",      val:"420",        sub:"altas brutas objetivo",  color:C.navy},
+                  {label:"Mar 26 real",        val:"310",        sub:"284 hab + 22 SS + 4 bl", color:C.blue},
+                  {label:"% vs meta",          val:"73.8%",      sub:"en progreso",            color:C.amber},
+                  {label:"Gap a cerrar",        val:"110 altas",  sub:"para llegar a 420/mes",  color:C.red},
+                ].map((k,i)=>(
+                  <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 12px",textAlign:"center"}}>
+                    <p style={{fontSize:9,color:C.text3,textTransform:"uppercase",marginBottom:2}}>{k.label}</p>
+                    <p style={{fontSize:15,fontFamily:C.mono,fontWeight:700,color:k.color}}>{k.val}</p>
+                    <p style={{fontSize:9,color:C.text3,marginTop:2}}>{k.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Gráfico barras apiladas por canal */}
+              <ResponsiveContainer width="100%" height={260}>
+                <ComposedChart data={[
+                  {m:"Ago 25", meta:0,   google:0,  tiktok:0,  org:299, objetivo:420},
+                  {m:"Sep 25", meta:0,   google:0,  tiktok:0,  org:281, objetivo:420},
+                  {m:"Oct 25", meta:0,   google:0,  tiktok:0,  org:324, objetivo:420},
+                  {m:"Nov 25", meta:0,   google:0,  tiktok:0,  org:225, objetivo:420},
+                  {m:"Dic 25", meta:0,   google:0,  tiktok:0,  org:279, objetivo:420},
+                  {m:"Ene 26", meta:0,   google:0,  tiktok:0,  org:354, objetivo:420},
+                  {m:"Feb 26", meta:25,  google:0,  tiktok:0,  org:267, objetivo:420},
+                  {m:"Mar 26", meta:38,  google:12, tiktok:5,  org:255, objetivo:420},
+                  {m:"Abr 26", meta:55,  google:25, tiktok:15, org:255, objetivo:420, proyeccion:true},
+                  {m:"May 26", meta:75,  google:40, tiktok:25, org:255, objetivo:420, proyeccion:true},
+                  {m:"Jun 26", meta:95,  google:55, tiktok:30, org:240, objetivo:420, proyeccion:true},
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
+                  <XAxis dataKey="m" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
+                  <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}
+                    label={{value:"altas/mes",angle:-90,position:"insideLeft",fill:C.text2,fontSize:9}}/>
+                  <Tooltip content={<TipCant/>}/>
+                  <Legend formatter={v=><span style={{fontSize:10,color:C.text2}}>{v}</span>}/>
+                  <ReferenceLine y={420} stroke={C.navy} strokeDasharray="5 3" strokeWidth={1.5}
+                    label={{value:"Meta 420",position:"right",fill:C.navy,fontSize:9}}/>
+                  <Bar dataKey="org"    name="Orgánico"   stackId="a" fill={C.blue}   radius={[0,0,0,0]}/>
+                  <Bar dataKey="meta"   name="Meta Ads"   stackId="a" fill="#1877F2"  radius={[0,0,0,0]}/>
+                  <Bar dataKey="google" name="Google Ads" stackId="a" fill="#EA4335"  radius={[0,0,0,0]}/>
+                  <Bar dataKey="tiktok" name="TikTok Ads" stackId="a" fill="#000000"  radius={[3,3,0,0]}/>
+                </ComposedChart>
+              </ResponsiveContainer>
+
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:8,marginTop:12}}>
+                {[
+                  {canal:"Orgánico",   color:C.blue,   estado:"✅ Activo",   nota:"~255/mes base estable"},
+                  {canal:"Meta Ads",   color:"#1877F2", estado:"✅ Activo",   nota:"Feb 26: ~25 altas · escalando"},
+                  {canal:"Google Ads", color:"#EA4335", estado:"🔄 Iniciando",nota:"Mar 26: ~12 altas · optimizando"},
+                  {canal:"TikTok Ads", color:"#000000", estado:"🔄 Iniciando",nota:"Mar 26: ~5 altas · en prueba"},
+                ].map((c,i)=>(
+                  <div key={i} style={{border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"8px 12px",borderTop:`3px solid ${c.color}`}}>
+                    <p style={{fontSize:11,fontWeight:600,color:C.text,marginBottom:2}}>{c.canal}</p>
+                    <p style={{fontSize:10,color:C.text2,marginBottom:2}}>{c.estado}</p>
+                    <p style={{fontSize:10,color:C.text3}}>{c.nota}</p>
+                  </div>
+                ))}
+              </div>
+              <Ins type="w" html="Abr–Jun 26 son <strong>proyección estimada</strong> asumiendo escalado progresivo de Meta + Google + TikTok · actualizar con datos reales cada mes"/>
             </Card>
 
           </div>
