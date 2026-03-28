@@ -38,53 +38,53 @@ const D = {
 
   // ── NEGOCIO: serie histórica ago24→mar26 ──
   LABELS:["24/08","24/09","24/10","24/11","24/12","25/01","25/02","25/03","25/04","25/05","25/06","25/07","25/08","25/09","25/10","25/11","25/12","26/01","26/02","26/03"],
-  COBROS:[5.66,7.59,12.62,18.00,24.57,30.87,31.64,41.41,44.76,47.42,62.50,64.90,70.20,76.62,78.08,85.40,92.87,95.98,95.19,100.83],
-  BILLS: [5.65,9.97,16.29,22.40,29.73,36.10,38.83,43.76,46.60,54.29,123.43,73.47,63.24,96.19,91.04,103.91,86.50,109.02,61.91,89.45],
+  COBROS:[5.66,7.59,12.62,18.00,24.57,30.87,31.64,41.41,44.76,47.42,62.50,64.90,70.20,76.62,78.08,85.40,92.87,95.96,95.19,104.06],
+  BILLS: [5.65,9.97,16.29,22.40,29.73,36.10,38.83,43.76,46.60,54.29,123.43,73.47,63.24,96.19,91.04,103.91,86.50,109.02,61.91,117.72],
 
   // ── NEGOCIO: últimos 8 meses ──
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  COBROS_M8:[70.20,76.62,78.08,85.40,92.87,95.98,95.19,100.83],
+  COBROS_M8:[70.20,76.62,78.08,85.40,92.87,95.96,95.19,104.06],
 
   // ── CANALES: últimos 8 meses ($M) ──
-  MP8:  [55.96,60.37,60.56,66.35,74.84,66.89,71.73,70.36],
-  SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,10.90],
-  VISA8:[4.82, 6.03, 6.98, 7.78, 7.33, 8.93, 8.10, 8.71],
-  PF8:  [4.16, 4.52, 4.66, 5.87, 4.95, 4.65, 4.05, 5.14],
-  CAJA8:[3.15, 3.59, 3.72, 3.28, 3.56, 3.71, 3.37, 3.89],
-  GAL8: [2.12, 2.11, 2.16, 1.69, 1.37,10.47, 2.51, 1.84],
+  MP8:  [55.96,60.37,60.56,66.35,74.84,66.89,71.73,72.30],
+  SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,10.93],
+  VISA8:[4.82, 6.03, 6.98, 7.78, 7.33, 8.93, 8.10, 9.68],
+  PF8:  [4.16, 4.52, 4.66, 5.87, 4.95, 4.65, 4.05, 5.20],
+  CAJA8:[3.15, 3.59, 3.72, 3.28, 3.56, 3.71, 3.37, 3.98],
+  GAL8: [2.12, 2.11, 2.16, 1.69, 1.37,10.47, 2.51, 1.96],
 
   // ── MES ACTUAL: Mar 26 ──
-  COB_ACTUAL:  100.83,   // cobrado total
+  COB_ACTUAL:  104.06,   // cobrado total
   COB_PREV:     95.19,   // mes anterior (Feb 26)
-  COB_VAR_PCT:   5.9,    // % variación
-  SIRO_ABS:     10.90,   // SIRO $M
-  SIRO_PCT:     10.8,    // SIRO % del cobrado
-  MP_ABS:       70.36,   // MP $M
-  MP_PCT:       69.8,    // MP %
-  FACT_ACTUAL:  89.45,   // facturado Mar 26
+  COB_VAR_PCT:   9.3,    // % variación
+  SIRO_ABS:     10.93,   // SIRO $M
+  SIRO_PCT:     10.5,    // SIRO % del cobrado
+  MP_ABS:       72.30,   // MP $M
+  MP_PCT:       69.5,    // MP %
+  FACT_ACTUAL: 117.72,   // facturado Mar 26
 
   // ── CLIENTES: estado actual ──
-  HAB:   4196,    // habilitados
-  BLOQ:   234,    // bloqueados
-  SS:    1556,    // sin servicio
-  TOTAL: 5986,    // total padrón
+  HAB:   4235,    // habilitados
+  BLOQ:   161,    // bloqueados
+  SS:    1616,    // sin servicio
+  TOTAL: 6012,    // total padrón
 
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [283, 256, 368, 247, 238, 257, 195, 284],  // mar 26: 284 total (267 hab) verificado
-  CHURNS_V:[ 89,  80,  47,  35,  35,  31,  26,  16],  // churn real = nuevos Sin servicio c/mes
+  ALTAS_V: [299, 281, 324, 225, 279, 354, 292, 310],  // mar 26: 284 total (267 hab) verificado
+  CHURNS_V:[ 93,  81,  48,  39,  38,  40,  33,  22],  // churn real = nuevos Sin servicio c/mes
 
   // ── CHURN: serie mensual ──
-  CHURN_PCT_ACT: 0.38,  // % real mar 26 = 16 nuevos SS / 4196 hab
-  CHURN_ABS_ACT:  16,   // clientes/mes Mar 26 = nuevos Sin servicio
+  CHURN_PCT_ACT: 0.52,  // % real mar 26 = 16 nuevos SS / 4196 hab
+  CHURN_ABS_ACT:  22,   // clientes/mes Mar 26 = nuevos Sin servicio
   // CHURN REAL = nuevos Sin servicio / base habilitados ese mes
   CHURN_MENS:[
     {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
     {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
     {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},
     {mes:"Ago 25",pct:2.26,cant:89},{mes:"Sep 25",pct:2.01,cant:80},{mes:"Oct 25",pct:1.18,cant:47},
-    {mes:"Nov 25",pct:0.87,cant:35},{mes:"Dic 25",pct:0.87,cant:35},{mes:"Ene 26",pct:0.76,cant:31},
-    {mes:"Feb 26",pct:0.64,cant:26},{mes:"Mar 26",pct:0.38,cant:16},
+    {mes:"Nov 25",pct:0.87,cant:35},{mes:"Dic 25",pct:0.87,cant:35},{mes:"Ene 26",pct:1.13,cant:40},
+    {mes:"Feb 26",pct:1.13,cant:33},{mes:"Mar 26",pct:0.71,cant:22},
   ],
 
   // ── COHORTS churn acumulado ──
@@ -107,7 +107,7 @@ const D = {
 
   // ── CIUDADES ──
   CIUDADES:[
-    {ciudad:"Almirante Brown",    habilitados:1952, total:3128, deudaVenc:55.04},
+    {ciudad:"Almirante Brown",    habilitados:1952, total:3128, deudaVenc:50.00},
     {ciudad:"Capitan Sarmiento",  habilitados:1314, total:1747, deudaVenc:12.04},
     {ciudad:"Ministro Rivadavia", habilitados:362,  total:410,  deudaVenc:1.96},
     {ciudad:"Glew",               habilitados:336,  total:402,  deudaVenc:2.60},
@@ -121,17 +121,17 @@ const D = {
   CITY_MORA: [55.04,12.04,1.96,2.60,0.62,1.19,0.24],
 
   // ── MORA ──
-  MORA_TOTAL:109.13, MORA_VENC:73.69, MORA_SS:58.91, MORA_BLOQ:7.18, MORA_HAB:7.60,
-  MORA_MOROSOS:1790, // ss(1556) + bloq(234)
+  MORA_TOTAL:134.23, MORA_VENC:73.69, MORA_SS:58.91, MORA_BLOQ:7.18, MORA_HAB:7.56,
+  MORA_MOROSOS:1777, // ss(1556) + bloq(234)
   MORA_PCT:29.9,     // morosos / total
 
   // ── OBJETIVOS: actuales y metas ──
   OBJ:{
-    altas_actual:267,  altas_meta:420,   altas_pct:63.6,  // 267 hab / meta 420
-    siro_actual:10.8,  siro_meta:40.0,   siro_pct:27.0,
-    churn_actual:0.38, churn_meta:0.5,   churn_pct:76.0, // meta: <0.5% nuevos SS/mes
+    altas_actual:287,  altas_meta:420,   altas_pct:68.3,  // 267 hab / meta 420
+    siro_actual:10.5,  siro_meta:40.0,   siro_pct:26.3,
+    churn_actual:0.52, churn_meta:0.5,   churn_pct:4.0, // meta: <0.5% nuevos SS/mes
     cajas_actual:156,  cajas_meta:384,   cajas_pct:40.6,  // obra: 156 inst / esperado 384 (24d×16/día)
-    inst_actual:267,   inst_meta:420,    inst_pct:63.6,
+    inst_actual:287,   inst_meta:420,    inst_pct:68.3,
   },
 
   // ── COSTOS (manual — no viene de CSV) ──
@@ -161,8 +161,8 @@ const D = {
   PF:    5.14, CAJA:   3.89, GAL:  1.84,
 
   // Mora
-  MORA_SS:   58.91, MORA_BLOQ: 7.18,
-  MORA_VENC: 73.69,
+  MORA_SS:    60.42, MORA_BLOQ:   4.91,
+  MORA_VENC:  72.89,
 
   // Costos steady state
   SS_OPEX: 150.3, SS_CAPEX: 33.0, SS_RES: -88.1, SS_RATIO: 1.93,
@@ -187,7 +187,7 @@ const D = {
   CITY_HAB_V:[1952,1314,362,336,129,60,43],
   CITY_MORA_V:[55.04,12.04,1.96,2.60,0.62,1.19,0.24],
   RED_PROJ:[
-    {mes:"Hoy",   cajas:1000,cap:10500,pen:2.0,churn:2.90,altas:274, clientes:4196, cobrado:100.8,opex:150.3,capex:0, costo:150.3,neto:-49.5},
+    {mes:"Hoy",   cajas:1150,cap:12075,pen:2.2,churn:2.70,altas:310, clientes:4235, cobrado:104.1,opex:150.3,capex:40,costo:190.3,neto:-86.2},
     {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:100.8,opex:150.3,capex:40,costo:190.3,neto:-89.5},
     {mes:"May 26",cajas:1300,cap:13650,pen:2.3,churn:2.67,altas:378, clientes:4409, cobrado:99.0, opex:150.3,capex:40,costo:190.3,neto:-91.3},
     {mes:"Jun 26",cajas:1450,cap:15225,pen:2.5,churn:2.55,altas:445, clientes:4669, cobrado:104.8,opex:150.3,capex:40,costo:190.3,neto:-85.5},
@@ -215,7 +215,7 @@ const D = {
     {mes:"Dic 25", cobrado:92.9,  opex:171.7, capex:0.1,  costo:171.8, neto:-78.9},
     {mes:"Ene 26", cobrado:96.0,  opex:150.3, capex:25.0, costo:175.3, neto:-79.3},
     {mes:"Feb 26", cobrado:95.2,  opex:150.3, capex:33.0, costo:183.3, neto:-88.1},
-    {mes:"Mar 26", cobrado:100.8, opex:150.3, capex:0,    costo:150.3, neto:-49.5},
+    {mes:"Mar 26", cobrado:104.1, opex:150.3, capex:0,    costo:150.3, neto:-46.2},
   ],
 
   // ── Curva neto clientes (altas+churns+neto real) ──
@@ -225,7 +225,7 @@ const D = {
     {mes:"Dic 25", neto:-78.9,  altas:279, churns:35},
     {mes:"Ene 26", neto:-79.3,  altas:354, churns:31},
     {mes:"Feb 26", neto:-88.1,  altas:292, churns:26},
-    {mes:"Mar 26", neto:-49.5,  altas:284, churns:16},
+    {mes:"Mar 26", neto:-46.2,  altas:310, churns:22},
   ],
 
   // ── Break-even gráfico ② proyección ──
@@ -836,6 +836,113 @@ export default function App() {
               </div>
               <Ins type="g" html="El 97% del churn es prevenible. Los primeros 3 se atacan con automatización, sin llamar a nadie, sin reportes manuales."/>
             </Card>
+
+            {/* ── BLOQUEADOS POR ANTIGÜEDAD ── */}
+            <Card title="Bloqueados por antigüedad de bloqueo · corte 28/04/2026">
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:10,marginBottom:14}}>
+                {[
+                  {label:"< 30 días",    cant:0,   deuda:"$0",       color:C.green,  bg:C.greenP, desc:"Sin casos al corte"},
+                  {label:"31 a 45 días", cant:113, deuda:"$3.36M",   color:C.amber,  bg:C.amberP, desc:"Gestión activa urgente"},
+                  {label:"> 45 días",    cant:48,  deuda:"$1.55M",   color:C.red,    bg:C.redP,   desc:"Riesgo alto de pase a SS"},
+                ].map((g,i)=>(
+                  <div key={i} style={{background:g.bg,border:`0.5px solid ${g.color}`,borderRadius:10,padding:"14px 16px",textAlign:"center"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:g.color,marginBottom:4}}>{g.label}</p>
+                    <p style={{fontSize:28,fontFamily:C.mono,fontWeight:700,color:g.color}}>{g.cant}</p>
+                    <p style={{fontSize:11,color:g.color,fontWeight:600,marginTop:4}}>{g.deuda}</p>
+                    <p style={{fontSize:10,color:C.text2,marginTop:4}}>{g.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <Ins type="i" html="Total bloqueados: <strong>161 clientes · $4.91M deuda vencida</strong> · Sin casos recientes (&lt;30d) — el bloqueo más nuevo tiene 31 días"/>
+              <div style={{overflowX:"auto",marginTop:10}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?600:0}}>
+                <thead>
+                  <tr style={{background:C.bg3}}>
+                    {["Grupo","Clientes","Deuda vencida","Acción recomendada"].map(h=>(
+                      <th key={h} style={{padding:"7px 10px",textAlign:"left",color:C.text2,fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {grupo:"31 a 45 días",cli:113,deuda:"$3.36M",accion:"Contacto WSP inmediato · oferta plan de cuotas · 1er vencimiento próximo",color:C.amber},
+                    {grupo:"> 45 días",   cli:48, deuda:"$1.55M",accion:"Campaña de recupero campo · evaluar pase a Sin servicio si no responden",color:C.red},
+                    {grupo:"TOTAL",       cli:161,deuda:"$4.91M",accion:"",color:C.navy,bold:true},
+                  ].map((r,i)=>(
+                    <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:r.bold?C.bg3:"#FFFFFF"}}>
+                      <td style={{padding:"7px 10px",fontWeight:r.bold?700:600,color:r.color}}>{r.grupo}</td>
+                      <td style={{padding:"7px 10px",fontFamily:C.mono,fontWeight:r.bold?700:400,color:r.color}}>{r.cli}</td>
+                      <td style={{padding:"7px 10px",fontFamily:C.mono,fontWeight:r.bold?700:400,color:r.bold?C.navy:C.red}}>{r.deuda}</td>
+                      <td style={{padding:"7px 10px",fontSize:10,color:C.text2,fontStyle:r.bold?"":"italic"}}>{r.accion}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+            </Card>
+
+            {/* ── RESUMEN MENSUAL SIN SERVICIO ── */}
+            <Card title="Sin servicio por cohorte — clientes que nunca volvieron · ago 24 → mar 26">
+              <Ins type="d" html="Cada fila = clientes captados ese mes. <strong>SS = nunca regularizaron</strong>. Tendencia: mejora notable desde oct 25 (31% → 7%)."/>
+              <div style={{overflowX:"auto",marginTop:10}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?600:0}}>
+                <thead>
+                  <tr style={{background:"#0D1B2A"}}>
+                    {["Mes alta","Total altas","Habilitados","Bloqueados","Sin servicio","% No volvió","Deuda SS"].map(h=>(
+                      <th key={h} style={{padding:"7px 10px",textAlign:h==="Mes alta"?"left":"center",color:"#fff",fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {m:"Ago 24",tot:296,hab:201,bloq:3, ss:92, pct:31.1,deu:"$2.530.342"},
+                    {m:"Sep 24",tot:339,hab:228,bloq:9, ss:102,pct:30.1,deu:"$2.871.937"},
+                    {m:"Oct 24",tot:293,hab:182,bloq:5, ss:106,pct:36.2,deu:"$4.859.820"},
+                    {m:"Nov 24",tot:291,hab:157,bloq:5, ss:129,pct:44.3,deu:"$5.517.067"},
+                    {m:"Dic 24",tot:257,hab:151,bloq:5, ss:101,pct:39.3,deu:"$4.325.231"},
+                    {m:"Ene 25",tot:278,hab:178,bloq:13,ss:87, pct:31.3,deu:"$4.949.447"},
+                    {m:"Feb 25",tot:238,hab:139,bloq:7, ss:92, pct:38.7,deu:"$5.073.626"},
+                    {m:"Mar 25",tot:242,hab:169,bloq:7, ss:66, pct:27.3,deu:"$3.426.292"},
+                    {m:"Abr 25",tot:257,hab:161,bloq:15,ss:81, pct:31.5,deu:"$4.492.399"},
+                    {m:"May 25",tot:270,hab:166,bloq:15,ss:89, pct:33.0,deu:"$3.890.549"},
+                    {m:"Jun 25",tot:236,hab:147,bloq:15,ss:74, pct:31.4,deu:"$3.412.495"},
+                    {m:"Jul 25",tot:279,hab:169,bloq:20,ss:90, pct:32.3,deu:"$3.738.141"},
+                    {m:"Ago 25",tot:299,hab:196,bloq:10,ss:93, pct:31.1,deu:"$3.300.903"},
+                    {m:"Sep 25",tot:281,hab:191,bloq:9, ss:81, pct:28.8,deu:"$3.042.679"},
+                    {m:"Oct 25",tot:324,hab:263,bloq:13,ss:48, pct:14.8,deu:"$1.061.890"},
+                    {m:"Nov 25",tot:225,hab:178,bloq:8, ss:39, pct:17.3,deu:"$551.971"},
+                    {m:"Dic 25",tot:279,hab:232,bloq:9, ss:38, pct:13.6,deu:"$500.739"},
+                    {m:"Ene 26",tot:354,hab:301,bloq:13,ss:40, pct:11.3,deu:"$63.461"},
+                    {m:"Feb 26",tot:292,hab:247,bloq:12,ss:33, pct:11.3,deu:"$22.995"},
+                    {m:"Mar 26",tot:310,hab:287,bloq:1, ss:22, pct:7.1, deu:"$0"},
+                  ].map((r,i)=>{
+                    const semColor = r.pct <= 15 ? C.green : r.pct <= 30 ? C.amber : C.red;
+                    const bg = i%2===0?"#FFFFFF":"#F4F6F9";
+                    return (
+                      <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:bg}}>
+                        <td style={{padding:"6px 10px",fontWeight:600,color:C.text}}>{r.m}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.text2}}>{r.tot}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.green,fontWeight:600}}>{r.hab}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.amber}}>{r.bloq}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.red,fontWeight:600}}>{r.ss}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:semColor}}>{r.pct}%</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>{r.deu}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr style={{background:C.bg3,fontWeight:700,borderTop:`1.5px solid ${C.navy}`}}>
+                    <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>TOTAL</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>5.640</td>
+                    <td colSpan={2} style={{padding:"7px 10px"}}></td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>1.528</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>27.1%</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$58.6M</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </Card>
+
           </div>
         )}
 
@@ -1507,7 +1614,7 @@ export default function App() {
                 fuente:"CSV ISPCube · fecha alta mar 26",
                 contexto:"Meta plan completo: 420/mes · orgánico actual: 195/mes",
                 accion:"Activar Meta+Google+TikTok y IA ventas WSP",
-                historico:[219,172,267],
+                historico:[300,251,287],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1520,7 +1627,7 @@ export default function App() {
                 fuente:"CSV ISPCube · 2.9% base activa",
                 contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
                 accion:"IA WSP cobranza D5/15/25 · onboarding automático",
-                historico:[0.76,0.64,0.38],
+                historico:[1.13,1.13,0.71],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1545,7 +1652,7 @@ export default function App() {
                 fuente:"CSV ISPCube · altas habilitadas mar 26",
                 contexto:"Cada alta = 1 instalación técnica realizada",
                 accion:"Más altas → más instalaciones · ligado a ventas",
-                historico:[219,172,267],
+                historico:[300,251,287],
                 labHist:["Ene","Feb","Mar"],
               },
               {
@@ -1570,7 +1677,7 @@ export default function App() {
                 fuente:"CSV caja · SIRO / cobrado mar 26",
                 contexto:"SIRO: $0 oct 25 → crecimiento mensual · objetivo 40%",
                 accion:"Campaña WSP incentivo 5% descuento · meta 40%",
-                historico:[1.33, 5.45, 10.8],
+                historico:[1.33, 5.45, 10.5],
                 labHist:["Ene","Feb","Mar"],
               },
             ].map((obj,i)=>{
