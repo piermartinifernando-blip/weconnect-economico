@@ -1825,35 +1825,47 @@ export default function App() {
                   const hab  = [283,567,619,655,594,416,287,148,17,628];
                   const ss   = [178,293,274,259,179,148, 90, 44, 9,131];
                   const bloq = [ 15, 28, 30, 27, 27, 10,  6,  3, 0, 15];
-                  const maxVal = Math.max(...hab.map((h,i)=>h+ss[i]+bloq[i]));
                   return (
-                    <div>
-                      <div style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
-                        {[{c:C.blue,l:"Habilitados"},{c:C.red,l:"Sin servicio"},{c:C.amber,l:"Bloqueados"}].map((x,i)=>(
-                          <div key={i} style={{display:"flex",alignItems:"center",gap:4}}>
-                            <div style={{width:10,height:10,borderRadius:2,background:x.c}}/>
-                            <span style={{color:C.text2}}>{x.l}</span>
-                          </div>
-                        ))}
-                      </div>
-                      {rangos.map((r,i)=>(
-                        <div key={i} style={{marginBottom:7}}>
-                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:3}}>
-                            <span style={{fontSize:10,color:C.text2,minWidth:90}}>{r}</span>
-                            <div style={{display:"flex",gap:10,fontSize:10,fontFamily:C.mono}}>
-                              <span style={{color:C.blue}}>Hab: {hab[i]}</span>
-                              <span style={{color:C.red}}>SS: {ss[i]}</span>
-                              <span style={{color:C.amber}}>Bloq: {bloq[i]}</span>
-                              <span style={{color:C.text3,fontWeight:600}}>Tot: {hab[i]+ss[i]+bloq[i]}</span>
-                            </div>
-                          </div>
-                          <div style={{display:"flex",height:10,borderRadius:4,overflow:"hidden",background:C.bg3}}>
-                            <div style={{width:`${hab[i]/maxVal*100}%`,background:C.blue}}/>
-                            <div style={{width:`${ss[i]/maxVal*100}%`,background:C.red,opacity:0.7}}/>
-                            <div style={{width:`${bloq[i]/maxVal*100}%`,background:C.amber,opacity:0.8}}/>
-                          </div>
-                        </div>
-                      ))}
+                    <div style={{overflowX:"auto"}}>
+                      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:420}}>
+                        <thead>
+                          <tr style={{background:C.bg3}}>
+                            {["Rango etario","Habilitados","Sin servicio","Bloqueados","Total","% SS"].map((h,i)=>(
+                              <th key={i} style={{padding:"7px 10px",textAlign:i===0?"left":"center",color:C.text2,fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`,whiteSpace:"nowrap"}}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rangos.map((r,i)=>{
+                            const tot = hab[i]+ss[i]+bloq[i];
+                            const pctSS = Math.round(ss[i]/tot*100);
+                            const colSS = pctSS>30?C.red:pctSS>25?C.amber:C.green;
+                            return (
+                              <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:i%2===0?"#FFFFFF":C.bg3}}>
+                                <td style={{padding:"7px 10px",fontWeight:600,color:C.text}}>{r}</td>
+                                <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.blue,fontWeight:600}}>{hab[i]}</td>
+                                <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.red}}>{ss[i]}</td>
+                                <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.amber}}>{bloq[i]}</td>
+                                <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.text2,fontWeight:600}}>{tot}</td>
+                                <td style={{padding:"7px 10px",textAlign:"center"}}>
+                                  <span style={{background:`${colSS}18`,color:colSS,fontWeight:700,fontFamily:C.mono,fontSize:11,padding:"2px 8px",borderRadius:9}}>{pctSS}%</span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          <tr style={{background:C.bg3,borderTop:`1.5px solid ${C.navy}`}}>
+                            <td style={{padding:"7px 10px",fontWeight:700,color:C.navy}}>TOTAL</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.blue}}>{[283,567,619,655,594,416,287,148,17,628].reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.red}}>{[178,293,274,259,179,148,90,44,9,131].reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.amber}}>{[15,28,30,27,27,10,6,3,0,15].reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.navy}}>{[283,567,619,655,594,416,287,148,17,628].reduce((a,b)=>a+b,0)+[178,293,274,259,179,148,90,44,9,131].reduce((a,b)=>a+b,0)+[15,28,30,27,27,10,6,3,0,15].reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center"}}>
+                              <span style={{background:`${C.amber}18`,color:C.amber,fontWeight:700,fontFamily:C.mono,fontSize:11,padding:"2px 8px",borderRadius:9}}>26.7%</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <Ins type="i" html="Edad estimada por número de DNI · DNI 94M+ = extranjeros · DNI 45M-90M = Emp/menores · Extranjero: <strong>mejor segmento</strong> con solo 16.9% SS"/>
                     </div>
                   );
                 })()}
