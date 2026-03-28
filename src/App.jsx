@@ -220,12 +220,12 @@ const D = {
 
   // ── Curva neto clientes (altas+churns+neto real) ──
   NETO_HIST:[
-    {mes:"Oct 25", neto:-69.5,  altas:324, churns:47},
-    {mes:"Nov 25", neto:-50.5,  altas:225, churns:35},
-    {mes:"Dic 25", neto:-78.9,  altas:279, churns:35},
-    {mes:"Ene 26", neto:-79.3,  altas:354, churns:31},
-    {mes:"Feb 26", neto:-88.1,  altas:292, churns:26},
-    {mes:"Mar 26", neto:-46.2,  altas:310, churns:22},
+    {mes:"Oct 25", neto:-69.5, altas:324, churns:48, neto_cli:276},
+    {mes:"Nov 25", neto:-50.5, altas:225, churns:39, neto_cli:186},
+    {mes:"Dic 25", neto:-78.9, altas:279, churns:38, neto_cli:241},
+    {mes:"Ene 26", neto:-79.3, altas:354, churns:40, neto_cli:314},
+    {mes:"Feb 26", neto:-88.1, altas:292, churns:33, neto_cli:259},
+    {mes:"Mar 26", neto:-46.2, altas:310, churns:22, neto_cli:288},
   ],
 
   // ── Break-even gráfico ② proyección ──
@@ -722,8 +722,7 @@ export default function App() {
             {/* Curva neto ingreso - egresos */}
             <Card title="Curva neto: cobrado − OPEX − CAPEX ($M) · altas y churns reales (eje der.)" style={{marginBottom:12}}>
               <div style={{fontSize:11,color:C.text2,marginBottom:10,padding:"7px 10px",background:C.bg3,borderRadius:6,border:`0.5px solid ${C.bdr}`}}>
-                <strong>Neto</strong> = cobrado − OPEX − CAPEX (total real por mes) ·
-                <strong> Churns</strong> = 2.9% de base activa de cada mes · Eje izq: $M · Eje der: clientes
+                <strong>Neto financiero</strong> = cobrado − OPEX − CAPEX · <strong>Neto clientes</strong> = altas brutas − SS nuevos · <strong>Churns (SS)</strong> = nuevos Sin servicio ese mes
               </div>
               <ResponsiveContainer width="100%" height={240}>
                 <ComposedChart data={[
@@ -742,15 +741,16 @@ export default function App() {
                     label={{value:"0",fill:C.navy,fontSize:10}}/>
                   <Area yAxisId="left" type="monotone" dataKey="neto"
                     name="Neto financiero ($M)" stroke={C.red} fill="rgba(209,48,48,0.12)" strokeWidth={2.5} dot={{r:4,fill:C.red}}/>
-                  <Bar yAxisId="right" dataKey="altas"  name="Altas brutas"       fill={C.green} opacity={0.7} radius={[3,3,0,0]}/>
-                  <Bar yAxisId="right" dataKey="churns" name="Churns reales (2.9%)" fill={C.red}   opacity={0.4} radius={[3,3,0,0]}/>
+                  <Bar  yAxisId="right" dataKey="altas"    name="Altas brutas"   fill={C.green}  opacity={0.7} radius={[3,3,0,0]}/>
+                  <Bar  yAxisId="right" dataKey="churns"  name="SS nuevos (churn)" fill={C.red}    opacity={0.4} radius={[3,3,0,0]}/>
+                  <Line yAxisId="right" type="monotone" dataKey="neto_cli" name="Neto clientes" stroke={C.blue} strokeWidth={2} dot={{r:4,fill:C.blue}} strokeDasharray="4 3"/>
                 </ComposedChart>
               </ResponsiveContainer>
               <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:8,marginTop:10}}>
                 {[
-                  {mes:"Ene 26",nota:"CAPEX OLT $25M → neto cae a −$104M",color:C.amber},
-                  {mes:"Feb 26",nota:"CAPEX obra $33M → neto mín −$121M",color:C.red},
-                  {mes:"Mar 26",nota:"Mes completo $100.8M · sin CAPEX registrado",color:C.green},
+                  {mes:"Ene 26",nota:"354 altas − 40 SS = +314 clientes neto",color:C.green},
+                  {mes:"Feb 26",nota:"292 altas − 33 SS = +259 clientes neto",color:C.green},
+                  {mes:"Mar 26",nota:"310 altas − 22 SS = +288 clientes neto ★ menor churn",color:C.blue},
                 ].map((n,i)=>(
                   <div key={i} style={{background:C.bg3,borderRadius:6,padding:"7px 10px",border:`0.5px solid ${C.bdr}`}}>
                     <p style={{fontSize:10,fontWeight:600,color:n.color}}>{n.mes}</p>
@@ -768,7 +768,7 @@ export default function App() {
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Churn acumulado"       value={`${(D.SS/D.TOTAL*100).toFixed(1)}%`} sub={`${D.SS.toLocaleString("es-AR")} de ${D.TOTAL.toLocaleString("es-AR")} inactivos`}   type="dn"/>
               <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} nuevos SS · mar 26`}            type="dn"/>
-              <KPI label="Churn anual implícito" value="30.1%"    sub="1 de cada 3.8 / año"           type="wr"/>
+              <KPI label="Churn anual implícito" value="0.83%"    sub="tasa mensual real · base 4.235 hab"           type="wr"/>
               <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
             </div>
 
@@ -941,6 +941,33 @@ export default function App() {
                 </tbody>
               </table>
               </div>
+
+              {/* Gráfico de barras evolución mensual */}
+              <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"18px 0 10px"}}>Evolución mensual — altas brutas vs SS (churn)</p>
+              <ResponsiveContainer width="100%" height={220}>
+                <ComposedChart data={[
+                  {m:"Ago 24",altas:296,ss:92, neto:204},{m:"Sep 24",altas:339,ss:102,neto:237},
+                  {m:"Oct 24",altas:293,ss:106,neto:187},{m:"Nov 24",altas:291,ss:129,neto:162},
+                  {m:"Dic 24",altas:257,ss:101,neto:156},{m:"Ene 25",altas:278,ss:87, neto:191},
+                  {m:"Feb 25",altas:238,ss:92, neto:146},{m:"Mar 25",altas:242,ss:66, neto:176},
+                  {m:"Abr 25",altas:257,ss:81, neto:176},{m:"May 25",altas:270,ss:89, neto:181},
+                  {m:"Jun 25",altas:236,ss:74, neto:162},{m:"Jul 25",altas:279,ss:90, neto:189},
+                  {m:"Ago 25",altas:299,ss:93, neto:206},{m:"Sep 25",altas:281,ss:81, neto:200},
+                  {m:"Oct 25",altas:324,ss:48, neto:276},{m:"Nov 25",altas:225,ss:39, neto:186},
+                  {m:"Dic 25",altas:279,ss:38, neto:241},{m:"Ene 26",altas:354,ss:40, neto:314},
+                  {m:"Feb 26",altas:292,ss:33, neto:259},{m:"Mar 26",altas:310,ss:22, neto:288},
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
+                  <XAxis dataKey="m" tick={{fontSize:8,fill:C.text2}} stroke={C.bdr} interval={1}/>
+                  <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
+                  <Tooltip content={<TipCant/>}/>
+                  <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
+                  <Bar dataKey="altas" name="Altas brutas"   fill={C.blue}  opacity={0.7} radius={[2,2,0,0]}/>
+                  <Bar dataKey="ss"    name="SS nuevos (churn)" fill={C.red} opacity={0.6} radius={[2,2,0,0]}/>
+                  <Line type="monotone" dataKey="neto" name="Neto (altas−SS)" stroke={C.green} strokeWidth={2.5} dot={false}/>
+                </ComposedChart>
+              </ResponsiveContainer>
+              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→39→22. El neto de clientes mejora mes a mes. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 310 altas."/>
             </Card>
 
           </div>
