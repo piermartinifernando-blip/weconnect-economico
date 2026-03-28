@@ -1821,7 +1821,7 @@ export default function App() {
 
               <Card title="Distribución por rango etario — hab · SS · bloqueados">
                 {(() => {
-                  const rangos = ['Empresa/<12a','~13-18a (2008)','~18-23a (2003)','~23-29a (1997)','~29-36a (1990)','~36-46a (1980)','~46-56a (1968)','~56-66a (1955)','~66-76a (1940)','~76+a (1920)'];
+                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','76 años o más'];
                   const hab  = [911,567,619,655,594,416,287,148,17,18];
                   const ss   = [309,293,274,259,179,148,90,44,9,11];
                   const bloq = [30,28,30,27,27,10,6,3,0,0];
@@ -1856,7 +1856,7 @@ export default function App() {
 
               <Card title="Tasa de abandono por rango (% SS sobre total captado)">
                 {(() => {
-                  const rangos = ['Empresa/<12a','~13-18a (2008)','~18-23a (2003)','~23-29a (1997)','~29-36a (1990)','~36-46a (1980)','~46-56a (1968)','~56-66a (1955)','~66-76a (1940)','~76+a (1920)'];
+                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','76 años o más'];
                   const pcts   = [24.7,33.0,29.7,27.5,22.4,25.8,23.5,22.6,34.6,37.9];
                   return (
                     <div>
