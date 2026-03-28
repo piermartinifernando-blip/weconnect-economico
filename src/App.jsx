@@ -1821,10 +1821,10 @@ export default function App() {
 
               <Card title="Distribución por rango etario — hab · SS · bloqueados">
                 {(() => {
-                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','Extranjero'];
-                  const hab  = [283,567,619,655,594,416,287,148,17,628];
-                  const ss   = [178,293,274,259,179,148, 90, 44, 9,131];
-                  const bloq = [ 15, 28, 30, 27, 27, 10,  6,  3, 0, 15];
+                  const rangos = ['Histórico (<7M)','76+ años (7M-10M)','66-76 años (10M-14M)','56-66 años (14M-20M)','46-56 años (20M-25M)','36-46 años (25M-30M)','29-36 años (30M-35M)','23-29 años (35M-40M)','18-23 años (40M-48M)','13-18 años (48M-60M)','8-13 años (60M-80M)','Extranjero (>90M)'];
+                  const hab  = [ 27, 17, 148,287,416,594,655,619,766, 51, 32,622];
+                  const ss   = [ 11,  9,  44, 90,148,179,259,274,434, 32,  5,131];
+                  const bloq = [  0,  0,   3,  6, 10, 27, 27, 30, 39,  4,  0, 15];
                   return (
                     <div style={{overflowX:"auto"}}>
                       <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:420}}>
@@ -1855,17 +1855,17 @@ export default function App() {
                           })}
                           <tr style={{background:C.bg3,borderTop:`1.5px solid ${C.navy}`}}>
                             <td style={{padding:"7px 10px",fontWeight:700,color:C.navy}}>TOTAL</td>
-                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.blue}}>{[283,567,619,655,594,416,287,148,17,628].reduce((a,b)=>a+b,0)}</td>
-                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.red}}>{[178,293,274,259,179,148,90,44,9,131].reduce((a,b)=>a+b,0)}</td>
-                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.amber}}>{[15,28,30,27,27,10,6,3,0,15].reduce((a,b)=>a+b,0)}</td>
-                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.navy}}>{[283,567,619,655,594,416,287,148,17,628].reduce((a,b)=>a+b,0)+[178,293,274,259,179,148,90,44,9,131].reduce((a,b)=>a+b,0)+[15,28,30,27,27,10,6,3,0,15].reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.blue}}>{hab.reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.red}}>{ss.reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.amber}}>{bloq.reduce((a,b)=>a+b,0)}</td>
+                            <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.navy}}>{hab.reduce((a,b)=>a+b,0)+ss.reduce((a,b)=>a+b,0)+bloq.reduce((a,b)=>a+b,0)}</td>
                             <td style={{padding:"7px 10px",textAlign:"center"}}>
                               <span style={{background:`${C.amber}18`,color:C.amber,fontWeight:700,fontFamily:C.mono,fontSize:11,padding:"2px 8px",borderRadius:9}}>26.7%</span>
                             </td>
                           </tr>
                         </tbody>
                       </table>
-                      <Ins type="i" html="Edad estimada por número de DNI · DNI 94M+ = extranjeros · DNI 45M-90M = Emp/menores · Extranjero: <strong>mejor segmento</strong> con solo 16.9% SS"/>
+                      <Ins type="i" html="Edad estimada extrayendo DNI del CUIL (dígitos 3-10) · Extranjero (DNI >90M): <strong>mejor segmento con solo 17% SS</strong> · 18-23 años: mayor volumen y mayor riesgo (35% SS)"/>
                     </div>
                   );
                 })()}
@@ -1873,8 +1873,8 @@ export default function App() {
 
               <Card title="Tasa de abandono por rango (% SS sobre total captado)">
                 {(() => {
-                  const rangos = ['Emp / <12 años','13 a 18 años','18 a 23 años','23 a 29 años','29 a 36 años','36 a 46 años','46 a 56 años','56 a 66 años','66 a 76 años','Extranjero'];
-                  const pcts   = [37.4,33.0,29.7,27.5,22.4,25.8,23.5,22.6,34.6,16.9];
+                  const rangos = ['Histórico','76+ años','66-76 años','56-66 años','46-56 años','36-46 años','29-36 años','23-29 años','18-23 años','13-18 años','8-13 años','Extranjero'];
+                  const pcts   = [28.9,34.6,22.6,23.5,25.8,22.4,27.5,29.7,35.0,36.8,13.5,17.1];
                   return (
                     <div>
                       <div style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
@@ -1968,6 +1968,100 @@ export default function App() {
                   </div>
                 </div>
               ))}
+            </Card>
+
+            {/* ── MENORES Y RANKING RECUPERO ── */}
+            <Card title="Menores de edad en base — análisis y riesgo legal">
+              <Ins type="w" html="<strong>125 clientes con DNI 48M-90M</strong> son menores de 18 años · 85 de 125 tienen CUIL con prefijo adulto (20/23/27) pero DNI de menor — el contrato no tiene responsable legal adulto declarado formalmente"/>
+              <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
+                {[
+                  {label:"Menores en base",   val:"125", sub:"DNI 48M – 90M",         color:C.red},
+                  {label:"Menores activos",   val:"84",  sub:"habilitados hoy",        color:C.amber},
+                  {label:"Menores SS/Bloq",   val:"41",  sub:"37 SS + 4 bloqueados",   color:C.red},
+                ].map((k,i)=>(
+                  <div key={i} style={{background:C.bg3,border:`0.5px solid ${C.bdr}`,borderRadius:8,padding:"10px 14px",textAlign:"center"}}>
+                    <p style={{fontSize:10,color:C.text2,marginBottom:3}}>{k.label}</p>
+                    <p style={{fontSize:26,fontFamily:C.mono,fontWeight:700,color:k.color}}>{k.val}</p>
+                    <p style={{fontSize:10,color:C.text3,marginTop:2}}>{k.sub}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
+                <div>
+                  <p style={{fontSize:11,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>Menores habilitados por ciudad</p>
+                  {[["Capitán Sarmiento",34],["Almirante Brown",28],["Ministro Rivadavia",9],["Glew",8],["Burzaco",2],["Longchamps",2],["Florencio Varela",1]].map(([c,n],i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:12}}>
+                      <span style={{color:C.text2}}>{c}</span>
+                      <span style={{fontFamily:C.mono,fontWeight:600,color:C.text}}>{n}</span>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <p style={{fontSize:11,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>Vendedor que captó más menores</p>
+                  {[["Netsharing SA (directa)",27],["Local CS",10],["Alfredo Blockl",10],["Marcelo Shanahan",6],["Ignacio Rodriguez",3],["Coronel Vanesa",3],["Paz Diego",3],["Romero Silvana",2]].map(([v,n],i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`0.5px solid ${C.bdr}`,fontSize:12}}>
+                      <span style={{color:C.text2}}>{v}</span>
+                      <span style={{fontFamily:C.mono,fontWeight:600,color:C.text}}>{n}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Ins type="i" html="Acción recomendada: regularizar contratos de los 84 menores habilitados para que el responsable adulto firme como titular — reduce riesgo legal e impagos"/>
+            </Card>
+
+            {/* ── RANKING SEGMENTOS A ATACAR ── */}
+            <Card title="Ranking de segmentos a atacar — SS + bloqueados por rango etario">
+              <Ins type="i" html="Universo recuperable: <strong>1.777 clientes</strong> · SS sin deuda = recupero inmediato sin gestión de cobranza · SS ≤$24k = 1 cuota para reactivar"/>
+              <div style={{overflowX:"auto",marginTop:8}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?500:0}}>
+                <thead>
+                  <tr style={{background:C.bg3}}>
+                    {["Segmento","SS","Bloq","Total","SS sin deuda","SS ≤$24k","Táctica"].map((h,i)=>(
+                      <th key={i} style={{padding:"7px 10px",textAlign:i===0?"left":"center",color:C.text2,fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`,whiteSpace:"nowrap"}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {seg:"18-23 años (40M-48M)", ss:434,bl:39,  cero:107,low:33, col:C.red,   tactica:"WSP masivo · pedir pago parcial antes de reconectar"},
+                    {seg:"29-36 años (30M-35M)", ss:259,bl:27,  cero:86, low:15, col:C.green, tactica:"Mejor perfil · oferta directa sin descuento"},
+                    {seg:"23-29 años (35M-40M)", ss:274,bl:30,  cero:63, low:33, col:C.amber, tactica:"Campaña digital + WSP · sensibles al precio"},
+                    {seg:"36-46 años (25M-30M)", ss:179,bl:27,  cero:65, low:9,  col:C.green, tactica:"Llamada directa · jefes de hogar estables"},
+                    {seg:"46-56 años (20M-25M)", ss:148,bl:10,  cero:61, low:8,  col:C.green, tactica:"Alta fidelidad · contacto telefónico personal"},
+                    {seg:"Extranjero (>90M)",    ss:131,bl:15,  cero:48, low:7,  col:C.green, tactica:"Mejor pagadores · probable mudanza o problema puntual"},
+                    {seg:"56-66 años (14M-20M)", ss:90, bl:6,   cero:29, low:1,  col:C.green, tactica:"Muy fieles · SS son excepción · contacto directo"},
+                    {seg:"66-76 años (10M-14M)", ss:44, bl:3,   cero:15, low:7,  col:C.text3, tactica:"Volumen bajo · contacto familiar si no responden"},
+                  ].map((r,i)=>(
+                    <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:i%2===0?"#FFFFFF":C.bg3}}>
+                      <td style={{padding:"7px 10px",fontWeight:600,color:C.text}}>{r.seg}</td>
+                      <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.red}}>{r.ss}</td>
+                      <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,color:C.amber}}>{r.bl}</td>
+                      <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:600,color:C.text}}>{r.ss+r.bl}</td>
+                      <td style={{padding:"7px 10px",textAlign:"center"}}>
+                        <span style={{background:`${C.green}20`,color:C.green,fontWeight:700,fontFamily:C.mono,fontSize:11,padding:"2px 8px",borderRadius:9}}>{r.cero}</span>
+                      </td>
+                      <td style={{padding:"7px 10px",textAlign:"center"}}>
+                        <span style={{background:`${C.amber}20`,color:C.amber,fontWeight:700,fontFamily:C.mono,fontSize:11,padding:"2px 8px",borderRadius:9}}>{r.low}</span>
+                      </td>
+                      <td style={{padding:"7px 10px",fontSize:10,color:C.text2}}>{r.tactica}</td>
+                    </tr>
+                  ))}
+                  <tr style={{background:C.bg3,borderTop:`1.5px solid ${C.navy}`}}>
+                    <td style={{padding:"7px 10px",fontWeight:700,color:C.navy}}>TOTAL</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.red}}>1.559</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.amber}}>157</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",fontFamily:C.mono,fontWeight:700,color:C.navy}}>1.716</td>
+                    <td style={{padding:"7px 10px",textAlign:"center"}}>
+                      <span style={{background:`${C.green}20`,color:C.green,fontWeight:700,fontFamily:C.mono,fontSize:12,padding:"2px 8px",borderRadius:9}}>414</span>
+                    </td>
+                    <td style={{padding:"7px 10px",textAlign:"center"}}>
+                      <span style={{background:`${C.amber}20`,color:C.amber,fontWeight:700,fontFamily:C.mono,fontSize:12,padding:"2px 8px",borderRadius:9}}>73</span>
+                    </td>
+                    <td style={{padding:"7px 10px",fontSize:11,fontWeight:600,color:C.green}}>Potencial 30% conversión: +$3.5M/mes</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>
             </Card>
 
           </div>
