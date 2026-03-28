@@ -353,6 +353,7 @@ const TABS = [
 
   {id:"recupero",  label:"📦 Recupero AB"},
   {id:"objetivos", label:"🎯 Objetivos"  },
+  {id:"analisis",  label:"🔍 Análisis"    },
 ];
 
 /* ═══ MAIN ═══════════════════════════════════════════════════════ */
@@ -1800,6 +1801,157 @@ export default function App() {
                 </div>
               );
             })}
+
+          </div>
+        )}
+
+        {tab==="analisis"&&(
+          <div>
+
+            {/* KPIs resumen */}
+            <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
+              <KPI label="Habilitados"          value={D.HAB.toLocaleString("es-AR")}  sub="activos hoy"                    type="ok"/>
+              <KPI label="Sin servicio"          value={D.SS.toLocaleString("es-AR")}   sub="nunca regularizaron"             type="dn"/>
+              <KPI label="SS sin deuda"          value="492"  sub="recupero gratuito · win-back fácil"  type="ok"/>
+              <KPI label="SS deuda ≤$24k"        value="121"  sub="1 cuota para reactivar"              type="wr"/>
+            </div>
+
+            {/* Gráficos lado a lado */}
+            <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1.2fr 1fr",gap:14,marginBottom:14}}>
+
+              <Card title="Distribución por rango etario — hab · SS · bloqueados">
+                {(() => {
+                  const rangos = ['<12/emp','12-18','18-22','22-28','28-35','35-45','45-55','55-65','65-75','75+'];
+                  const hab  = [911,567,619,655,594,416,287,148,17,18];
+                  const ss   = [309,293,274,259,179,148,90,44,9,11];
+                  const bloq = [30,28,30,27,27,10,6,3,0,0];
+                  const maxVal = Math.max(...hab.map((h,i)=>h+ss[i]+bloq[i]));
+                  return (
+                    <div>
+                      <div style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
+                        {[{c:C.blue,l:"Habilitados"},{c:C.red,l:"Sin servicio"},{c:C.amber,l:"Bloqueados"}].map((x,i)=>(
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:4}}>
+                            <div style={{width:10,height:10,borderRadius:2,background:x.c}}/>
+                            <span style={{color:C.text2}}>{x.l}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {rangos.map((r,i)=>(
+                        <div key={i} style={{marginBottom:6}}>
+                          <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+                            <span style={{fontSize:10,color:C.text2,width:60}}>{r}</span>
+                            <span style={{fontSize:10,color:C.text3,fontFamily:C.mono}}>{hab[i]+ss[i]+bloq[i]}</span>
+                          </div>
+                          <div style={{display:"flex",height:10,borderRadius:4,overflow:"hidden",background:C.bg3}}>
+                            <div style={{width:`${hab[i]/maxVal*100}%`,background:C.blue}}/>
+                            <div style={{width:`${ss[i]/maxVal*100}%`,background:C.red,opacity:0.7}}/>
+                            <div style={{width:`${bloq[i]/maxVal*100}%`,background:C.amber,opacity:0.8}}/>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </Card>
+
+              <Card title="Tasa de abandono por rango (% SS sobre total captado)">
+                {(() => {
+                  const rangos = ['<12/emp','12-18','18-22','22-28','28-35','35-45','45-55','55-65','65-75','75+'];
+                  const pcts   = [24.7,33.0,29.7,27.5,22.4,25.8,23.5,22.6,34.6,37.9];
+                  return (
+                    <div>
+                      <div style={{display:"flex",gap:12,marginBottom:10,fontSize:11}}>
+                        {[{c:C.green,l:"≤25% (bueno)"},{c:C.amber,l:"25-30%"},{c:C.red,l:">30% (riesgo)"}].map((x,i)=>(
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:4}}>
+                            <div style={{width:10,height:10,borderRadius:2,background:x.c}}/>
+                            <span style={{color:C.text2}}>{x.l}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {rangos.map((r,i)=>{
+                        const col = pcts[i]>30?C.red:pcts[i]>25?C.amber:C.green;
+                        return (
+                          <div key={i} style={{marginBottom:6}}>
+                            <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
+                              <span style={{fontSize:10,color:C.text2,width:60}}>{r}</span>
+                              <span style={{fontSize:11,fontFamily:C.mono,fontWeight:600,color:col}}>{pcts[i]}%</span>
+                            </div>
+                            <div style={{height:10,borderRadius:4,overflow:"hidden",background:C.bg3}}>
+                              <div style={{width:`${pcts[i]/45*100}%`,background:col,borderRadius:4}}/>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </Card>
+            </div>
+
+            {/* Oportunidades */}
+            <Card title="Oportunidades — análisis de negocio por segmento" style={{marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:10}}>
+                {[
+                  {color:C.green, titulo:"492 SS sin deuda — win-back gratuito",
+                   texto:"Se fueron sin deber nada. Causa probable: precio, mudanza o servicio. Son los más fáciles de reactivar con una oferta WSP. Al 30% de conversión: ~150 clientes · +$3.3M/mes.",
+                   tag:"ACCIÓN INMEDIATA"},
+                  {color:C.amber, titulo:"121 SS con deuda ≤$24k — 1 cuota",
+                   texto:"Deuda equivale a 1 mes de factura. Campaña WSP: 'Pagá 1 mes y te reconectamos'. Alta conversión esperada. Potencial: 60-80 clientes adicionales.",
+                   tag:"FÁCIL"},
+                  {color:C.blue, titulo:"35-55 años — upsell al segmento más fiel",
+                   texto:"703 hab activos en 100 MB con menor churn (22-23%). Los más fieles y con capacidad de pago. Upgrade a 300 MB: +$8k ARPU × 50% conversión = +$2.8M/mes.",
+                   tag:"ALTA CONVERSIÓN"},
+                  {color:C.red, titulo:"12-22 años — política diferenciada urgente",
+                   texto:"29-33% de abandono. DNI 35M-45M: ingresos inestables, mayor riesgo crediticio. Evaluar depósito inicial de $12k o plan mensual estricto para nuevas altas.",
+                   tag:"PREVENCIÓN"},
+                  {color:"#7B5EA7", titulo:"DNI >45M — separar empresas de jóvenes",
+                   texto:"911 hab con DNI reciente. 1.219 con 'Actividad comercial: HOGAR' declarada. Separar comercios del segmento residencial para upgrade a planes empresa con mejor margen.",
+                   tag:"SEGMENTACIÓN"},
+                  {color:C.teal, titulo:"45-65 años en CS — zona de alto valor",
+                   texto:"CS concentra 73 hab de 55+ años. Menor churn, más estables, subutilizados en 100 MB. Campaña local en CS de upgrade a 300 MB con instalador en zona.",
+                   tag:"UPSELL LOCAL"},
+                ].map((o,i)=>(
+                  <div key={i} style={{borderLeft:`3px solid ${o.color}`,padding:"10px 14px",background:C.bg3,borderRadius:`0 ${8}px ${8}px 0`,border:`0.5px solid ${C.bdr}`,borderLeftColor:o.color,borderLeftWidth:3}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                      <p style={{fontSize:12,fontWeight:600,color:o.color}}>{o.titulo}</p>
+                      <span style={{background:`${o.color}18`,color:o.color,fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:9,whiteSpace:"nowrap"}}>{o.tag}</span>
+                    </div>
+                    <p style={{fontSize:11,color:C.text2,lineHeight:1.6}}>{o.texto}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Plan de cuotas */}
+            <Card title="Top 3 acciones concretas — prioridad de ejecución">
+              {[
+                {n:"1",color:C.green,
+                 titulo:"Campaña win-back SS sin deuda · 492 clientes",
+                 detalle:"WSP masivo personalizado: 'Hola [nombre], queremos que vuelvas — te reconectamos sin cargo hoy'. Priorizá AB (230 clientes) y CS (184 clientes). Conversión esperada 30%: 148 nuevos clientes · $3.3M/mes adicionales.",
+                 kpi:"Potencial: +$3.3M/mes"},
+                {n:"2",color:C.blue,
+                 titulo:"Upsell 100→300 MB al segmento 35-55 años · 703 hab",
+                 detalle:"Campaña segmentada por DNI 20M-30M. Oferta: '300 MB por $X más al mes'. Menor resistencia al cambio en este grupo. Con 50% conversión sobre 703 clientes: +$2.8M/mes de ARPU incremental.",
+                 kpi:"Potencial: +$2.8M/mes"},
+                {n:"3",color:C.red,
+                 titulo:"Política de ingreso para 12-22 años — depósito $12k",
+                 detalle:"Implementar depósito reembolsable o primera cuota doble para DNI 35M-45M. Reducción esperada de futuros SS en este segmento: 30-40%. Impacto directo en deuda incobrable de largo plazo.",
+                 kpi:"Prevención: -30% SS jóvenes"},
+              ].map((a,i)=>(
+                <div key={i} style={{display:"flex",gap:14,padding:"12px 0",borderBottom:i<2?`0.5px solid ${C.bdr}`:"none"}}>
+                  <div style={{width:32,height:32,borderRadius:"50%",background:`${a.color}18`,border:`1.5px solid ${a.color}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    <span style={{fontSize:14,fontWeight:600,color:a.color}}>{a.n}</span>
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                      <p style={{fontSize:13,fontWeight:600,color:C.text}}>{a.titulo}</p>
+                      <span style={{fontFamily:C.mono,fontSize:11,fontWeight:600,color:a.color,background:`${a.color}12`,padding:"2px 8px",borderRadius:9}}>{a.kpi}</span>
+                    </div>
+                    <p style={{fontSize:11,color:C.text2,lineHeight:1.6}}>{a.detalle}</p>
+                  </div>
+                </div>
+              ))}
+            </Card>
 
           </div>
         )}
