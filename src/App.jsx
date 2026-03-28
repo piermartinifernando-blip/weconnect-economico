@@ -251,7 +251,7 @@ const D = {
   // ── Obra: cajas y fibra ──
   OBRA:{
     inicio:"21/02/26", dias_hab:47,
-    cajas:{ act:202,    total:2800,   meta_dia:16,   esperado:752,   ritmo:4.3,  pct_ritmo:26.9, fin_meta:"11/12/26"},
+    cajas:{ act:202,    total:600,    meta_dia:16,   esperado:752,   ritmo:4.3,  pct_ritmo:26.9, fin_meta:"02/06/26"},
     fibra:{ act:110000, total:320000, meta_dia:2000, esperado:48000, ritmo:4583, pct_ritmo:229.2,fin_meta:"29/05/26"},
   },
 
@@ -1661,12 +1661,12 @@ export default function App() {
               {
                 area:"Operaciones · Red",
                 icono:"📦",
-                nombre:"Cajas instaladas — obra AB",
-                actual:202, meta:2800, unidad:"cajas",
+                nombre:"Cajas instaladas — obra sectores 1 y 2",
+                actual:202, meta:600, unidad:"cajas",
                 pct:26.9,
-                fuente:"Obra iniciada 21/02/26 · 47 días hábiles transcurridos",
-                contexto:"Meta: 16 cajas/día · Ritmo real: 4.3/día · Fin si cumple meta: 11/12/26",
-                accion:"Ritmo al 26.9% del objetivo — requiere acelerar a 16 cajas/día hábil",
+                fuente:"Obra iniciada 21/02/26 · 47 días hábiles · sectores 1 y 2",
+                contexto:"Meta: 16 cajas/día · Ritmo real: 4.3/día · Fin si cumple meta: 02/06/26",
+                accion:"Ritmo al 26.9% — acelerar a 16 cajas/día para cerrar sectores 1 y 2 en junio",
                 historico:[0, 156, 202],
                 labHist:["21/02","Mar 26","Hoy"],
                 obraExtra:true,
