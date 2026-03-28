@@ -61,7 +61,9 @@ const D = {
   SIRO_PCT:     10.5,    // SIRO % del cobrado
   MP_ABS:       72.30,   // MP $M
   MP_PCT:       69.5,    // MP %
-  FACT_ACTUAL: 117.72,   // facturado Mar 26
+  FACT_ACTUAL: 117.89,   // facturado mensual Mar 26 (csv bills sep=;)
+  TASA_ACTUAL: 88.3,     // cobrado/facturado Mar 26
+  FACT_SIN_COB:13.83,    // $M sin cobrar Mar 26
 
   // ── CLIENTES: estado actual ──
   HAB:   4235,    // habilitados
