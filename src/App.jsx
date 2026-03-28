@@ -556,7 +556,7 @@ export default function App() {
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
               <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
-              <KPI label="Tasa cobranza mar-26" value={`${(D.COB_ACTUAL/D.MORA_TOTAL*100).toFixed(0)}%`} sub={`$${D.COB_ACTUAL}M cobrado / $${D.MORA_TOTAL}M facturado`} type="wr"/>
+              <KPI label="Tasa cobranza mar-26" value={`${D.TASA_ACTUAL}%`} sub={`$${D.COB_ACTUAL}M cobrado / $${D.FACT_ACTUAL}M facturado · sin cobrar $${D.FACT_SIN_COB}M`} type="wr"/>
               <KPI label="SIRO Mar 26"               value={`$${D.SIRO_ABS}M`} sub={`▲ desde $0 oct 25 · ${D.SIRO_PCT}% del cobrado`} type="ok"/>
             </div>
           </div>
