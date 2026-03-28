@@ -129,7 +129,7 @@ const D = {
   OBJ:{
     altas_actual:287,  altas_meta:420,   altas_pct:68.3,  // 267 hab / meta 420
     siro_actual:10.5,  siro_meta:40.0,   siro_pct:26.3,
-    churn_actual:0.52, churn_meta:0.5,   churn_pct:4.0, // meta: <0.5% nuevos SS/mes
+    churn_actual:0.52, churn_meta:0.5,   churn_pct:96.2, // meta/actual×100 — casi en meta
     cajas_actual:156,  cajas_meta:384,   cajas_pct:40.6,  // obra: 156 inst / esperado 384 (24d×16/día)
     inst_actual:287,   inst_meta:420,    inst_pct:68.3,
   },
@@ -250,8 +250,8 @@ const D = {
 
   // ── Obra: cajas y fibra ──
   OBRA:{
-    inicio:"21/02/26", dias_hab:24,
-    cajas:{ act:156,    total:2800,   meta_dia:16,   esperado:384,   ritmo:6.5,  pct_ritmo:40.6, fin_meta:"12/11/26"},
+    inicio:"21/02/26", dias_hab:47,
+    cajas:{ act:202,    total:2800,   meta_dia:16,   esperado:752,   ritmo:4.3,  pct_ritmo:26.9, fin_meta:"11/12/26"},
     fibra:{ act:110000, total:320000, meta_dia:2000, esperado:48000, ritmo:4583, pct_ritmo:229.2,fin_meta:"29/05/26"},
   },
 
@@ -1647,27 +1647,27 @@ export default function App() {
               {
                 area:"Atención al cliente",
                 icono:"💬",
-                nombre:"Reducción de churn",
+                nombre:"Churn mensual (SS nuevos / altas brutas)",
                 actual:D.OBJ.churn_actual, meta:D.OBJ.churn_meta, unidad:"%",
                 pct:D.OBJ.churn_pct,
                 inverso:true,
-                fuente:"CSV ISPCube · 2.9% base activa",
-                contexto:"Churn 2.9% → meta 1.5% · reducir 1.4pp en 12 meses",
-                accion:"IA WSP cobranza D5/15/25 · onboarding automático",
-                historico:[1.13,1.13,0.71],
-                labHist:["Ene","Feb","Mar"],
+                fuente:"CSV ISPCube · SS nuevos / altas brutas ese mes",
+                contexto:"Mar 26: 22 SS / 310 altas = 0.71% · meta <0.5% · tendencia bajando",
+                accion:"Seguir mejorando onboarding · meta alcanzable próximos 2 meses",
+                historico:[11.3, 11.3, 7.1],
+                labHist:["Ene 26","Feb 26","Mar 26"],
               },
               {
                 area:"Operaciones · Red",
                 icono:"📦",
                 nombre:"Cajas instaladas — obra AB",
-                actual:156, meta:2800, unidad:"cajas",
-                pct:40.6,
-                fuente:"Obra iniciada 21/02/26 · 24 días hábiles transcurridos",
-                contexto:"Meta: 16 cajas/día hábil · Ritmo real: 6.5/día · Fin si cumple meta: 12/11/26",
-                accion:"Ritmo al 40% del objetivo — requiere acelerar a 16 cajas/día hábil",
-                historico:[0, 84, 156],
-                labHist:["21/02","Mar 1","Hoy"],
+                actual:202, meta:2800, unidad:"cajas",
+                pct:26.9,
+                fuente:"Obra iniciada 21/02/26 · 47 días hábiles transcurridos",
+                contexto:"Meta: 16 cajas/día · Ritmo real: 4.3/día · Fin si cumple meta: 11/12/26",
+                accion:"Ritmo al 26.9% del objetivo — requiere acelerar a 16 cajas/día hábil",
+                historico:[0, 156, 202],
+                labHist:["21/02","Mar 26","Hoy"],
                 obraExtra:true,
               },
               {
