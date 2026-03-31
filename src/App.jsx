@@ -73,20 +73,26 @@ const D = {
 
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  ALTAS_V: [299, 281, 324, 225, 279, 354, 292, 310],  // mar 26: 284 total (267 hab) verificado
-  CHURNS_V:[73,79,71,72,101,104,138,37],  // método real: SS con fecha bloqueo ese mes  // churn real = nuevos Sin servicio c/mes
+  ALTAS_V: [299,281,324,225,279,354,292,346],
+  CHURNS_V:[73,79,71,72,101,104,138,37],  // método real: SS + fecha bloqueo ese mes
 
   // ── CHURN: serie mensual ──
-  CHURN_PCT_ACT: 0.52,  // % real mar 26 = 16 nuevos SS / 4196 hab
-  CHURN_ABS_ACT:  22,   // clientes/mes Mar 26 = nuevos Sin servicio
+  CHURN_PCT_ACT: 0.86,  // % mar 26 = 37 SS / 4.298 hab
+  CHURN_ABS_ACT:  37,   // SS con fecha bloqueo mar 26
   // CHURN REAL = nuevos Sin servicio / base habilitados ese mes
   CHURN_MENS:[
-    {mes:"Sep 24",pct:2.1,cant:59}, {mes:"Oct 24",pct:2.3,cant:67}, {mes:"Nov 24",pct:2.0,cant:60}, {mes:"Dic 24",pct:1.9,cant:59},
-    {mes:"Ene 25",pct:2.2,cant:70}, {mes:"Feb 25",pct:2.4,cant:79}, {mes:"Mar 25",pct:2.6,cant:88}, {mes:"Abr 25",pct:2.8,cant:101},
-    {mes:"May 25",pct:2.7,cant:100},{mes:"Jun 25",pct:2.9,cant:110},{mes:"Jul 25",pct:3.1,cant:121},
-    {mes:"Ago 25",pct:2.26,cant:89},{mes:"Sep 25",pct:2.01,cant:80},{mes:"Oct 25",pct:1.18,cant:47},
-    {mes:"Nov 25",pct:0.87,cant:35},{mes:"Dic 25",pct:0.87,cant:35},{mes:"Ene 26",pct:1.13,cant:40},
-    {mes:"Feb 26",pct:1.13,cant:33},{mes:"Mar 26",pct:0.71,cant:22},
+    {mes:"Abr 25",pct:1.51,cant:65},
+    {mes:"May 25",pct:0.70,cant:30},
+    {mes:"Jun 25",pct:2.68,cant:115},
+    {mes:"Jul 25",pct:1.84,cant:79},
+    {mes:"Ago 25",pct:1.70,cant:73},
+    {mes:"Sep 25",pct:1.84,cant:79},
+    {mes:"Oct 25",pct:1.65,cant:71},
+    {mes:"Nov 25",pct:1.68,cant:72},
+    {mes:"Dic 25",pct:2.35,cant:101},
+    {mes:"Ene 26",pct:2.42,cant:104},
+    {mes:"Feb 26",pct:3.21,cant:138},
+    {mes:"Mar 26",pct:0.86,cant:37},
   ],
 
   // ── COHORTS churn acumulado ──
@@ -146,7 +152,7 @@ const D = {
   CJ_CAPEX:[0,0,0.1,25.0,33.0],
 
   // ── BREAK-EVEN proyección ──
-  ARPU_COB:22447,
+  ARPU_COB:25054,
 
   // ── DATOS FALTANTES — compatibilidad con componentes ──
   ARPU: 27425,          // ARPU teórico (precio plan)
@@ -154,7 +160,7 @@ const D = {
   LTV_CAC: 59.5,
   PAYBACK_DIAS: 17,
   ALTAS: 152,
-  CHURN_PCT: 2.3,
+  CHURN_PCT: 10.3,
   CHURN_ABS: 97,
   CLIENTES: 4196,
 
@@ -227,7 +233,7 @@ const D = {
     {mes:"Dic 25", neto:-78.9, altas:279, churns:38, neto_cli:241},
     {mes:"Ene 26", neto:-79.3, altas:354, churns:40, neto_cli:314},
     {mes:"Feb 26", neto:-88.1, altas:292, churns:33, neto_cli:259},
-    {mes:"Mar 26", neto:-46.2, altas:346, churns:22, neto_cli:324},
+    {mes:"Mar 26", neto:-46.2, altas:346, churns:37, neto_cli:309},
   ],
 
   // ── Break-even gráfico ② proyección ──
@@ -406,7 +412,7 @@ export default function App() {
     return row;
   });
   const OPEX_BASE = 150.3;   // real ene-feb 26
-  const ARPU_BE   = 22447;   // ARPU cobrado real (no teórico)
+  const ARPU_BE = 25054;  // ARPU cobrado real mar 26
   const beData    = D.RED_PROJ;
 
   if(loading) return(
@@ -775,7 +781,7 @@ export default function App() {
                 {[
                   {mes:"Ene 26",nota:"354 altas − 40 SS = +314 clientes neto",color:C.green},
                   {mes:"Feb 26",nota:"292 altas − 33 SS = +259 clientes neto",color:C.green},
-                  {mes:"Mar 26",nota:"346 altas − 22 SS = +324 clientes neto ★ menor churn",color:C.blue},
+                  {mes:"Mar 26",nota:"346 altas − 37 churns = +309 clientes neto ★ menor churn",color:C.blue},
                 ].map((n,i)=>(
                   <div key={i} style={{background:C.bg3,borderRadius:6,padding:"7px 10px",border:`0.5px solid ${C.bdr}`}}>
                     <p style={{fontSize:10,fontWeight:600,color:n.color}}>{n.mes}</p>
