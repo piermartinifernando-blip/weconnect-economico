@@ -475,9 +475,9 @@ export default function App() {
         {tab==="negocio"&&(
           <div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="Cobranza Dic 2025" value="$92.6M" sub="▲ +7.4% vs noviembre" type="ok"/>
+              <KPI label="Cobranza Feb 2026" value="$95.19M" sub="▲ +2.9% vs enero" type="ok"/>
               <KPI label="Cobranza Feb 2026" value={`$${D.COB_PREV}M`} sub="mes completo" type="ok"/>
-              <KPI label="Cobranza Feb 2026" value="$95.4M" sub="mes completo · datos frescos" type="ok"/>
+              <KPI label="Cobranza Mar 2026" value="$107.68M" sub="★ primer mes +$100M · +13.1% vs feb" type="ok"/>
               <KPI label="Cobro Mar 2026"    value={`$${D.COB_ACTUAL}M`} sub={`★ primer mes +$100M · SIRO $${D.SIRO_ABS}M · +${D.COB_VAR_PCT}% vs feb`} type="ok"/>
             </div>
 
@@ -526,7 +526,7 @@ export default function App() {
                   </BarChart>
                 </ResponsiveContainer>
                 <Ins type="g" html="SIRO: 0.5% (nov) → 5.7% (feb) → <strong>10.8% (mar)</strong> confirmado con datos frescos. 2do canal de mayor crecimiento."/>
-                <Ins type="d" html="⚠ Mercado Pago = 65% del cobro. Si falla o sube comisión, impacto inmediato."/>
+                <Ins type="d" html="⚠ Mercado Pago = 69% del cobro Mar 26. Si falla o sube comisión, impacto inmediato."/>
               </Card>
             </div>
 
@@ -557,7 +557,7 @@ export default function App() {
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:14}}>
-              <KPI label="ARPU cobrado real"   value="$22.447"   sub="promedio cobrado ene-feb 26 · precio plan $26.254" type="nv"/>
+              <KPI label="ARPU cobrado real"   value="$25.054"   sub="cobrado mar 26 / 4.298 hab · precio plan $26.254" type="nv"/>
               <KPI label="Tasa cobranza mar-26" value={`${D.TASA_ACTUAL}%`} sub={`$${D.COB_ACTUAL}M cobrado / $${D.FACT_ACTUAL}M facturado · sin cobrar $${D.FACT_SIN_COB}M`} type="wr"/>
               <KPI label="SIRO Mar 26"               value={`$${D.SIRO_ABS}M`} sub={`▲ desde $0 oct 25 · ${D.SIRO_PCT}% del cobrado`} type="ok"/>
             </div>
@@ -573,8 +573,8 @@ export default function App() {
             </div>
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="OPEX steady state"    value="$150.3M"  sub="ARS/mes · ene-feb 2026"                  type="dn"/>
-              <KPI label="Déficit mensual"      value="−$42.5M"  sub="4.106 cli × $26.254 = $107.8M"           type="dn"/>
-              <KPI label="Clientes para BE"     value="5.725"    sub="faltan 1.619 · ARPU $26.254"              type="wr"/>
+              <KPI label="Déficit mensual est." value="~−$42.6M" sub="proyección · sin egresos Mar 26 aún"      type="wr"/>
+              <KPI label="Clientes para BE"     value="5.725"    sub="faltan 1.427 · ARPU $26.254"              type="wr"/>
               <KPI label="CAPEX red AB ($M)"    value="$58.2M"   sub="OLT + Construcción · no recurrente"       type="nv"/>
             </div>
 
@@ -733,11 +733,11 @@ export default function App() {
                     </div>
                   </div>
                 ))}
-                <Ins type="i" html="511 clientes en 30/50 MB → upsell a 100 MB = potencial <strong>+$12.3M/mes</strong>."/>
+                <Ins type="i" html="487 clientes en 30/50 MB → upsell a 100 MB = potencial <strong>+$12.8M/mes</strong>."/>
 
                 <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"14px 0 10px"}}>Distribución geográfica</p>
                 {D.CIUDADES.map((r,i)=>(
-                  <Prog key={i} label={r.ciudad} value={r.habilitados} max={1952}
+                  <Prog key={i} label={r.ciudad} value={r.habilitados} max={1987}
                     display={`${r.habilitados.toLocaleString("es-AR")} hab · ${r.total} total`}
                     color={i<2?C.blue:C.green}/>
                 ))}
@@ -793,8 +793,8 @@ export default function App() {
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Churn acumulado"       value={`${(D.SS/D.TOTAL*100).toFixed(1)}%`} sub={`${D.SS.toLocaleString("es-AR")} de ${D.TOTAL.toLocaleString("es-AR")} inactivos`}   type="dn"/>
               <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} nuevos SS · mar 26`}            type="dn"/>
-              <KPI label="Churn anual implícito" value="0.83%"    sub="tasa mensual real · base 4.235 hab"           type="wr"/>
-              <KPI label="Vida media"            value="5.3 meses" sub="mediana: 3.9 meses"         type="wr"/>
+              <KPI label="Churn prom 8 meses"    value="1.20%"    sub="mensual · anual 14.4% · SS nuevos/base hab"   type="wr"/>
+              <KPI label="Churn últ. 3 meses"    value="0.75%"     sub="mensual · tendencia bajando · anual 9.0%"    type="ok"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
@@ -836,7 +836,7 @@ export default function App() {
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:12}}>
-              <KPI label="Churnan antes del mes 3"  value="30.7%" sub="problema de onboarding"      type="dn"/>
+              <KPI label="Vida media cliente"       value="12.5m"  sub="mediana 13m · alta → SS"     type="nv"/>
               <KPI label="Churnan entre mes 3–6"   value="38.8%" sub="primera renovación"           type="wr"/>
               <KPI label="Más de 12 meses activos" value="8.2%"  sub='los clientes "fieles"'        type="ok"/>
             </div>
@@ -859,7 +859,7 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <Ins type="g" html="El 97% del churn es prevenible. Los primeros 3 se atacan con automatización, sin llamar a nadie, sin reportes manuales."/>
+              <Ins type="g" html="Flujo real: <strong>Habilitado → Bloqueado (mora) → 45 días sin pago → Sin Servicio</strong>. Hoy los 138 bloqueados promedian 13 días — están en ventana de recuperación. El 97% del churn es prevenible con automatización temprana en el día 5, 15 y 25 de mora."/>
             </Card>
 
             {/* ── BLOQUEADOS POR ANTIGÜEDAD ── */}
@@ -878,7 +878,7 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <Ins type="i" html="Total bloqueados: <strong>138 clientes · $4.30M deuda vencida</strong> · CSV 31/03/26"/>
+              <Ins type="i" html="Total bloqueados: <strong>138 clientes · $4.30M deuda vencida</strong> · Promedio 13 días bloqueado · 99% dentro de ventana de recuperación (&lt;30d) · Solo 1 cliente supera los 45 días · flujo: Hab → Bloq → 45d sin pago → SS"/>
               <div style={{overflowX:"auto",marginTop:10}}>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?600:0}}>
                 <thead>
@@ -992,7 +992,7 @@ export default function App() {
                   <Line type="monotone" dataKey="neto" name="Neto (altas−SS)" stroke={C.green} strokeWidth={2.5} dot={false}/>
                 </ComposedChart>
               </ResponsiveContainer>
-              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→38→22. El neto de clientes mejora mes a mes. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 346 altas."/>
+              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→38→22. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 346 altas (0.64%). Vida media antes de irse: 12.5m · 35.6% churna entre mes 12–18 · solo 5.9% antes del mes 3."/>
             </Card>
 
           </div>
@@ -1825,7 +1825,7 @@ export default function App() {
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Habilitados"          value={D.HAB.toLocaleString("es-AR")}  sub="activos hoy"                    type="ok"/>
               <KPI label="Sin servicio"          value={D.SS.toLocaleString("es-AR")}   sub="nunca regularizaron"             type="dn"/>
-              <KPI label="SS sin deuda"          value="492"  sub="recupero gratuito · win-back fácil"  type="ok"/>
+              <KPI label="SS sin deuda"          value="490"  sub="recupero gratuito · win-back fácil"  type="ok"/>
               <KPI label="SS deuda ≤$24k"        value="121"  sub="1 cuota para reactivar"              type="wr"/>
             </div>
 
