@@ -907,92 +907,78 @@ export default function App() {
             </Card>
 
             {/* ── RESUMEN MENSUAL SIN SERVICIO ── */}
-            <Card title="Sin servicio por cohorte — clientes que nunca volvieron · ago 24 → mar 26">
-              <Ins type="d" html="Cada fila = clientes captados ese mes. <strong>SS = nunca regularizaron</strong>. Tendencia: mejora notable desde oct 25 (31% → 7%)."/>
+            <Card title="Churn operativo mensual — clientes que pasaron a SS · ago 25 → mar 26">
+              <Ins type="i" html="Churn real = clientes en SS con fecha de bloqueo ese mes · flujo: <strong>Habilitado → Bloqueado → 45d sin pago → Sin Servicio</strong> · si el cliente paga sale del churn automáticamente"/>
               <div style={{overflowX:"auto",marginTop:10}}>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?600:0}}>
                 <thead>
                   <tr style={{background:"#0D1B2A"}}>
-                    {["Mes alta","Total altas","Habilitados","Bloqueados","Sin servicio","% No volvió","Deuda SS"].map(h=>(
-                      <th key={h} style={{padding:"7px 10px",textAlign:h==="Mes alta"?"left":"center",color:"#fff",fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
+                    {["Mes","Total bloqueados","Reactivaron (pagaron)","Churnearon (SS)","% Recupero","Deuda SS"].map(h=>(
+                      <th key={h} style={{padding:"7px 10px",textAlign:h==="Mes"?"left":"center",color:"#fff",fontSize:10,fontWeight:600,borderBottom:`1px solid ${C.bdr}`}}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    {m:"Ago 24",tot:296,hab:203,bloq:1, ss:92, pct:31.1,deu:"$2.530.342"},
-                    {m:"Sep 24",tot:339,hab:231,bloq:5, ss:103,pct:30.4,deu:"$2.897.723"},
-                    {m:"Oct 24",tot:293,hab:183,bloq:4, ss:106,pct:36.2,deu:"$4.802.221"},
-                    {m:"Nov 24",tot:291,hab:161,bloq:2, ss:128,pct:44.0,deu:"$5.467.267"},
-                    {m:"Dic 24",tot:257,hab:152,bloq:4, ss:101,pct:39.3,deu:"$4.325.230"},
-                    {m:"Ene 25",tot:278,hab:181,bloq:10,ss:87, pct:31.3,deu:"$4.949.447"},
-                    {m:"Feb 25",tot:238,hab:141,bloq:3, ss:94, pct:39.5,deu:"$5.152.783"},
-                    {m:"Mar 25",tot:242,hab:170,bloq:5, ss:67, pct:27.7,deu:"$3.483.892"},
-                    {m:"Abr 25",tot:257,hab:163,bloq:5, ss:89, pct:34.6,deu:"$4.789.511"},
-                    {m:"May 25",tot:270,hab:168,bloq:9, ss:93, pct:34.4,deu:"$3.952.420"},
-                    {m:"Jun 25",tot:236,hab:151,bloq:9, ss:76, pct:32.2,deu:"$3.517.044"},
-                    {m:"Jul 25",tot:279,hab:174,bloq:9, ss:96, pct:34.4,deu:"$3.907.797"},
-                    {m:"Ago 25",tot:299,hab:196,bloq:10,ss:93, pct:31.1,deu:"$3.436.209"},
-                    {m:"Sep 25",tot:281,hab:192,bloq:8, ss:81, pct:28.8,deu:"$3.100.278"},
-                    {m:"Oct 25",tot:324,hab:263,bloq:13,ss:48, pct:14.8,deu:"$1.110.887"},
-                    {m:"Nov 25",tot:225,hab:180,bloq:7, ss:38, pct:16.9,deu:"$665.466"},
-                    {m:"Dic 25",tot:279,hab:234,bloq:8, ss:37, pct:13.3,deu:"$588.402"},
-                    {m:"Ene 26",tot:354,hab:303,bloq:11,ss:40, pct:11.3,deu:"$212.454"},
-                    {m:"Feb 26",tot:292,hab:249,bloq:10,ss:33, pct:11.3,deu:"$45.993"},
-                    {m:"Mar 26",tot:346,hab:323,bloq:1, ss:22, pct:6.4, deu:"$24.000"},
+                    {m:"Ago 25",tot:82, reactiv:9,  churn:73, pct_rec:11.0,deu:"$3.842.622"},
+                    {m:"Sep 25",tot:91, reactiv:12, churn:79, pct_rec:13.2,deu:"$4.213.736"},
+                    {m:"Oct 25",tot:94, reactiv:23, churn:71, pct_rec:24.5,deu:"$4.157.611"},
+                    {m:"Nov 25",tot:108,reactiv:36, churn:72, pct_rec:33.3,deu:"$3.896.593"},
+                    {m:"Dic 25",tot:169,reactiv:68, churn:101,pct_rec:40.2,deu:"$5.845.458"},
+                    {m:"Ene 26",tot:245,reactiv:141,churn:104,pct_rec:57.6,deu:"$4.037.283"},
+                    {m:"Feb 26",tot:655,reactiv:516,churn:138,pct_rec:78.8,deu:"$4.797.686"},
+                    {m:"Mar 26",tot:936,reactiv:762,churn:37, pct_rec:81.4,deu:"$341.952"},
                   ].map((r,i)=>{
-                    const semColor = r.pct <= 15 ? C.green : r.pct <= 30 ? C.amber : C.red;
+                    const semColor = r.pct_rec >= 70 ? C.green : r.pct_rec >= 40 ? C.amber : C.red;
                     const bg = i%2===0?"#FFFFFF":"#F4F6F9";
                     return (
                       <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:bg}}>
                         <td style={{padding:"6px 10px",fontWeight:600,color:C.text}}>{r.m}</td>
                         <td style={{padding:"6px 10px",textAlign:"center",color:C.text2}}>{r.tot}</td>
-                        <td style={{padding:"6px 10px",textAlign:"center",color:C.green,fontWeight:600}}>{r.hab}</td>
-                        <td style={{padding:"6px 10px",textAlign:"center",color:C.amber}}>{r.bloq}</td>
-                        <td style={{padding:"6px 10px",textAlign:"center",color:C.red,fontWeight:600}}>{r.ss}</td>
-                        <td style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:semColor}}>{r.pct}%</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.green,fontWeight:600}}>{r.reactiv}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",color:C.red,fontWeight:600}}>{r.churn}</td>
+                        <td style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:semColor}}>{r.pct_rec}%</td>
                         <td style={{padding:"6px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>{r.deu}</td>
                       </tr>
                     );
                   })}
                   <tr style={{background:C.bg3,fontWeight:700,borderTop:`1.5px solid ${C.navy}`}}>
-                    <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>TOTAL</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>5.676</td>
-                    <td colSpan={2} style={{padding:"7px 10px"}}></td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>1.524</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>26.8%</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$58.9M</td>
+                    <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>Mar 26</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>936</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.green,fontWeight:700}}>762</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>37</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.green,fontWeight:700}}>81.4%</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$341.952</td>
                   </tr>
                 </tbody>
               </table>
               </div>
 
-              {/* Gráfico de barras evolución mensual */}
-              <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"18px 0 10px"}}>Evolución mensual — altas brutas vs SS (churn)</p>
+              {/* Gráfico churn vs recupero */}
+              <p style={{fontSize:10,fontWeight:600,color:C.text2,textTransform:"uppercase",letterSpacing:"0.07em",margin:"18px 0 10px"}}>Evolución churn real vs recupero — ago 25 → mar 26</p>
               <ResponsiveContainer width="100%" height={220}>
                 <ComposedChart data={[
-                  {m:"Ago 24",altas:296,ss:92, neto:204},{m:"Sep 24",altas:339,ss:103,neto:236},
-                  {m:"Oct 24",altas:293,ss:106,neto:187},{m:"Nov 24",altas:291,ss:128,neto:163},
-                  {m:"Dic 24",altas:257,ss:101,neto:156},{m:"Ene 25",altas:278,ss:87, neto:191},
-                  {m:"Feb 25",altas:238,ss:94, neto:144},{m:"Mar 25",altas:242,ss:67, neto:175},
-                  {m:"Abr 25",altas:257,ss:89, neto:168},{m:"May 25",altas:270,ss:93, neto:177},
-                  {m:"Jun 25",altas:236,ss:76, neto:160},{m:"Jul 25",altas:279,ss:96, neto:183},
-                  {m:"Ago 25",altas:299,ss:93, neto:206},{m:"Sep 25",altas:281,ss:81, neto:200},
-                  {m:"Oct 25",altas:324,ss:48, neto:276},{m:"Nov 25",altas:225,ss:38, neto:187},
-                  {m:"Dic 25",altas:279,ss:37, neto:242},{m:"Ene 26",altas:354,ss:40, neto:314},
-                  {m:"Feb 26",altas:292,ss:33, neto:259},{m:"Mar 26",altas:346,ss:22, neto:324},
+                  {m:"Ago 25",churn:73, reactiv:9,  pct_rec:11.0},
+                  {m:"Sep 25",churn:79, reactiv:12, pct_rec:13.2},
+                  {m:"Oct 25",churn:71, reactiv:23, pct_rec:24.5},
+                  {m:"Nov 25",churn:72, reactiv:36, pct_rec:33.3},
+                  {m:"Dic 25",churn:101,reactiv:68, pct_rec:40.2},
+                  {m:"Ene 26",churn:104,reactiv:141,pct_rec:57.6},
+                  {m:"Feb 26",churn:138,reactiv:516,pct_rec:78.8},
+                  {m:"Mar 26",churn:37, reactiv:762,pct_rec:81.4},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
-                  <XAxis dataKey="m" tick={{fontSize:8,fill:C.text2}} stroke={C.bdr} interval={1}/>
-                  <YAxis tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
+                  <XAxis dataKey="m" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
+                  <YAxis yAxisId="left" tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
+                  <YAxis yAxisId="right" orientation="right" tickFormatter={v=>`${v}%`} tick={{fontSize:9,fill:C.text2}} stroke={C.bdr}/>
                   <Tooltip content={<TipCant/>}/>
                   <Legend formatter={v=><span style={{fontSize:11,color:C.text2}}>{v}</span>}/>
-                  <Bar dataKey="altas" name="Altas brutas"   fill={C.blue}  opacity={0.7} radius={[2,2,0,0]}/>
-                  <Bar dataKey="ss"    name="SS nuevos (churn)" fill={C.red} opacity={0.6} radius={[2,2,0,0]}/>
-                  <Line type="monotone" dataKey="neto" name="Neto (altas−SS)" stroke={C.green} strokeWidth={2.5} dot={false}/>
+                  <Bar yAxisId="left" dataKey="churn"   name="Churnearon (SS)" fill={C.red}   opacity={0.7} radius={[2,2,0,0]}/>
+                  <Bar yAxisId="left" dataKey="reactiv" name="Reactivaron"      fill={C.green} opacity={0.6} radius={[2,2,0,0]}/>
+                  <Line yAxisId="right" type="monotone" dataKey="pct_rec" name="% Recupero" stroke={C.blue} strokeWidth={2.5} dot={{r:3}} strokeDasharray="4 2"/>
                 </ComposedChart>
               </ResponsiveContainer>
-              <Ins type="g" html="Churn real = clientes en SS con fecha de bloqueo ese mes. Mar 26: 936 bloqueados → 762 pagaron (81.3%) → <strong>37 churnearon = mejor mes</strong>. Feb 26 fue el pico: 138 SS. Vida media antes de irse: 12.5m."/>
+              <Ins type="g" html="Tendencia clara: recupero sube de 11% (ago 25) a <strong>81.4% (mar 26)</strong>. Churn baja de 138 (feb 26) a <strong>37 (mar 26) = mínimo histórico</strong>. Las acciones de recupero están funcionando."/>
             </Card>
 
           </div>
