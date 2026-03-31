@@ -43,27 +43,27 @@ const D = {
 
   // ── NEGOCIO: últimos 8 meses ──
   M8:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
-  COBROS_M8:[70.20,76.62,78.08,85.40,92.87,95.96,95.19,104.06],
+  COBROS_M8:[70.20,76.62,78.04,85.40,92.87,95.96,95.19,107.68],
 
   // ── CANALES: últimos 8 meses ($M) ──
-  MP8:  [55.96,60.37,60.56,66.35,74.84,66.89,71.73,72.30],
-  SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,10.93],
-  VISA8:[4.82, 6.03, 6.98, 7.78, 7.33, 8.93, 8.10, 9.68],
-  PF8:  [4.16, 4.52, 4.66, 5.87, 4.95, 4.65, 4.05, 5.20],
-  CAJA8:[3.15, 3.59, 3.72, 3.28, 3.56, 3.71, 3.37, 3.98],
-  GAL8: [2.12, 2.11, 2.16, 1.69, 1.37,10.47, 2.51, 1.96],
+  MP8:  [55.96,60.37,60.52,66.35,74.84,66.89,71.73,74.73],
+  SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,11.65],
+  VISA8:[0.03, 7.19,13.32, 9.22, 3.42, 0.49, 0.90,1.66],
+  PF8:  [4.65, 3.12, 6.60, 5.60, 3.78, 1.89, 1.51,4.06],
+  CAJA8:[3.26, 4.06, 4.03, 3.75, 3.37, 2.32, 2.34,4.16],
+  GAL8: [2.09, 1.69, 3.24, 2.31, 1.98, 9.52, 1.24,2.29],
 
   // ── MES ACTUAL: Mar 26 ──
-  COB_ACTUAL:  104.06,   // cobrado total
+  COB_ACTUAL:  107.68,   // cobrado total
   COB_PREV:     95.19,   // mes anterior (Feb 26)
-  COB_VAR_PCT:   9.3,    // % variación
+  COB_VAR_PCT:  13.1,    // % variación
   SIRO_ABS:     10.93,   // SIRO $M
   SIRO_PCT:     10.5,    // SIRO % del cobrado
   MP_ABS:       72.30,   // MP $M
   MP_PCT:       69.5,    // MP %
-  FACT_ACTUAL: 117.89,   // facturado mensual Mar 26 (csv bills sep=;)
-  TASA_ACTUAL: 88.3,     // cobrado/facturado Mar 26
-  FACT_SIN_COB:13.83,    // $M sin cobrar Mar 26
+  FACT_ACTUAL: 123.65,   // facturado mensual Mar 26 (csv bills sep=;)
+  TASA_ACTUAL: 87.1,     // cobrado/facturado Mar 26
+  FACT_SIN_COB:15.97,    // $M sin cobrar Mar 26
 
   // ── CLIENTES: estado actual ──
   HAB:   4298,    // habilitados — CSV 31/03/26
