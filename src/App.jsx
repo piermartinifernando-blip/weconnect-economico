@@ -66,10 +66,10 @@ const D = {
   FACT_SIN_COB:13.83,    // $M sin cobrar Mar 26
 
   // ── CLIENTES: estado actual ──
-  HAB:   4235,    // habilitados
-  BLOQ:   161,    // bloqueados
-  SS:    1616,    // sin servicio
-  TOTAL: 6012,    // total padrón
+  HAB:   4298,    // habilitados — CSV 31/03/26
+  BLOQ:   138,    // bloqueados
+  SS:    1612,    // sin servicio
+  TOTAL: 6048,    // total padrón
 
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
@@ -109,21 +109,21 @@ const D = {
 
   // ── CIUDADES ──
   CIUDADES:[
-    {ciudad:"Almirante Brown",    habilitados:1952, total:3128, deudaVenc:50.00},
-    {ciudad:"Capitan Sarmiento",  habilitados:1314, total:1747, deudaVenc:12.04},
-    {ciudad:"Ministro Rivadavia", habilitados:362,  total:410,  deudaVenc:1.96},
-    {ciudad:"Glew",               habilitados:336,  total:402,  deudaVenc:2.60},
-    {ciudad:"Longchamps",         habilitados:129,  total:154,  deudaVenc:0.62},
-    {ciudad:"Florencio Varela",   habilitados:60,   total:94,   deudaVenc:1.19},
-    {ciudad:"Burzaco",            habilitados:43,   total:51,   deudaVenc:0.24},
-  ],
+    {ciudad:"Almirante Brown",    habilitados:1987, total:3128, deudaVenc:54.62},
+    {ciudad:"Capitan Sarmiento",  habilitados:1341, total:1765, deudaVenc:11.67},
+    {ciudad:"Ministro Rivadavia", habilitados:378,  total:429,  deudaVenc:1.39},
+    {ciudad:"Glew",               habilitados:346,  total:411,  deudaVenc:1.97},
+    {ciudad:"Longchamps",         habilitados:141,  total:166,  deudaVenc:0.48},
+    {ciudad:"Florencio Varela",   habilitados:58,   total:95,   deudaVenc:1.12},
+    {ciudad:"Burzaco",            habilitados:47,   total:54,   deudaVenc:0.13},
+  ],  // CSV ISPCube 31/03/26
   CITY_NAMES:["AB","CS","MR","Glew","LCH","FV","Buz"],
-  CITY_HAB:  [1952,1314,362,336,129,60,43],
-  CITY_TOTAL:[3128,1747,410,402,154,94,51],
-  CITY_MORA: [55.04,12.04,1.96,2.60,0.62,1.19,0.24],
+  CITY_HAB:  [1987,1341,378,346,141,58,47],
+  CITY_TOTAL:[3128,1765,429,411,166,95,54],
+  CITY_MORA: [54.62,11.67,1.39,1.97,0.48,1.12,0.13],
 
   // ── MORA ──
-  MORA_TOTAL:134.23, MORA_VENC:73.69, MORA_SS:58.91, MORA_BLOQ:7.18, MORA_HAB:7.56,
+  MORA_TOTAL:137.41, MORA_VENC:71.38, MORA_SS:60.42, MORA_BLOQ:4.91, MORA_HAB:7.56,
   MORA_MOROSOS:1777, // ss(1556) + bloq(234)
   MORA_PCT:29.9,     // morosos / total
 
@@ -164,7 +164,7 @@ const D = {
 
   // Mora
   MORA_SS:    60.42, MORA_BLOQ:   4.91,
-  MORA_VENC:  72.89,
+  MORA_VENC:  71.38,
 
   // Costos steady state
   SS_OPEX: 150.3, SS_CAPEX: 33.0, SS_RES: -88.1, SS_RATIO: 1.93,
