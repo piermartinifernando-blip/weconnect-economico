@@ -929,7 +929,7 @@ export default function App() {
                     {m:"Feb 26",tot:655,reactiv:516,churn:138,pct_rec:78.8,deu:"$4.797.686"},
                     {m:"Mar 26",tot:936,reactiv:762,churn:37, pct_rec:81.4,deu:"$341.952"},
                   ].map((r,i)=>{
-                    const semColor = r.pct_rec >= 70 ? C.green : r.pct_rec >= 40 ? C.amber : C.red;
+                    const semColor = r.churn <= 50 ? C.green : r.churn <= 100 ? C.amber : C.red;
                     const bg = i%2===0?"#FFFFFF":"#F4F6F9";
                     return (
                       <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:bg}}>
@@ -943,12 +943,12 @@ export default function App() {
                     );
                   })}
                   <tr style={{background:C.bg3,fontWeight:700,borderTop:`1.5px solid ${C.navy}`}}>
-                    <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>Mar 26</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>936</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.green,fontWeight:700}}>762</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>37</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.green,fontWeight:700}}>81.4%</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$341.952</td>
+                    <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>TOTAL 8m</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>2.380</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.green,fontWeight:700}}>1.567</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>575</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.blue,fontWeight:700}}>65.8%</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$30.1M</td>
                   </tr>
                 </tbody>
               </table>
