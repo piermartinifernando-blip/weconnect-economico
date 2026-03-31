@@ -163,7 +163,7 @@ const D = {
   PF:    5.14, CAJA:   3.89, GAL:  1.84,
 
   // Mora
-  MORA_SS:    60.42, MORA_BLOQ:   4.91,
+  MORA_SS:    60.24, MORA_BLOQ:   4.43,
   MORA_VENC:  71.38,
 
   // Costos steady state
@@ -189,7 +189,7 @@ const D = {
   CITY_HAB_V:[1952,1314,362,336,129,60,43],
   CITY_MORA_V:[55.04,12.04,1.96,2.60,0.62,1.19,0.24],
   RED_PROJ:[
-    {mes:"Hoy",   cajas:1150,cap:12075,pen:2.2,churn:2.70,altas:310, clientes:4235, cobrado:104.1,opex:150.3,capex:40,costo:190.3,neto:-86.2},
+    {mes:"Hoy",   cajas:1150,cap:12075,pen:2.2,churn:2.70,altas:346, clientes:4298, cobrado:107.7,opex:150.3,capex:40,costo:190.3,neto:-86.2},
     {mes:"Abr 26",cajas:1150,cap:12075,pen:2.2,churn:2.78,altas:330, clientes:4196, cobrado:100.8,opex:150.3,capex:40,costo:190.3,neto:-89.5},
     {mes:"May 26",cajas:1300,cap:13650,pen:2.3,churn:2.67,altas:378, clientes:4409, cobrado:99.0, opex:150.3,capex:40,costo:190.3,neto:-91.3},
     {mes:"Jun 26",cajas:1450,cap:15225,pen:2.5,churn:2.55,altas:445, clientes:4669, cobrado:104.8,opex:150.3,capex:40,costo:190.3,neto:-85.5},
@@ -227,7 +227,7 @@ const D = {
     {mes:"Dic 25", neto:-78.9, altas:279, churns:38, neto_cli:241},
     {mes:"Ene 26", neto:-79.3, altas:354, churns:40, neto_cli:314},
     {mes:"Feb 26", neto:-88.1, altas:292, churns:33, neto_cli:259},
-    {mes:"Mar 26", neto:-46.2, altas:310, churns:22, neto_cli:288},
+    {mes:"Mar 26", neto:-46.2, altas:346, churns:22, neto_cli:324},
   ],
 
   // ── Break-even gráfico ② proyección ──
@@ -525,7 +525,7 @@ export default function App() {
                     <Bar dataKey="Caja"             stackId="a" fill={C.text3}  name="Caja" radius={[2,2,0,0]}/>
                   </BarChart>
                 </ResponsiveContainer>
-                <Ins type="g" html="SIRO: 0.5% (nov) → 6.1% (feb) → <strong>9.8% (mar)</strong> confirmado con datos frescos. 2do canal de mayor crecimiento."/>
+                <Ins type="g" html="SIRO: 0.5% (nov) → 5.7% (feb) → <strong>10.8% (mar)</strong> confirmado con datos frescos. 2do canal de mayor crecimiento."/>
                 <Ins type="d" html="⚠ Mercado Pago = 65% del cobro. Si falla o sube comisión, impacto inmediato."/>
               </Card>
             </div>
@@ -775,7 +775,7 @@ export default function App() {
                 {[
                   {mes:"Ene 26",nota:"354 altas − 40 SS = +314 clientes neto",color:C.green},
                   {mes:"Feb 26",nota:"292 altas − 33 SS = +259 clientes neto",color:C.green},
-                  {mes:"Mar 26",nota:"310 altas − 22 SS = +288 clientes neto ★ menor churn",color:C.blue},
+                  {mes:"Mar 26",nota:"346 altas − 22 SS = +324 clientes neto ★ menor churn",color:C.blue},
                 ].map((n,i)=>(
                   <div key={i} style={{background:C.bg3,borderRadius:6,padding:"7px 10px",border:`0.5px solid ${C.bdr}`}}>
                     <p style={{fontSize:10,fontWeight:600,color:n.color}}>{n.mes}</p>
@@ -878,7 +878,7 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <Ins type="i" html="Total bloqueados: <strong>161 clientes · $4.91M deuda vencida</strong> · Sin casos recientes (&lt;30d) — el bloqueo más nuevo tiene 31 días"/>
+              <Ins type="i" html="Total bloqueados: <strong>138 clientes · $4.30M deuda vencida</strong> · CSV 31/03/26"/>
               <div style={{overflowX:"auto",marginTop:10}}>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?600:0}}>
                 <thead>
@@ -892,7 +892,7 @@ export default function App() {
                   {[
                     {grupo:"31 a 45 días",cli:113,deuda:"$3.36M",accion:"Contacto WSP inmediato · oferta plan de cuotas · 1er vencimiento próximo",color:C.amber},
                     {grupo:"> 45 días",   cli:48, deuda:"$1.55M",accion:"Campaña de recupero campo · evaluar pase a Sin servicio si no responden",color:C.red},
-                    {grupo:"TOTAL",       cli:161,deuda:"$4.91M",accion:"",color:C.navy,bold:true},
+                    {grupo:"TOTAL",       cli:138,deuda:"$4.30M",accion:"",color:C.navy,bold:true},
                   ].map((r,i)=>(
                     <tr key={i} style={{borderBottom:`0.5px solid ${C.bdr}`,background:r.bold?C.bg3:"#FFFFFF"}}>
                       <td style={{padding:"7px 10px",fontWeight:r.bold?700:600,color:r.color}}>{r.grupo}</td>
@@ -980,7 +980,7 @@ export default function App() {
                   {m:"Ago 25",altas:299,ss:93, neto:206},{m:"Sep 25",altas:281,ss:81, neto:200},
                   {m:"Oct 25",altas:324,ss:48, neto:276},{m:"Nov 25",altas:225,ss:39, neto:186},
                   {m:"Dic 25",altas:279,ss:38, neto:241},{m:"Ene 26",altas:354,ss:40, neto:314},
-                  {m:"Feb 26",altas:292,ss:33, neto:259},{m:"Mar 26",altas:310,ss:22, neto:288},
+                  {m:"Feb 26",altas:292,ss:33, neto:259},{m:"Mar 26",altas:346,ss:22, neto:324},
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.bdr}/>
                   <XAxis dataKey="m" tick={{fontSize:8,fill:C.text2}} stroke={C.bdr} interval={1}/>
@@ -992,7 +992,7 @@ export default function App() {
                   <Line type="monotone" dataKey="neto" name="Neto (altas−SS)" stroke={C.green} strokeWidth={2.5} dot={false}/>
                 </ComposedChart>
               </ResponsiveContainer>
-              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→39→22. El neto de clientes mejora mes a mes. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 310 altas."/>
+              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→38→22. El neto de clientes mejora mes a mes. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 346 altas."/>
             </Card>
 
           </div>
@@ -1021,7 +1021,7 @@ export default function App() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <Ins type="d" html="AB = 72.6% de la deuda vencida. Prioridad para campaña de recupero de campo."/>
+                <Ins type="d" html="AB = 76.5% de la deuda vencida ($54.62M). Prioridad para campaña de recupero de campo."/>
               </Card>
 
               <Card title="Causa raíz — medios de pago declarados">
@@ -1201,7 +1201,7 @@ export default function App() {
                  d:"Meta tiene segmentos de <strong>recién mudados, inquilinos, primera vivienda y jefes de hogar</strong>. El que se muda cambia de proveedor en el 78% de los casos en los primeros 30 días.",
                  box:"~15.000 usuarios 'recién mudados' en AB solo · <strong>Nadie busca internet si ya tiene</strong> — Meta llega antes de que busquen"},
                 {t:"3 · Lookalike de clientes actuales",
-                 d:"Subir la base de <strong>4.088 clientes reales</strong> a Meta genera una audiencia 'parecida' de 200k-500k personas. El algoritmo optimiza hacia quienes más se parecen a quienes ya convirtieron.",
+                 d:"Subir la base de <strong>4.298 clientes reales</strong> a Meta genera una audiencia 'parecida' de 200k-500k personas. El algoritmo optimiza hacia quienes más se parecen a quienes ya convirtieron.",
                  box:"Lookalike 1% reduce el CPL un <strong>35–40%</strong> vs audiencia fría · WeConnect ya tiene el activo — sin usarlo están pagando de más"},
               ].map((c,i)=>(
                 <div key={i} style={{background:C.bg2,border:`0.5px solid ${C.bdr}`,borderTop:`3px solid ${C.blue}`,borderRadius:10,padding:"14px 16px"}}>
@@ -1677,7 +1677,7 @@ export default function App() {
                 pct:D.OBJ.churn_pct,
                 inverso:true,
                 fuente:"CSV ISPCube · SS nuevos / altas brutas ese mes",
-                contexto:"Mar 26: 22 SS / 310 altas = 0.71% · meta <0.5% · tendencia bajando",
+                contexto:"Mar 26: 22 SS / 346 altas = 0.64% · meta <0.5% · tendencia bajando",
                 accion:"Seguir mejorando onboarding · meta alcanzable próximos 2 meses",
                 historico:[11.3, 11.3, 7.1],
                 labHist:["Ene 26","Feb 26","Mar 26"],
@@ -2024,7 +2024,7 @@ export default function App() {
 
             {/* ── RANKING SEGMENTOS A ATACAR ── */}
             <Card title="Ranking de segmentos a atacar — SS + bloqueados por rango etario">
-              <Ins type="i" html="Universo recuperable: <strong>1.777 clientes</strong> · SS sin deuda = recupero inmediato sin gestión de cobranza · SS ≤$24k = 1 cuota para reactivar"/>
+              <Ins type="i" html="Universo recuperable: <strong>611 clientes</strong> · 490 SS sin deuda + 121 SS ≤$24k = 1 cuota para reactivar"/>
               <div style={{overflowX:"auto",marginTop:8}}>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:mob?500:0}}>
                 <thead>
@@ -2083,7 +2083,7 @@ export default function App() {
               <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:8,marginBottom:14}}>
                 {[
                   {label:"Meta mensual",      val:"420",        sub:"altas brutas objetivo",  color:C.navy},
-                  {label:"Mar 26 real",        val:"310",        sub:"284 hab + 22 SS + 4 bl", color:C.blue},
+                  {label:"Mar 26 real",        val:"346",        sub:"323 hab + 22 SS + 1 bl", color:C.blue},
                   {label:"% vs meta",          val:"73.8%",      sub:"en progreso",            color:C.amber},
                   {label:"Gap a cerrar",        val:"110 altas",  sub:"para llegar a 420/mes",  color:C.red},
                 ].map((k,i)=>(
