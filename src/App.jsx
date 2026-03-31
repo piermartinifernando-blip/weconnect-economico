@@ -74,7 +74,7 @@ const D = {
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
   ALTAS_V: [299, 281, 324, 225, 279, 354, 292, 310],  // mar 26: 284 total (267 hab) verificado
-  CHURNS_V:[93,81,48,38,37,40,33,22],  // churn real = nuevos Sin servicio c/mes
+  CHURNS_V:[73,79,71,72,101,104,138,37],  // método real: SS con fecha bloqueo ese mes  // churn real = nuevos Sin servicio c/mes
 
   // ── CHURN: serie mensual ──
   CHURN_PCT_ACT: 0.52,  // % real mar 26 = 16 nuevos SS / 4196 hab
@@ -793,8 +793,8 @@ export default function App() {
             <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:14}}>
               <KPI label="Churn acumulado"       value={`${(D.SS/D.TOTAL*100).toFixed(1)}%`} sub={`${D.SS.toLocaleString("es-AR")} de ${D.TOTAL.toLocaleString("es-AR")} inactivos`}   type="dn"/>
               <KPI label="Tasa mensual prom."    value={`${D.CHURN_PCT_ACT}%`} sub={`${D.CHURN_ABS_ACT} nuevos SS · mar 26`}            type="dn"/>
-              <KPI label="Churn prom 8 meses"    value="1.20%"    sub="mensual · anual 14.4% · SS nuevos/base hab"   type="wr"/>
-              <KPI label="Churn últ. 3 meses"    value="0.75%"     sub="mensual · tendencia bajando · anual 9.0%"    type="ok"/>
+              <KPI label="Churn real Mar 26"     value="37"       sub="SS con bloqueo mar · de 936 bloqueados"       type="ok"/>
+              <KPI label="Recupero Mar 26"       value="81.3%"    sub="762 de 936 bloqueados pagaron y volvieron"    type="ok"/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:12,marginBottom:12}}>
@@ -992,7 +992,7 @@ export default function App() {
                   <Line type="monotone" dataKey="neto" name="Neto (altas−SS)" stroke={C.green} strokeWidth={2.5} dot={false}/>
                 </ComposedChart>
               </ResponsiveContainer>
-              <Ins type="g" html="Desde oct 25 el SS cae sostenidamente: 129→38→22. <strong>Mar 26 = mejor mes</strong> con solo 22 SS de 346 altas (0.64%). Vida media antes de irse: 12.5m · 35.6% churna entre mes 12–18 · solo 5.9% antes del mes 3."/>
+              <Ins type="g" html="Churn real = clientes en SS con fecha de bloqueo ese mes. Mar 26: 936 bloqueados → 762 pagaron (81.3%) → <strong>37 churnearon = mejor mes</strong>. Feb 26 fue el pico: 138 SS. Vida media antes de irse: 12.5m."/>
             </Card>
 
           </div>
@@ -1677,7 +1677,7 @@ export default function App() {
                 pct:D.OBJ.churn_pct,
                 inverso:true,
                 fuente:"CSV ISPCube · SS nuevos / altas brutas ese mes",
-                contexto:"Mar 26: 22 SS / 346 altas = 0.64% · meta <0.5% · tendencia bajando",
+                contexto:"Mar 26: 37 SS reales / 346 altas = 10.7% · 936 bloqueados → 762 pagaron (81%) → 37 churnearon",
                 accion:"Seguir mejorando onboarding · meta alcanzable próximos 2 meses",
                 historico:[11.3, 11.3, 7.1],
                 labHist:["Ene 26","Feb 26","Mar 26"],
