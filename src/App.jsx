@@ -48,10 +48,10 @@ const D = {
   // ── CANALES: últimos 8 meses ($M) ──
   MP8:  [55.96,60.37,60.52,66.35,74.84,66.89,71.73,74.73],
   SIRO8:[0.00, 0.00, 0.00, 0.42, 0.81, 1.33, 5.45,11.65],
-  VISA8:[0.03, 7.19,13.32, 9.22, 3.42, 0.49, 0.90,1.66],
-  PF8:  [4.65, 3.12, 6.60, 5.60, 3.78, 1.89, 1.51,4.06],
-  CAJA8:[3.26, 4.06, 4.03, 3.75, 3.37, 2.32, 2.34,4.16],
-  GAL8: [2.09, 1.69, 3.24, 2.31, 1.98, 9.52, 1.24,2.29],
+  VISA8:[4.82, 6.03, 6.98, 7.78, 7.33, 8.93, 8.10, 9.68],
+  PF8:  [4.16, 4.52, 4.66, 5.87, 4.95, 4.65, 4.05, 5.50],
+  CAJA8:[3.15, 3.59, 3.72, 3.28, 3.56, 3.71, 3.37, 4.09],
+  GAL8: [2.12, 2.11, 2.16, 1.69, 1.37,10.45, 2.51, 2.03],
 
   // ── MES ACTUAL: Mar 26 ──
   COB_ACTUAL:  107.68,   // cobrado total
@@ -74,7 +74,7 @@ const D = {
   // ── CLIENTES: altas y churns últimos 8 meses ──
   ALTAS_M:["Ago 25","Sep 25","Oct 25","Nov 25","Dic 25","Ene 26","Feb 26","Mar 26"],
   ALTAS_V: [299, 281, 324, 225, 279, 354, 292, 310],  // mar 26: 284 total (267 hab) verificado
-  CHURNS_V:[ 93,  81,  48,  39,  38,  40,  33,  22],  // churn real = nuevos Sin servicio c/mes
+  CHURNS_V:[93,81,48,38,37,40,33,22],  // churn real = nuevos Sin servicio c/mes
 
   // ── CHURN: serie mensual ──
   CHURN_PCT_ACT: 0.52,  // % real mar 26 = 16 nuevos SS / 4196 hab
@@ -123,7 +123,7 @@ const D = {
   CITY_MORA: [54.62,11.67,1.39,1.97,0.48,1.12,0.13],
 
   // ── MORA ──
-  MORA_TOTAL:137.41, MORA_VENC:71.38, MORA_SS:60.42, MORA_BLOQ:4.91, MORA_HAB:7.56,
+  MORA_TOTAL:137.41, MORA_VENC:71.38, MORA_SS:60.24, MORA_BLOQ:4.43, MORA_HAB:72.74,
   MORA_MOROSOS:1777, // ss(1556) + bloq(234)
   MORA_PCT:29.9,     // morosos / total
 
@@ -920,26 +920,26 @@ export default function App() {
                 </thead>
                 <tbody>
                   {[
-                    {m:"Ago 24",tot:296,hab:201,bloq:3, ss:92, pct:31.1,deu:"$2.530.342"},
-                    {m:"Sep 24",tot:339,hab:228,bloq:9, ss:102,pct:30.1,deu:"$2.871.937"},
-                    {m:"Oct 24",tot:293,hab:182,bloq:5, ss:106,pct:36.2,deu:"$4.859.820"},
-                    {m:"Nov 24",tot:291,hab:157,bloq:5, ss:129,pct:44.3,deu:"$5.517.067"},
-                    {m:"Dic 24",tot:257,hab:151,bloq:5, ss:101,pct:39.3,deu:"$4.325.231"},
-                    {m:"Ene 25",tot:278,hab:178,bloq:13,ss:87, pct:31.3,deu:"$4.949.447"},
-                    {m:"Feb 25",tot:238,hab:139,bloq:7, ss:92, pct:38.7,deu:"$5.073.626"},
-                    {m:"Mar 25",tot:242,hab:169,bloq:7, ss:66, pct:27.3,deu:"$3.426.292"},
-                    {m:"Abr 25",tot:257,hab:161,bloq:15,ss:81, pct:31.5,deu:"$4.492.399"},
-                    {m:"May 25",tot:270,hab:166,bloq:15,ss:89, pct:33.0,deu:"$3.890.549"},
-                    {m:"Jun 25",tot:236,hab:147,bloq:15,ss:74, pct:31.4,deu:"$3.412.495"},
-                    {m:"Jul 25",tot:279,hab:169,bloq:20,ss:90, pct:32.3,deu:"$3.738.141"},
-                    {m:"Ago 25",tot:299,hab:196,bloq:10,ss:93, pct:31.1,deu:"$3.300.903"},
-                    {m:"Sep 25",tot:281,hab:191,bloq:9, ss:81, pct:28.8,deu:"$3.042.679"},
-                    {m:"Oct 25",tot:324,hab:263,bloq:13,ss:48, pct:14.8,deu:"$1.061.890"},
-                    {m:"Nov 25",tot:225,hab:178,bloq:8, ss:39, pct:17.3,deu:"$551.971"},
-                    {m:"Dic 25",tot:279,hab:232,bloq:9, ss:38, pct:13.6,deu:"$500.739"},
-                    {m:"Ene 26",tot:354,hab:301,bloq:13,ss:40, pct:11.3,deu:"$63.461"},
-                    {m:"Feb 26",tot:292,hab:247,bloq:12,ss:33, pct:11.3,deu:"$22.995"},
-                    {m:"Mar 26",tot:310,hab:287,bloq:1, ss:22, pct:7.1, deu:"$0"},
+                    {m:"Ago 24",tot:296,hab:203,bloq:1, ss:92, pct:31.1,deu:"$2.530.342"},
+                    {m:"Sep 24",tot:339,hab:231,bloq:5, ss:103,pct:30.4,deu:"$2.897.723"},
+                    {m:"Oct 24",tot:293,hab:183,bloq:4, ss:106,pct:36.2,deu:"$4.802.221"},
+                    {m:"Nov 24",tot:291,hab:161,bloq:2, ss:128,pct:44.0,deu:"$5.467.267"},
+                    {m:"Dic 24",tot:257,hab:152,bloq:4, ss:101,pct:39.3,deu:"$4.325.231"},
+                    {m:"Ene 25",tot:278,hab:181,bloq:10,ss:87, pct:31.3,deu:"$4.949.447"},
+                    {m:"Feb 25",tot:238,hab:141,bloq:3, ss:94, pct:39.5,deu:"$5.152.784"},
+                    {m:"Mar 25",tot:242,hab:170,bloq:5, ss:67, pct:27.7,deu:"$3.483.892"},
+                    {m:"Abr 25",tot:257,hab:163,bloq:5, ss:89, pct:34.6,deu:"$4.789.512"},
+                    {m:"May 25",tot:270,hab:168,bloq:9, ss:93, pct:34.4,deu:"$3.952.420"},
+                    {m:"Jun 25",tot:236,hab:151,bloq:9, ss:76, pct:32.2,deu:"$3.517.044"},
+                    {m:"Jul 25",tot:279,hab:174,bloq:9, ss:96, pct:34.4,deu:"$3.907.798"},
+                    {m:"Ago 25",tot:299,hab:196,bloq:10,ss:93, pct:31.1,deu:"$3.436.209"},
+                    {m:"Sep 25",tot:281,hab:192,bloq:8, ss:81, pct:28.8,deu:"$3.100.279"},
+                    {m:"Oct 25",tot:324,hab:263,bloq:13,ss:48, pct:14.8,deu:"$1.110.888"},
+                    {m:"Nov 25",tot:225,hab:180,bloq:7, ss:38, pct:16.9,deu:"$665.467"},
+                    {m:"Dic 25",tot:279,hab:234,bloq:8, ss:37, pct:13.3,deu:"$588.403"},
+                    {m:"Ene 26",tot:354,hab:303,bloq:11,ss:40, pct:11.3,deu:"$212.454"},
+                    {m:"Feb 26",tot:292,hab:249,bloq:10,ss:33, pct:11.3,deu:"$45.994"},
+                    {m:"Mar 26",tot:346,hab:323,bloq:1, ss:22, pct:6.4, deu:"$24.000"},
                   ].map((r,i)=>{
                     const semColor = r.pct <= 15 ? C.green : r.pct <= 30 ? C.amber : C.red;
                     const bg = i%2===0?"#FFFFFF":"#F4F6F9";
@@ -957,11 +957,11 @@ export default function App() {
                   })}
                   <tr style={{background:C.bg3,fontWeight:700,borderTop:`1.5px solid ${C.navy}`}}>
                     <td style={{padding:"7px 10px",color:C.navy,fontWeight:700}}>TOTAL</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>5.640</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.navy,fontWeight:700}}>5.676</td>
                     <td colSpan={2} style={{padding:"7px 10px"}}></td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>1.528</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>27.1%</td>
-                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$58.6M</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>1.524</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.red,fontWeight:700}}>26.8%</td>
+                    <td style={{padding:"7px 10px",textAlign:"center",color:C.text2,fontFamily:C.mono,fontSize:10}}>$58.9M</td>
                   </tr>
                 </tbody>
               </table>
