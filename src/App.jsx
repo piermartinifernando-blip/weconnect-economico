@@ -133,7 +133,6 @@ function MoraMap({ polygons, points }) {
         attributionControl: false,
       });
       mapInstanceRef.current = map;
-      window._wMap = map;
 
       L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
         attribution: "© OpenStreetMap © CARTO",
@@ -187,7 +186,6 @@ function MoraMap({ polygons, points }) {
 
       setTimeout(() => map.invalidateSize(), 50);
       setTimeout(() => map.invalidateSize(), 250);
-      setTimeout(() => map.invalidateSize(), 700);
     }
 
     initMap();
@@ -252,23 +250,27 @@ function MoraMap({ polygons, points }) {
 }
 
 
-const fetchAllRows = async (table, columns, chunkSize = 1000) => {
-  let from = 0;
-  let all = [];
-  while (true) {
-    const { data, error } = await supabase
-      .from(table)
-      .select(columns)
-      .order("id", { ascending: true })
-      .range(from, from + chunkSize - 1);
-
-    if (error) throw error;
-    const rows = data || [];
-    all = all.concat(rows);
-    if (rows.length < chunkSize) break;
-    from += chunkSize;
+const loadLeafletAssets = async () => {
+  if (!document.querySelector('link[data-weconnect-leaflet="1"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    link.setAttribute("data-weconnect-leaflet", "1");
+    document.head.appendChild(link);
   }
-  return all;
+
+  if (window.L) return window.L;
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+
+  return window.L;
 };
 
 const TABS = [
@@ -342,23 +344,6 @@ export default function App() {
   const [altasMensuales, setAltasMensuales] = useState([]);
   const [churnCohortes, setChurnCohortes] = useState([]);
   const [clientesDetalle, setClientesDetalle] = useState([]);
-  const [kmlPolygons, setKmlPolygons] = useState([]);
-
-  useEffect(() => {
-    let mounted = true;
-    fetch("/Cobertura AB-FV.kml")
-      .then((r) => (r.ok ? r.text() : ""))
-      .then((txt) => {
-        if (!mounted) return;
-        setKmlPolygons(parseKmlPolygons(txt));
-      })
-      .catch(() => {
-        if (mounted) setKmlPolygons([]);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     const loadAll = async () => {
@@ -398,29 +383,21 @@ export default function App() {
           supabase.from("vw_cobranza_canales_mensual").select("*").order("mes", { ascending: true }),
           supabase.from("vw_altas_mensuales_habilitados").select("*").order("mes", { ascending: true }),
           supabase.from("vw_churn_cohortes").select("*").order("cohorte", { ascending: true }),
-          fetchAllRows(
-            "clientes_ispcube",
-            "id,lat,lng,estado,deuda,deuda_vencida,ciudad,medio_pago"
-          ),
+          supabase
+            .from("clientes_ispcube")
+            .select("lat,lng,estado,deuda,deuda_vencida,ciudad,medio_pago")
+            .range(0, 9999),
         ]);
 
-        const [ciudadRes, canalesRes, altasRes, cohortesRes, clientesDetalleRes] = optional;
+        const [ciudadRes, canalesRes, altasRes, cohortesRes, clientesDetalleRes] = optional.map((r) =>
+          r.status === "fulfilled" ? r.value : null
+        );
 
-        setCobranzaCiudad(
-          ciudadRes.status === "fulfilled" && !ciudadRes.value?.error ? (ciudadRes.value?.data || []) : []
-        );
-        setCobranzaCanales(
-          canalesRes.status === "fulfilled" && !canalesRes.value?.error ? (canalesRes.value?.data || []) : []
-        );
-        setAltasMensuales(
-          altasRes.status === "fulfilled" && !altasRes.value?.error ? (altasRes.value?.data || []) : []
-        );
-        setChurnCohortes(
-          cohortesRes.status === "fulfilled" && !cohortesRes.value?.error ? (cohortesRes.value?.data || []) : []
-        );
-        setClientesDetalle(
-          clientesDetalleRes.status === "fulfilled" ? (clientesDetalleRes.value || []) : []
-        );
+        setCobranzaCiudad(ciudadRes?.data || []);
+        setCobranzaCanales(canalesRes?.data || []);
+        setAltasMensuales(altasRes?.data || []);
+        setChurnCohortes(cohortesRes?.data || []);
+        setClientesDetalle(clientesDetalleRes?.data || []);
       } catch (e) {
         setError(e.message || "Error cargando datos");
       } finally {
@@ -801,17 +778,6 @@ export default function App() {
   }, [clientesDetalle]);
   const ultimoChurn = churn.at(-1) || {};
 
-  useEffect(() => {
-    if (tab !== "mora") return;
-    const invalidate = () => {
-      if (window._wMap && typeof window._wMap.invalidateSize === "function") {
-        window._wMap.invalidateSize();
-      }
-    };
-    setTimeout(invalidate, 80);
-    setTimeout(invalidate, 260);
-  }, [tab, clientesDetalle, kmlPolygons]);
-
   if (loading) {
     return (
       <div className="wrap">
@@ -1135,7 +1101,7 @@ export default function App() {
         {tab === "mora" && (
           <div className="sec on">
             <div className="kr k4">
-              <Kpi label="Deuda total cartera" value={fmtMoney(deudaTotalCartera)} sub="base completa de clientes" tone="dn" />
+              <Kpi label="Deuda total cartera" value={fmtMoney(deudaTotalCartera)} sub="habilitados + bloqueados + sin servicio" tone="dn" />
               <Kpi label="Deuda vencida" value={fmtMoney(deudaVencidaElegible)} sub="solo habilitados + bloqueados" tone="dn" />
               <Kpi label="% cartera con mora" value={fmtPct(moraPctCartera)} sub="sobre habilitados + bloqueados" tone="wr" />
               <Kpi label="Deuda prom./moroso" value={fmtMoney(deudaPromMoroso)} sub="deuda total cartera / clientes morosos" tone="wr" />
