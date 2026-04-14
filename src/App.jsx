@@ -854,25 +854,34 @@ export default function App() {
   const buildGrowthMatrix = (rows, label) => {
     const altasMap = new Map();
     const churnMap = new Map();
+    const ymNow = currentYearMonth();
+
     rows.forEach((r) => {
       const estado = String(r.estado || "").toLowerCase().trim();
       const alta = String(r.fecha_alta || "");
       const bloqueo = String(r.fecha_bloqueo || "");
-      if (alta && estado.includes("habil")) {
+
+      if (alta) {
         const mes = alta.slice(0, 7);
-        if (mes) altasMap.set(mes, (altasMap.get(mes) || 0) + 1);
+        if (mes && mes < ymNow) altasMap.set(mes, (altasMap.get(mes) || 0) + 1);
       }
+
       if (bloqueo && estado === "sin servicio") {
         const mes = bloqueo.slice(0, 7);
-        if (mes) churnMap.set(mes, (churnMap.get(mes) || 0) + 1);
+        if (mes && mes < ymNow) churnMap.set(mes, (churnMap.get(mes) || 0) + 1);
       }
     });
-    const months = [...new Set([...altasMap.keys(), ...churnMap.keys()])].sort();
+
+    const months = [...new Set([...altasMap.keys(), ...churnMap.keys()])]
+      .sort()
+      .filter((mes) => (altasMap.get(mes) || 0) + (churnMap.get(mes) || 0) > 0);
+
     const data = months.slice(-8).map((mes) => {
       const altas = altasMap.get(mes) || 0;
       const churn = churnMap.get(mes) || 0;
       return { mes, label: monthShort(mes), altas, churn, neto: altas - churn };
     });
+
     const avgNeto = data.length ? data.reduce((acc, r) => acc + r.neto, 0) / data.length : 0;
     const avgAltas = data.length ? data.reduce((acc, r) => acc + r.altas, 0) / data.length : 0;
     const avgChurn = data.length ? data.reduce((acc, r) => acc + r.churn, 0) / data.length : 0;
@@ -1455,68 +1464,56 @@ export default function App() {
           <div className="sec on">
             <div className="kr k4">
               <Kpi label="Ingresos último mes" value={fmtMoney(ultimoMesCerradoResultado.cobrado_auditado)} sub={monthShort(ultimoMesCerradoResultado.mes)} tone="ok" />
-              <Kpi label="Egresos totales" value={fmtMoney(Number(ultimoMesCerradoResultado.opex || 0) + CAPEX_OBRA_PROMEDIO)} sub="OPEX + CAPEX obra promedio" tone="dn" />
+              <Kpi label="Egresos totales reales" value={fmtMoney(Number(ultimoMesCerradoResultado.opex || 0) + Number(ultimoMesCerradoResultado.capex || 0))} sub="CAPEX + OPEX juntos" tone="dn" />
               <Kpi label="Clientes para break-even" value={fmtNum(beTargetClientes)} sub={`Gap actual ${fmtNum(Math.max(beTargetClientes - Number(kpis?.habilitados || 0), 0))}`} tone="wr" />
-              <Kpi label="ARPU usado" value={fmtMoney(arpuReferencia)} sub="Base real validada" tone="tl" />
+              <Kpi label="Escenario base plan" value="255 netos/mes" sub="Optimista recomendado" tone="tl" />
             </div>
 
-            <div className="g2">
-              <Card title="Ingresos vs egresos totales ($M)">
-                <div className="ch-lg">
-                  <ResponsiveContainer>
-                    <ComposedChart data={chartCostos}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip formatter={(v) => fmtMoney1(Number(v) * 1_000_000)} />
-                      <Legend />
-                      <Bar dataKey="opex" stackId="eg" name="OPEX" fill="#D13030" />
-                      <Bar dataKey="capex" stackId="eg" name="CAPEX" fill="#1A5FBF" />
-                      <Line type="monotone" dataKey="ingresos" name="Ingresos" stroke="#1A7A3C" strokeWidth={3} dot={false} />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </Card>
-
-              <Card title="Escenarios del plan hacia break-even">
-                <div className="ch-lg">
-                  <ResponsiveContainer>
-                    <LineChart data={beScenarioProjection}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip formatter={(v) => fmtNum(v)} />
-                      <Legend />
-                      <Line type="monotone" dataKey="be" name="Break-even" stroke="#5A6A7A" strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="conservador" name="Conservador" stroke="#C47A00" strokeWidth={2.5} dot={false} />
-                      <Line type="monotone" dataKey="optimista" name="Optimista" stroke="#1A7A3C" strokeWidth={2.5} dot={false} />
-                      <Line type="monotone" dataKey="ideal" name="Ideal" stroke="#1A5FBF" strokeWidth={2.5} dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </Card>
+            <div className="card">
+              <div className="ct">Ingresos vs egresos totales ($M)</div>
+              <div className="ch-lg" style={{ height: 430 }}>
+                <ResponsiveContainer>
+                  <ComposedChart data={beFinancialProjection}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${Math.round(v)}M`} />
+                    <Tooltip formatter={(v) => fmtMoney1(Number(v) * 1_000_000)} />
+                    <Legend />
+                    <Bar dataKey="egresos" name="Egresos reales" fill="#D13030" radius={[4,4,0,0]} />
+                    <Line type="linear" dataKey="actual" name="Ingreso actual" stroke="#1A5FBF" strokeWidth={3} dot={{ r: 4 }} />
+                    <Line type="linear" dataKey="conservador" name="Escenario conservador" stroke="#C47A00" strokeWidth={2.5} dot={false} />
+                    <Line type="linear" dataKey="optimista" name="Escenario optimista" stroke="#1A7A3C" strokeWidth={3} dot={false} />
+                    <Line type="linear" dataKey="ideal" name="Escenario ideal" stroke="#0D7377" strokeWidth={2.5} dot={false} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="ins ins-i" style={{ marginTop: 10 }}>
+                La barra roja muestra <strong>egresos reales con CAPEX + OPEX juntos</strong>. Las líneas proyectan ingresos según el neto mensual de cada escenario del plan.
+              </div>
             </div>
 
             <div className="card">
               <div className="ct">Escenarios del plan — neto mensual y tiempo estimado</div>
-              <table className="tbl">
-                <thead>
-                  <tr><th>Escenario</th><th className="r">Bruto</th><th className="r">Churn</th><th className="r">Neto</th><th className="r">Meses a BE</th></tr>
-                </thead>
-                <tbody>
-                  {beScenarioSummary.map((s, idx) => (
-                    <tr key={s.escenario} className={idx === 1 ? "hl" : ""}>
-                      <td>{s.escenario}</td>
-                      <td className="r">{fmtNum(s.bruto)}</td>
-                      <td className="r">{fmtNum(s.churn)}</td>
-                      <td className="r ok">{fmtNum(s.neto)}</td>
-                      <td className="r">{s.meses === 0 ? "Ya alcanzado" : `${fmtNum(s.meses)} meses`}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="ins ins-i" style={{ marginTop: 10 }}>
-                El break-even usa egresos reales con <strong>CAPEX + OPEX juntos</strong>, y proyecta la llegada según el plan actual.
+              <div style={{ overflowX: "auto" }}>
+                <table className="tbl">
+                  <thead>
+                    <tr><th>Escenario</th><th className="r">Bruto</th><th className="r">Churn</th><th className="r">Neto</th><th className="r">Meses a BE</th></tr>
+                  </thead>
+                  <tbody>
+                    {beScenarioSummary.map((s, idx) => (
+                      <tr key={s.escenario} className={idx === 1 ? "hl" : ""}>
+                        <td>{s.escenario}</td>
+                        <td className="r">{fmtNum(s.bruto)}</td>
+                        <td className="r">{fmtNum(s.churn)}</td>
+                        <td className="r ok">{fmtNum(s.neto)}</td>
+                        <td className="r">{s.meses === 0 ? "Ya alcanzado" : `${fmtNum(s.meses)} meses`}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="ins ins-g" style={{ marginTop: 10 }}>
+                El escenario optimista es la referencia recomendada porque combina red, pauta, TV y omnicanal con una trayectoria defendible hacia el equilibrio.
               </div>
             </div>
           </div>
@@ -1527,44 +1524,126 @@ export default function App() {
         {tab === "aportes" && <div className="sec on"><PlaceholderSection title="Aportes al objetivo" text="Pestaña preparada para ver cuánto aporta cada frente al objetivo mensual." /></div>}
         {tab === "recupero" && (
           <div className="sec on">
-            <div className="kr k4">
-              <Kpi label="ONUs retiradas/semana" value="60" sub="776 pendientes · 2 técnicos de campo" tone="wr" />
-              <Kpi label="Backlog total pendiente" value="776" sub="Verde ≤200" tone="dn" />
-              <Kpi label="Reacondicionadas/mes" value="30" sub="Para reutilizar en nuevas instalaciones" tone="nv" />
-              <Kpi label="Tiempo coord→visita" value="3 días" sub="Desde llamada hasta visita" tone="ok" />
+            <div className="ins ins-i" style={{ marginBottom: 14 }}>
+              Area nueva: <strong>Retiro / Recupero de Equipos — Almirante Brown</strong>. 497 ONUs pendientes · $25.5M ARS neto recuperable · 1 persona con vehículo propio · Combustible incluido en salario · TC $1.450 ARS/USD · ONU: USD 35 + IVA = $61.408 ARS
             </div>
 
-            <div className="g2">
-              <Card title="Recupero / Retiro ONUs por geografía">
-                <div className="ch-lg">
-                  <ResponsiveContainer>
-                    <BarChart data={recuperoGeoData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="zona" tick={{ fontSize: 10 }} />
-                      <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip formatter={(v) => `${fmtNum(v)} ONUs`} />
-                      <Bar dataKey="onus" fill="#D13030" radius={[4,4,0,0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="ins ins-d" style={{ marginTop: 10 }}>
-                  Almirante Brown concentra la mayor parte del backlog de recupero, seguido por Capitán Sarmiento. El cuello de botella es operativo.
-                </div>
+            <div className="kr k4">
+              <Kpi label="ONUs pendientes AB" value="497" sub="64% del backlog total" tone="dn" />
+              <Kpi label="Valor neto recuperable" value="$25.5M" sub="ARS · 497 × $51.408 neto" tone="ok" />
+              <Kpi label="Costo fijo mensual" value="$2.25M" sub="salario + cargas, sin movilidad extra" tone="wr" />
+              <Kpi label="ROI peor caso" value="1.42x" sub="positivo desde el día 1" tone="ok" />
+            </div>
+
+            <div className="g22">
+              <Card title="Estructura del puesto">
+                <table className="tbl">
+                  <thead><tr><th>Concepto</th><th className="r">Importe</th><th>Nota</th></tr></thead>
+                  <tbody>
+                    <tr><td>Salario bruto</td><td className="r">$1.500.000</td><td>Incluye combustible</td></tr>
+                    <tr><td>Cargas sociales (50%)</td><td className="r">$750.000</td><td>Jubilación, ART, etc.</td></tr>
+                    <tr><td>Movilidad extra</td><td className="r">$0</td><td>Vehículo propio</td></tr>
+                    <tr className="hl"><td><strong>COSTO FIJO TOTAL</strong></td><td className="r"><strong>$2.250.000</strong></td><td>por mes</td></tr>
+                  </tbody>
+                </table>
               </Card>
 
-              <Card title="Detalle operativo del dashboard viejo">
-                <div className="plan-row"><span>Meta verde ONUs/semana</span><span className="bdg bdg-g">60</span></div>
-                <div className="plan-row"><span>Backlog objetivo</span><span className="bdg bdg-w">≤ 200</span></div>
-                <div className="plan-row"><span>Bono recupero</span><span className="bdg bdg-i">USD 3k / mes</span></div>
-                <div className="plan-row"><span>Retiros vs nuevas ONUs</span><span className="bdg bdg-w">≥100%</span></div>
-
+              <Card title="Estructura de comisiones">
+                <table className="tbl">
+                  <thead><tr><th>Actividad</th><th className="r">Comisión</th><th>Cuándo cobra</th><th className="r">Margen empresa</th></tr></thead>
+                  <tbody>
+                    <tr><td>Retiro de ONU</td><td className="r">$10.000</td><td>Al cerrar ticket</td><td className="r">$51.408</td></tr>
+                    <tr><td>A — Pago completo de deuda</td><td className="r">$15.000</td><td>Cobro único al activar</td><td className="r">$23.375</td></tr>
+                    <tr><td>B — Plan de cuotas: cuota 1</td><td className="r">$7.500</td><td>Al firmar el acuerdo</td><td className="r">—</td></tr>
+                    <tr><td>B — Plan de cuotas: cuota 2</td><td className="r">$7.500</td><td>Al cobrar 2da cuota del plan</td><td className="r">$23.375</td></tr>
+                    <tr className="hl"><td><strong>Total modalidad B</strong></td><td className="r"><strong>$15.000</strong></td><td>Mismo total que modalidad A</td><td className="r"><strong>= modalidad A</strong></td></tr>
+                  </tbody>
+                </table>
                 <div className="ins ins-i" style={{ marginTop: 10 }}>
-                  El tablero viejo medía recupero como frente operativo independiente: retiros, backlog, reacondicionamiento y tiempo de visita. Esta pestaña conserva esa lógica.
-                </div>
-                <div className="ins ins-w">
-                  La prioridad es bajar backlog, aumentar retiro semanal y sostener reutilización para no seguir agrandando el pendiente.
+                  El recurso siempre cobra <strong>$15.000 por cliente activado</strong>, sin importar si paga todo o en cuotas. La diferencia es el timing: pago completo = cobro inmediato; plan cuotas = 2 tramos alineados al cobro real.
                 </div>
               </Card>
+            </div>
+
+            <div className="card">
+              <div className="ct">Distribución mensual — lo que percibe la persona vs lo que retiene la empresa</div>
+              <div style={{ overflowX: "auto" }}>
+                <table className="tbl">
+                  <thead><tr><th>Concepto</th><th className="r">Peor absoluto</th><th className="r">Peor realista</th><th className="r">Base</th><th className="r">Bueno</th></tr></thead>
+                  <tbody>
+                    <tr className="hl"><td colSpan="5"><strong>▸ ACTIVIDAD</strong></td></tr>
+                    <tr><td>ONUs retiradas/mes</td><td className="r">66</td><td className="r">86</td><td className="r">108</td><td className="r">132</td></tr>
+                    <tr><td>Clientes recuperados/mes</td><td className="r">2</td><td className="r">3</td><td className="r">5</td><td className="r">7</td></tr>
+                    <tr><td>Planes de pago/mes</td><td className="r">3</td><td className="r">5</td><td className="r">8</td><td className="r">12</td></tr>
+
+                    <tr className="hl"><td colSpan="5"><strong>▸ INGRESOS EMPRESA</strong></td></tr>
+                    <tr><td>Retiro de ONUs</td><td className="r">$4.05M</td><td className="r">$5.28M</td><td className="r">$6.63M</td><td className="r">$8.11M</td></tr>
+                    <tr><td>Recupero clientes (ARPU mensual)</td><td className="r">$53k</td><td className="r">$79k</td><td className="r">$131k</td><td className="r">$184k</td></tr>
+                    <tr><td>Planes de pago cobrados</td><td className="r">$115k</td><td className="r">$192k</td><td className="r">$307k</td><td className="r">$460k</td></tr>
+                    <tr className="hi"><td><strong>TOTAL INGRESOS</strong></td><td className="r"><strong>$4.22M</strong></td><td className="r"><strong>$5.55M</strong></td><td className="r"><strong>$7.07M</strong></td><td className="r"><strong>$8.75M</strong></td></tr>
+
+                    <tr className="hl"><td colSpan="5"><strong>▸ PERSONA PERCIBE (bruto, antes de retenciones)</strong></td></tr>
+                    <tr><td>Salario fijo (incl. combustible)</td><td className="r">$1.50M</td><td className="r">$1.50M</td><td className="r">$1.50M</td><td className="r">$1.50M</td></tr>
+                    <tr><td>Comisión ONUs</td><td className="r">$660k</td><td className="r">$860k</td><td className="r">$1.08M</td><td className="r">$1.32M</td></tr>
+                    <tr><td>Comisión recuperos</td><td className="r">$30k</td><td className="r">$45k</td><td className="r">$75k</td><td className="r">$105k</td></tr>
+                    <tr><td>Comisión planes pago</td><td className="r">$22k</td><td className="r">$38k</td><td className="r">$60k</td><td className="r">$90k</td></tr>
+                    <tr><td><strong>TOTAL PERSONA</strong></td><td className="r"><strong>$2.21M</strong></td><td className="r"><strong>$2.44M</strong></td><td className="r"><strong>$2.71M</strong></td><td className="r"><strong>$3.02M</strong></td></tr>
+                    <tr><td>Multiplicador</td><td className="r">1.48x</td><td className="r">1.63x</td><td className="r">1.81x</td><td className="r">2.01x</td></tr>
+
+                    <tr className="hl"><td colSpan="5"><strong>▸ EMPRESA RETIENE</strong></td></tr>
+                    <tr><td>Costo fijo (sal+cargas)</td><td className="r">-$2.25M</td><td className="r">-$2.25M</td><td className="r">-$2.25M</td><td className="r">-$2.25M</td></tr>
+                    <tr><td>Comisiones pagadas</td><td className="r">-$712k</td><td className="r">-$942k</td><td className="r">-$1.22M</td><td className="r">-$1.51M</td></tr>
+                    <tr className="hi"><td><strong>RESULTADO NETO EMPRESA</strong></td><td className="r"><strong>$1.26M</strong></td><td className="r"><strong>$2.36M</strong></td><td className="r"><strong>$3.61M</strong></td><td className="r"><strong>$4.99M</strong></td></tr>
+                    <tr><td>ROI</td><td className="r">1.42x</td><td className="r">1.74x</td><td className="r">2.04x</td><td className="r">2.32x</td></tr>
+
+                    <tr className="hl"><td colSpan="5"><strong>▸ DISTRIBUCIÓN EXCEDENTE NETO</strong></td></tr>
+                    <tr><td>Persona (% del excedente)</td><td className="r">64%</td><td className="r">51%</td><td className="r">43%</td><td className="r">38%</td></tr>
+                    <tr><td>Empresa (% del excedente)</td><td className="r">36%</td><td className="r">49%</td><td className="r">57%</td><td className="r">62%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="g22">
+              <Card title="Persona percibe (ARS/mes)">
+                <div className="br"><div className="bl">Peor absoluto</div><div className="bt"><div className="bf" style={{ width: "73%", background: "#C47A00" }}></div></div><div className="bv">$2.21M</div></div>
+                <div className="br"><div className="bl">Peor realista</div><div className="bt"><div className="bf" style={{ width: "81%", background: "#1A5FBF" }}></div></div><div className="bv">$2.44M</div></div>
+                <div className="br"><div className="bl">Base</div><div className="bt"><div className="bf" style={{ width: "90%", background: "#1A7A3C" }}></div></div><div className="bv">$2.71M</div></div>
+                <div className="br"><div className="bl">Bueno</div><div className="bt"><div className="bf" style={{ width: "100%", background: "#0D7377" }}></div></div><div className="bv">$3.02M</div></div>
+              </Card>
+
+              <Card title="Empresa retiene — resultado neto (ARS/mes)">
+                <div className="br"><div className="bl">Peor absoluto</div><div className="bt"><div className="bf" style={{ width: "25%", background: "#C47A00" }}></div></div><div className="bv">$1.26M</div></div>
+                <div className="br"><div className="bl">Peor realista</div><div className="bt"><div className="bf" style={{ width: "47%", background: "#1A5FBF" }}></div></div><div className="bv">$2.36M</div></div>
+                <div className="br"><div className="bl">Base</div><div className="bt"><div className="bf" style={{ width: "72%", background: "#1A7A3C" }}></div></div><div className="bv">$3.61M</div></div>
+                <div className="br"><div className="bl">Bueno</div><div className="bt"><div className="bf" style={{ width: "100%", background: "#0D7377" }}></div></div><div className="bv">$4.99M</div></div>
+              </Card>
+            </div>
+
+            <div className="g22">
+              <Card title="Timeline recupero backlog AB — 497 ONUs">
+                <div className="plan-row"><span>8 meses</span><span className="bdg bdg-w">5 visitas/día · 60% éxito · 66 ONUs/mes</span></div>
+                <div className="plan-row"><span>6 meses</span><span className="bdg bdg-i">6 visitas/día · 65% éxito · 86 ONUs/mes</span></div>
+                <div className="plan-row"><span>5 meses</span><span className="bdg bdg-g">7 visitas/día · 70% éxito · 108 ONUs/mes</span></div>
+              </Card>
+
+              <Card title="Semáforos KPI del área — actualizar mensualmente">
+                <table className="tbl">
+                  <tbody>
+                    <tr><td>ONUs retiradas/semana</td><td className="r">—</td><td>obj: ↑18</td><td>◻ Sin dato</td></tr>
+                    <tr><td>Backlog total pendiente</td><td className="r">497</td><td>obj: ↓200</td><td className="dn">🔴 Rojo</td></tr>
+                    <tr><td>Clientes recuperados/mes</td><td className="r">—</td><td>obj: ↑5</td><td>◻ Sin dato</td></tr>
+                    <tr><td>Tiempo coord a visita (días)</td><td className="r">—</td><td>obj: ↓3</td><td>◻ Sin dato</td></tr>
+                  </tbody>
+                </table>
+              </Card>
+            </div>
+
+            <div className="kr k4">
+              <Kpi label="ONUs retiradas esta semana" value="18" sub="ejemplo de seguimiento" tone="nv" />
+              <Kpi label="Backlog pendiente total" value="497" sub="inicio del área" tone="dn" />
+              <Kpi label="Recuperos este mes" value="3" sub="ejemplo de activaciones" tone="ok" />
+              <Kpi label="Tiempo coord a visita" value="4 días" sub="objetivo ≤ 3" tone="wr" />
             </div>
           </div>
         )}
