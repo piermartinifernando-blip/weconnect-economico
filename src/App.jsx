@@ -1376,7 +1376,130 @@ export default function App() {
         {tab === "aportes" && <div className="sec on"><PlaceholderSection title="Aportes al objetivo" text="Pestaña preparada para ver cuánto aporta cada frente al objetivo mensual." /></div>}
         {tab === "recupero" && <div className="sec on"><PlaceholderSection title="Recupero AB" text="Acá después entra recupero, segmentación y campañas específicas por base." /></div>}
         {tab === "objetivos" && <div className="sec on"><PlaceholderSection title="Objetivos" text="Próximo paso: conectar objetivos_mensuales y cumplimiento vs real." /></div>}
-        {tab === "plan" && <div className="sec on"><PlaceholderSection title="Plan de mejoras" text="Pestaña reservada para roadmap, pendientes y estado de implementación." /></div>}
+        {tab === "plan" && (
+          <div className="sec on">
+            <div className="ins ins-i" style={{ marginBottom: 14 }}>
+              El foco pasa de ordenar información a construir una <strong>máquina integrada de crecimiento</strong>:
+              red + pauta + omnicanal IA + TV + control de churn.
+            </div>
+
+            <div className="kr k4">
+              <Kpi label="Pauta objetivo" value="USD 3.500" sub="Meta 2.000 · Google 1.000 · TikTok 500" tone="nv" />
+              <Kpi label="Omnicanal IA" value="Fin de abril" sub="Ventas + atención + soporte" tone="ok" />
+              <Kpi label="Producto de entrada" value="Internet + TV" sub="3 meses de fútbol gratis" tone="tl" />
+              <Kpi label="Meta operativa" value="255 netos/mes" sub="300 brutas - 45 churn" tone="wr" />
+            </div>
+
+            <div className="g2">
+              <Card title="Plan de mejoras — frentes prioritarios">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>Frente</th>
+                      <th>Meta</th>
+                      <th>Impacto esperado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Red</td>
+                      <td>Escalar de 1.170 a 3.000 cajas</td>
+                      <td>Más capacidad comercial y más superficie vendible</td>
+                    </tr>
+                    <tr>
+                      <td>Omnicanal IA</td>
+                      <td>Producción fin de abril</td>
+                      <td>Responder 24/7, ordenar atención y mejorar cierre</td>
+                    </tr>
+                    <tr>
+                      <td>Oferta comercial</td>
+                      <td>Internet + TV + fútbol gratis</td>
+                      <td>Subir valor percibido y bajar objeción por precio</td>
+                    </tr>
+                    <tr>
+                      <td>Pauta</td>
+                      <td>USD 3.500 / mes</td>
+                      <td>Diversificar adquisición y reducir dependencia</td>
+                    </tr>
+                    <tr>
+                      <td>Churn</td>
+                      <td>Bajar churn evitable</td>
+                      <td>Transformar bruto en neto sostenible</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Card>
+
+              <Card title="Escenarios ejecutivos">
+                <div className="plan-row">
+                  <span style={{ fontWeight: 600 }}>Conservador</span>
+                  <span><span className="bdg bdg-w">175–205 netos/mes</span></span>
+                </div>
+                <div className="plan-row">
+                  <span style={{ fontWeight: 600 }}>Optimista</span>
+                  <span><span className="bdg bdg-g">230–290 netos/mes</span></span>
+                </div>
+                <div className="plan-row">
+                  <span style={{ fontWeight: 600 }}>Ideal</span>
+                  <span><span className="bdg bdg-i">320–430 netos/mes</span></span>
+                </div>
+
+                <div className="ins ins-g" style={{ marginTop: 10 }}>
+                  Escenario base recomendado para gestión: <strong>300 altas brutas / 45 churn / 255 netos por mes</strong>.
+                </div>
+                <div className="ins ins-w">
+                  La pauta adicional sola no alcanza. El impacto aparece cuando red, oferta, omnicanal y atención trabajan coordinados.
+                </div>
+              </Card>
+            </div>
+
+            <div className="g22">
+              <Card title="Hoja de ruta 2026">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>Mes</th>
+                      <th>Hito</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Abril</td>
+                      <td>Salida a producción del omnicanal IA + incorporación de TV + estabilización del dashboard</td>
+                    </tr>
+                    <tr>
+                      <td>Mayo</td>
+                      <td>Consolidar Meta + Google + TikTok, medir adopción de TV y comparar bruto vs neto</td>
+                    </tr>
+                    <tr>
+                      <td>Junio</td>
+                      <td>Ajustar embudo comercial, bajar churn evitable y validar entrada al escenario optimista</td>
+                    </tr>
+                    <tr>
+                      <td>Julio en adelante</td>
+                      <td>Escalar red, escalar pauta eficiente y acelerar trayectoria hacia equilibrio</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Card>
+
+              <Card title="Insights ejecutivos">
+                <div className="ins ins-i">
+                  Brown ya validó una tasa superior al piso conservador del 2%, incluso antes de capturar toda la expansión futura.
+                </div>
+                <div className="ins ins-g">
+                  TV + fútbol gratis puede transformar la propuesta comercial en una zona sensible a precio.
+                </div>
+                <div className="ins ins-w">
+                  El omnicanal IA no es solo eficiencia: es una palanca directa de conversión, atención y retención.
+                </div>
+                <div className="ins ins-d">
+                  La prioridad no es solo crecer en bruto, sino convertir la nueva capacidad de red en <strong>crecimiento neto sostenible</strong>.
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
 
         <div className="foot">WeConnect · Dashboard Ejecutivo · versión visual alineada al aprobado</div>
       </div>
