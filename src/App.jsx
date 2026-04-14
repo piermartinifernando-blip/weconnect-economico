@@ -314,12 +314,12 @@ const TABS = [
   { key: "mora", label: "⚠️ Mora" },
   { key: "red", label: "🗺 Red" },
   { key: "be", label: "📈 Break-even" },
-  { key: "rrss", label: "📣 Redes sociales" },
-  { key: "ia", label: "🤖 IA Ventas" },
-  { key: "dvtas", label: "📱 Dashboard Ventas IA" },
-  { key: "aportes", label: "🎯 Aportes al objetivo" },
+  
+  
+  
+  
   { key: "recupero", label: "📦 Recupero AB" },
-  { key: "objetivos", label: "🎯 Objetivos" },
+  
   { key: "plan", label: "🚀 Plan de mejoras" },
 ];
 
