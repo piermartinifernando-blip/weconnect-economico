@@ -876,7 +876,10 @@ export default function App() {
       .sort()
       .filter((mes) => (altasMap.get(mes) || 0) + (churnMap.get(mes) || 0) > 0);
 
-    const data = months.slice(-8).map((mes) => {
+    const lastMonthWithAltas = [...months].reverse().find((mes) => (altasMap.get(mes) || 0) > 0);
+    const effectiveMonths = lastMonthWithAltas ? months.filter((mes) => mes <= lastMonthWithAltas) : months;
+
+    const data = effectiveMonths.slice(-8).map((mes) => {
       const altas = altasMap.get(mes) || 0;
       const churn = churnMap.get(mes) || 0;
       return { mes, label: monthShort(mes), altas, churn, neto: altas - churn };
