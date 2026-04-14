@@ -977,7 +977,8 @@ export default function App() {
     const historico = last3.map((r) => ({
       mes: r.mes,
       label: monthShort(r.mes),
-      egresos_reales: (Number(r.opex || 0) + Number(r.capex || 0)) / 1_000_000,
+      opex_real: Number(r.opex || 0) / 1_000_000,
+      capex_real: Number(r.capex || 0) / 1_000_000,
       egresos_promedio: null,
       ingreso_actual: Number(r.cobrado_auditado || 0) / 1_000_000,
       conservador: null,
@@ -991,7 +992,8 @@ export default function App() {
       return {
         mes,
         label: idx === 0 ? "Hoy" : monthShort(mes),
-        egresos_reales: null,
+        opex_real: null,
+        capex_real: null,
         egresos_promedio: egresosPromedio / 1_000_000,
         ingreso_actual: idx === 0 ? startIngreso / 1_000_000 : null,
         conservador: (startIngreso + planScenarioBars[0].neto * arpuReferencia * idx) / 1_000_000,
@@ -1561,7 +1563,8 @@ export default function App() {
                     <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${Math.round(v)}M`} />
                     <Tooltip formatter={(v) => fmtMoney1(Number(v) * 1_000_000)} />
                     <Legend />
-                    <Bar dataKey="egresos_reales" name="Egresos reales" fill="#D13030" radius={[4,4,0,0]} />
+                    <Bar dataKey="opex_real" stackId="real" name="OPEX real" fill="#D13030" radius={[0,0,0,0]} />
+                    <Bar dataKey="capex_real" stackId="real" name="CAPEX real" fill="#F28B82" radius={[4,4,0,0]} />
                     <Line type="linear" dataKey="egresos_promedio" name="Egresos proyectados promedio" stroke="#5A6A7A" strokeWidth={2} strokeDasharray="6 6" dot={false} />
                     <Line type="linear" dataKey="ingreso_actual" name="Ingreso actual" stroke="#1A5FBF" strokeWidth={3} dot={{ r: 4 }} />
                     <Line type="linear" dataKey="conservador" name="Escenario conservador" stroke="#C47A00" strokeWidth={2.5} dot={false} />
@@ -1571,7 +1574,7 @@ export default function App() {
                 </ResponsiveContainer>
               </div>
               <div className="ins ins-i" style={{ marginTop: 10 }}>
-                La barra roja muestra <strong>egresos reales</strong> de los últimos meses cerrados. La línea punteada proyecta egresos con <strong>OPEX promedio de los últimos 3 meses</strong> más <strong>CAPEX de $40M durante 6 meses</strong>; luego el CAPEX se corta.
+                Las barras rojas muestran <strong>egresos reales divididos entre OPEX y CAPEX</strong> en los últimos meses cerrados. La línea punteada proyecta egresos con <strong>OPEX promedio de los últimos 3 meses</strong> más <strong>CAPEX de $40M durante 6 meses</strong>; luego el CAPEX se corta.
               </div>
             </div>
 
