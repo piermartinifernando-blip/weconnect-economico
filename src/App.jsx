@@ -418,7 +418,7 @@ export default function App() {
           supabase.from("vw_churn_cohortes").select("*").order("cohorte", { ascending: true }),
           supabase
             .from("clientes_ispcube")
-            .select("lat,lng,estado,deuda,deuda_vencida,ciudad,medio_pago")
+            .select("lat,lng,estado,deuda,deuda_vencida,ciudad,medio_pago,fecha_alta,fecha_bloqueo")
             .range(0, 9999),
         ]);
 
@@ -850,6 +850,81 @@ export default function App() {
       })
       .filter(Boolean);
   }, [clientesDetalle]);
+
+  const buildGrowthMatrix = (rows, label) => {
+    const altasMap = new Map();
+    const churnMap = new Map();
+    rows.forEach((r) => {
+      const estado = String(r.estado || "").toLowerCase().trim();
+      const alta = String(r.fecha_alta || "");
+      const bloqueo = String(r.fecha_bloqueo || "");
+      if (alta && estado.includes("habil")) {
+        const mes = alta.slice(0, 7);
+        if (mes) altasMap.set(mes, (altasMap.get(mes) || 0) + 1);
+      }
+      if (bloqueo && estado === "sin servicio") {
+        const mes = bloqueo.slice(0, 7);
+        if (mes) churnMap.set(mes, (churnMap.get(mes) || 0) + 1);
+      }
+    });
+    const months = [...new Set([...altasMap.keys(), ...churnMap.keys()])].sort();
+    const data = months.slice(-8).map((mes) => {
+      const altas = altasMap.get(mes) || 0;
+      const churn = churnMap.get(mes) || 0;
+      return { mes, label: monthShort(mes), altas, churn, neto: altas - churn };
+    });
+    const avgNeto = data.length ? data.reduce((acc, r) => acc + r.neto, 0) / data.length : 0;
+    const avgAltas = data.length ? data.reduce((acc, r) => acc + r.altas, 0) / data.length : 0;
+    const avgChurn = data.length ? data.reduce((acc, r) => acc + r.churn, 0) / data.length : 0;
+    return { label, data, avgNeto, avgAltas, avgChurn };
+  };
+
+  const clienteMatrices = useMemo(() => {
+    const rows = clientesDetalle || [];
+    const isBrown = (r) => normalizeCity(r.ciudad) === "Almirante Brown";
+    const isVarela = (r) => normalizeCity(r.ciudad) === "Florencio Varela";
+    const isCapitan = (r) => normalizeCity(r.ciudad) === "Capitán Sarmiento";
+    return [
+      buildGrowthMatrix(rows, "General"),
+      buildGrowthMatrix(rows.filter(isBrown), "Almirante Brown"),
+      buildGrowthMatrix(rows.filter(isVarela), "Florencio Varela"),
+      buildGrowthMatrix(rows.filter(isCapitan), "Capitán Sarmiento"),
+    ];
+  }, [clientesDetalle]);
+
+  const planScenarioBars = [
+    { escenario: "Conservador", bruto: 240, churn: 50, neto: 190 },
+    { escenario: "Optimista", bruto: 300, churn: 45, neto: 255 },
+    { escenario: "Ideal", bruto: 400, churn: 25, neto: 375 },
+  ];
+
+  const beTargetClientes = beTotalActual;
+  const beScenarioProjection = useMemo(() => {
+    const start = Number(kpis?.habilitados || 0);
+    const months = buildMonthRange(currentYearMonth(), RED_TARGET_MONTH);
+    return months.map((mes, idx) => ({
+      mes,
+      label: monthShort(mes),
+      be: beTargetClientes,
+      conservador: start + planScenarioBars[0].neto * idx,
+      optimista: start + planScenarioBars[1].neto * idx,
+      ideal: start + planScenarioBars[2].neto * idx,
+    }));
+  }, [kpis, beTargetClientes]);
+
+  const beScenarioSummary = planScenarioBars.map((s) => ({
+    ...s,
+    meses: Math.max(Math.ceil(Math.max(beTargetClientes - Number(kpis?.habilitados || 0), 0) / s.neto), 0),
+  }));
+
+  const recuperoGeoData = [
+    { zona: "Almirante Brown", onus: 508 },
+    { zona: "Capitán Sarmiento", onus: 138 },
+    { zona: "Glew", onus: 53 },
+    { zona: "Ministro Rivadavia", onus: 46 },
+    { zona: "Longchamps", onus: 22 },
+    { zona: "F. Varela", onus: 9 },
+  ];
   const ultimoChurn = churn.at(-1) || {};
 
   if (loading) {
@@ -1062,29 +1137,35 @@ export default function App() {
               <Kpi label="Promedio altas/mes" value={promedioAltas ? `~${fmtNum(Math.round(promedioAltas))}` : "0"} sub="Últimos 12 meses" tone="nv" />
             </div>
 
-            <div className="g2">
-              <Card title="Altas, churns y crecimiento neto mensual">
-                <div className="leg">
-                  <span className="li"><span className="ld" style={{ background: "#1A7A3C" }}></span>Altas</span>
-                  <span className="li"><span className="ld" style={{ background: "rgba(209,48,48,.55)" }}></span>Churns</span>
-                  <span className="li"><span className="ld" style={{ background: "#1A5FBF", borderRadius: "50%" }}></span>Neto</span>
-                </div>
-                <div className="ch-lg">
-                  <ResponsiveContainer>
-                    <ComposedChart data={clienteGrowthChart}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="mes" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="altas" name="Altas" fill="#1A7A3C" />
-                      <Bar dataKey="churn" name="Churns" fill="rgba(209,48,48,.65)" />
-                      <Line type="monotone" dataKey="neto" name="Neto" stroke="#1A5FBF" strokeWidth={3} dot={false} />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </Card>
+            <div className="g22">
+              {clienteMatrices.map((m) => (
+                <Card key={m.label} title={`Altas, churns y crecimiento neto mensual · ${m.label}`}>
+                  <div className="leg">
+                    <span className="li"><span className="ld" style={{ background: "#1A7A3C" }}></span>Altas</span>
+                    <span className="li"><span className="ld" style={{ background: "rgba(209,48,48,.55)" }}></span>Churns</span>
+                    <span className="li"><span className="ld" style={{ background: "#1A5FBF", borderRadius: "50%" }}></span>Neto</span>
+                  </div>
+                  <div className="ks" style={{ marginBottom: 8 }}>
+                    Prom. altas {fmtNum(Math.round(m.avgAltas))} · churn {fmtNum(Math.round(m.avgChurn))} · neto {fmtNum(Math.round(m.avgNeto))}
+                  </div>
+                  <div className="ch">
+                    <ResponsiveContainer>
+                      <ComposedChart data={m.data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Bar dataKey="altas" name="Altas" fill="#1A7A3C" />
+                        <Bar dataKey="churn" name="Churns" fill="rgba(209,48,48,.65)" />
+                        <Line type="monotone" dataKey="neto" name="Neto" stroke="#1A5FBF" strokeWidth={2.5} dot={false} />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
+              ))}
+            </div>
 
+            <div className="g2">
               <Card title="Distribución de planes">
                 {planesOrdenados.map((r) => (
                   <div className="plan-row" key={r.plan}>
@@ -1100,8 +1181,9 @@ export default function App() {
                     ? `${fmtNum(clientes3050)} clientes en 30/50 MB → espacio claro para upsell al plan base siguiente.`
                     : "La lectura comercial queda concentrada en la mezcla real de planes de la base actual."}
                 </div>
-                <hr className="dv" />
-                <div className="ct">Distribución geográfica</div>
+              </Card>
+
+              <Card title="Distribución geográfica">
                 {chartClientesCiudad.map((r) => (
                   <div className="br" key={r.ciudad}>
                     <div className="bl">{r.ciudad}</div>
@@ -1369,12 +1451,123 @@ export default function App() {
             </div>
           </div>
         )}
-        {tab === "be" && <div className="sec on"><PlaceholderSection title="Break-even" text="Próximo paso: pasar del break-even actual a simulación por clientes y ARPU." /></div>}
+        {tab === "be" && (
+          <div className="sec on">
+            <div className="kr k4">
+              <Kpi label="Ingresos último mes" value={fmtMoney(ultimoMesCerradoResultado.cobrado_auditado)} sub={monthShort(ultimoMesCerradoResultado.mes)} tone="ok" />
+              <Kpi label="Egresos totales" value={fmtMoney(Number(ultimoMesCerradoResultado.opex || 0) + CAPEX_OBRA_PROMEDIO)} sub="OPEX + CAPEX obra promedio" tone="dn" />
+              <Kpi label="Clientes para break-even" value={fmtNum(beTargetClientes)} sub={`Gap actual ${fmtNum(Math.max(beTargetClientes - Number(kpis?.habilitados || 0), 0))}`} tone="wr" />
+              <Kpi label="ARPU usado" value={fmtMoney(arpuReferencia)} sub="Base real validada" tone="tl" />
+            </div>
+
+            <div className="g2">
+              <Card title="Ingresos vs egresos totales ($M)">
+                <div className="ch-lg">
+                  <ResponsiveContainer>
+                    <ComposedChart data={chartCostos}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} />
+                      <Tooltip formatter={(v) => fmtMoney1(Number(v) * 1_000_000)} />
+                      <Legend />
+                      <Bar dataKey="opex" stackId="eg" name="OPEX" fill="#D13030" />
+                      <Bar dataKey="capex" stackId="eg" name="CAPEX" fill="#1A5FBF" />
+                      <Line type="monotone" dataKey="ingresos" name="Ingresos" stroke="#1A7A3C" strokeWidth={3} dot={false} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+
+              <Card title="Escenarios del plan hacia break-even">
+                <div className="ch-lg">
+                  <ResponsiveContainer>
+                    <LineChart data={beScenarioProjection}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} />
+                      <Tooltip formatter={(v) => fmtNum(v)} />
+                      <Legend />
+                      <Line type="monotone" dataKey="be" name="Break-even" stroke="#5A6A7A" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="conservador" name="Conservador" stroke="#C47A00" strokeWidth={2.5} dot={false} />
+                      <Line type="monotone" dataKey="optimista" name="Optimista" stroke="#1A7A3C" strokeWidth={2.5} dot={false} />
+                      <Line type="monotone" dataKey="ideal" name="Ideal" stroke="#1A5FBF" strokeWidth={2.5} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+            </div>
+
+            <div className="card">
+              <div className="ct">Escenarios del plan — neto mensual y tiempo estimado</div>
+              <table className="tbl">
+                <thead>
+                  <tr><th>Escenario</th><th className="r">Bruto</th><th className="r">Churn</th><th className="r">Neto</th><th className="r">Meses a BE</th></tr>
+                </thead>
+                <tbody>
+                  {beScenarioSummary.map((s, idx) => (
+                    <tr key={s.escenario} className={idx === 1 ? "hl" : ""}>
+                      <td>{s.escenario}</td>
+                      <td className="r">{fmtNum(s.bruto)}</td>
+                      <td className="r">{fmtNum(s.churn)}</td>
+                      <td className="r ok">{fmtNum(s.neto)}</td>
+                      <td className="r">{s.meses === 0 ? "Ya alcanzado" : `${fmtNum(s.meses)} meses`}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="ins ins-i" style={{ marginTop: 10 }}>
+                El break-even usa egresos reales con <strong>CAPEX + OPEX juntos</strong>, y proyecta la llegada según el plan actual.
+              </div>
+            </div>
+          </div>
+        )}
         {tab === "rrss" && <div className="sec on"><PlaceholderSection title="Redes sociales" text="Maqueta lista. Después conectamos Meta, Google y TikTok o carga manual mensual." /></div>}
         {tab === "ia" && <div className="sec on"><PlaceholderSection title="IA Ventas" text="Pestaña reservada para indicadores de automatización, asistencia y conversión por IA." /></div>}
         {tab === "dvtas" && <div className="sec on"><PlaceholderSection title="Dashboard Ventas IA" text="Acá después cruzamos leads, conversaciones, altas y atribución." /></div>}
         {tab === "aportes" && <div className="sec on"><PlaceholderSection title="Aportes al objetivo" text="Pestaña preparada para ver cuánto aporta cada frente al objetivo mensual." /></div>}
-        {tab === "recupero" && <div className="sec on"><PlaceholderSection title="Recupero AB" text="Acá después entra recupero, segmentación y campañas específicas por base." /></div>}
+        {tab === "recupero" && (
+          <div className="sec on">
+            <div className="kr k4">
+              <Kpi label="ONUs retiradas/semana" value="60" sub="776 pendientes · 2 técnicos de campo" tone="wr" />
+              <Kpi label="Backlog total pendiente" value="776" sub="Verde ≤200" tone="dn" />
+              <Kpi label="Reacondicionadas/mes" value="30" sub="Para reutilizar en nuevas instalaciones" tone="nv" />
+              <Kpi label="Tiempo coord→visita" value="3 días" sub="Desde llamada hasta visita" tone="ok" />
+            </div>
+
+            <div className="g2">
+              <Card title="Recupero / Retiro ONUs por geografía">
+                <div className="ch-lg">
+                  <ResponsiveContainer>
+                    <BarChart data={recuperoGeoData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="zona" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip formatter={(v) => `${fmtNum(v)} ONUs`} />
+                      <Bar dataKey="onus" fill="#D13030" radius={[4,4,0,0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="ins ins-d" style={{ marginTop: 10 }}>
+                  Almirante Brown concentra la mayor parte del backlog de recupero, seguido por Capitán Sarmiento. El cuello de botella es operativo.
+                </div>
+              </Card>
+
+              <Card title="Detalle operativo del dashboard viejo">
+                <div className="plan-row"><span>Meta verde ONUs/semana</span><span className="bdg bdg-g">60</span></div>
+                <div className="plan-row"><span>Backlog objetivo</span><span className="bdg bdg-w">≤ 200</span></div>
+                <div className="plan-row"><span>Bono recupero</span><span className="bdg bdg-i">USD 3k / mes</span></div>
+                <div className="plan-row"><span>Retiros vs nuevas ONUs</span><span className="bdg bdg-w">≥100%</span></div>
+
+                <div className="ins ins-i" style={{ marginTop: 10 }}>
+                  El tablero viejo medía recupero como frente operativo independiente: retiros, backlog, reacondicionamiento y tiempo de visita. Esta pestaña conserva esa lógica.
+                </div>
+                <div className="ins ins-w">
+                  La prioridad es bajar backlog, aumentar retiro semanal y sostener reutilización para no seguir agrandando el pendiente.
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
         {tab === "objetivos" && <div className="sec on"><PlaceholderSection title="Objetivos" text="Próximo paso: conectar objetivos_mensuales y cumplimiento vs real." /></div>}
         {tab === "plan" && (
           <div className="sec on">
@@ -1453,6 +1646,40 @@ export default function App() {
               </Card>
             </div>
 
+            <div className="g22">
+              <Card title="Crecimiento actual de red">
+                <div className="ch-lg">
+                  <ResponsiveContainer>
+                    <LineChart data={redGrowthData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} />
+                      <Tooltip formatter={(v) => fmtNum(Math.round(v))} />
+                      <Legend />
+                      <Line type="monotone" dataKey="real" name="Cajas reales" stroke="#1A5FBF" strokeWidth={3} connectNulls={false} />
+                      <Line type="monotone" dataKey="meta" name="Meta acumulada" stroke="#1A7A3C" strokeWidth={2.5} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+
+              <Card title="Escenarios del plan">
+                <div className="ch-lg">
+                  <ResponsiveContainer>
+                    <BarChart data={planScenarioBars}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="escenario" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="bruto" name="Bruto" fill="#1A5FBF" />
+                      <Bar dataKey="churn" name="Churn" fill="#D13030" />
+                      <Bar dataKey="neto" name="Neto" fill="#1A7A3C" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
+            </div>
             <div className="g22">
               <Card title="Hoja de ruta 2026">
                 <table className="tbl">
