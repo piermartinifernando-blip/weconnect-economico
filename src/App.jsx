@@ -891,18 +891,54 @@ export default function App() {
     return { label, data, avgNeto, avgAltas, avgChurn };
   };
 
+  const generalClienteMatrix = useMemo(() => {
+    const altasMap = new Map();
+    const churnMap = new Map();
+    const ymNow = currentYearMonth();
+
+    (altasMensuales || []).forEach((r) => {
+      const mes = String(r.mes || "");
+      const altas = Number(r.altas || r.cantidad || 0);
+      if (mes && mes < ymNow) altasMap.set(mes, altas);
+    });
+
+    (churn || []).forEach((r) => {
+      const mes = String(r.mes || "");
+      const churnMes = Number(r.churn_abs || r.churn || 0);
+      if (mes && mes < ymNow) churnMap.set(mes, churnMes);
+    });
+
+    const months = [...new Set([...altasMap.keys(), ...churnMap.keys()])]
+      .sort()
+      .filter((mes) => (altasMap.get(mes) || 0) + (churnMap.get(mes) || 0) > 0);
+
+    const lastMonthWithAltas = [...months].reverse().find((mes) => (altasMap.get(mes) || 0) > 0);
+    const effectiveMonths = lastMonthWithAltas ? months.filter((mes) => mes <= lastMonthWithAltas) : months;
+
+    const data = effectiveMonths.slice(-8).map((mes) => {
+      const altas = altasMap.get(mes) || 0;
+      const churnMes = churnMap.get(mes) || 0;
+      return { mes, label: monthShort(mes), altas, churn: churnMes, neto: altas - churnMes };
+    });
+
+    const avgNeto = data.length ? data.reduce((acc, r) => acc + r.neto, 0) / data.length : 0;
+    const avgAltas = data.length ? data.reduce((acc, r) => acc + r.altas, 0) / data.length : 0;
+    const avgChurn = data.length ? data.reduce((acc, r) => acc + r.churn, 0) / data.length : 0;
+    return { label: "General", data, avgNeto, avgAltas, avgChurn };
+  }, [altasMensuales, churn]);
+
   const clienteMatrices = useMemo(() => {
     const rows = clientesDetalle || [];
     const isBrown = (r) => normalizeCity(r.ciudad) === "Almirante Brown";
     const isVarela = (r) => normalizeCity(r.ciudad) === "Florencio Varela";
     const isCapitan = (r) => normalizeCity(r.ciudad) === "Capitán Sarmiento";
     return [
-      buildGrowthMatrix(rows, "General"),
+      generalClienteMatrix,
       buildGrowthMatrix(rows.filter(isBrown), "Almirante Brown"),
       buildGrowthMatrix(rows.filter(isVarela), "Florencio Varela"),
       buildGrowthMatrix(rows.filter(isCapitan), "Capitán Sarmiento"),
     ];
-  }, [clientesDetalle]);
+  }, [clientesDetalle, generalClienteMatrix]);
 
   const planScenarioBars = [
     { escenario: "Conservador", bruto: 240, churn: 50, neto: 190 },
@@ -923,6 +959,22 @@ export default function App() {
       ideal: start + planScenarioBars[2].neto * idx,
     }));
   }, [kpis, beTargetClientes]);
+
+  const beFinancialProjection = useMemo(() => {
+    const baseIngreso = Number(ultimoMesCerradoResultado.cobrado_auditado || 0);
+    const baseEgreso = Number(ultimoMesCerradoResultado.opex || 0) + Number(ultimoMesCerradoResultado.capex || 0);
+    const months = buildMonthRange(currentYearMonth(), RED_TARGET_MONTH);
+
+    return months.map((mes, idx) => ({
+      mes,
+      label: idx === 0 ? "Hoy" : monthShort(mes),
+      egresos: baseEgreso / 1_000_000,
+      actual: idx === 0 ? baseIngreso / 1_000_000 : null,
+      conservador: (baseIngreso + planScenarioBars[0].neto * arpuReferencia * idx) / 1_000_000,
+      optimista: (baseIngreso + planScenarioBars[1].neto * arpuReferencia * idx) / 1_000_000,
+      ideal: (baseIngreso + planScenarioBars[2].neto * arpuReferencia * idx) / 1_000_000,
+    }));
+  }, [ultimoMesCerradoResultado, arpuReferencia]);
 
   const beScenarioSummary = planScenarioBars.map((s) => ({
     ...s,
