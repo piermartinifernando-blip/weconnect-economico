@@ -13,23 +13,11 @@ import {
   Legend,
   ComposedChart,
 } from "recharts";
-import { CAPEX_OBRA_PROMEDIO, RED_BASE_MONTH, RED_TODAY_MONTH, RED_TARGET_MONTH, RED_BASE_BOXES, RED_CURRENT_BOXES, RED_TARGET_BOXES, RED_SUBSCRIBERS_PER_BOX, RED_CONSERVATIVE_RATE, RED_BROWN_GROSS_AVG, RED_BROWN_CHURN_AVG, RED_BROWN_NET_AVG, RED_BROWN_GROSS_RATE, RED_BROWN_NET_RATE, LOGO_SRC } from "./config/constants";
+import { CAPEX_OBRA_PROMEDIO, RED_BASE_MONTH, RED_TODAY_MONTH, RED_TARGET_MONTH, RED_BASE_BOXES, RED_CURRENT_BOXES, RED_TARGET_BOXES, RED_SUBSCRIBERS_PER_BOX, RED_CONSERVATIVE_RATE, RED_BROWN_GROSS_AVG, RED_BROWN_CHURN_AVG, RED_BROWN_NET_AVG, RED_BROWN_GROSS_RATE, RED_BROWN_NET_RATE } from "./config/constants";
 import { fmtMoney, fmtMoney1, fmtNum, fmtPct, toMillions } from "./utils/format";
 import { monthShort, currentYearMonth, buildMonthRange, lerp, monthDiff } from "./utils/dates";
-import { COBERTURA_KML } from "./config/coverage";
-import { normalizeCity, parseKmlPolygons } from "./utils/kml";
-      <div className="map-legend-box">
-        <div className="map-legend-title">Capas activas</div>
-        {Object.entries(categoryMeta).map(([key, meta]) => (
-          <div className="map-legend-row" key={key}>
-            <span className="map-dot" style={{ background: meta.color, opacity: visible[key] ? 1 : 0.25 }}></span>
-            <span>{meta.label} ({fmtNum(counts[key] || 0)})</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+
+
 
 
 const loadLeafletAssets = async () => {
