@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Ingresos from './pages/Ingresos'
 import Clientes from './pages/Clientes'
+import Churn from './pages/Churn'
 import Mora from './pages/Mora'
 import Egresos from './pages/Egresos'
 import PnL from './pages/PnL'
@@ -15,6 +16,7 @@ const PAGES = {
   dashboard: Dashboard,
   ingresos: Ingresos,
   clientes: Clientes,
+  churn: Churn,
   mora: Mora,
   egresos: Egresos,
   pnl: PnL,

@@ -25,6 +25,7 @@ export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊' },
   { id: 'ingresos', label: 'Ingresos', icon: '💰' },
   { id: 'clientes', label: 'Clientes', icon: '👥' },
+  { id: 'churn', label: 'Churn', icon: '📉' },
   { id: 'mora', label: 'Mora', icon: '⚠️' },
   { id: 'egresos', label: 'Egresos', icon: '📑' },
   { id: 'pnl', label: 'P&L', icon: '📈' },
