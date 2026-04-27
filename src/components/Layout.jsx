@@ -1,7 +1,17 @@
+import { useState, useEffect } from 'react'
 import { COLORS as C, NAV_ITEMS } from '../lib/constants'
 import { signOut } from '../lib/auth'
+import { supabase } from '../lib/supabase'
 
 export default function Layout({ currentPage, onNavigate, children }) {
+  const [userEmail, setUserEmail] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.email) setUserEmail(data.user.email)
+    })
+  }, [])
+
   const handleLogout = async () => {
     await signOut()
   }
@@ -53,6 +63,11 @@ export default function Layout({ currentPage, onNavigate, children }) {
 
         {/* Footer sidebar */}
         <div style={{ padding: '12px 16px', borderTop: `1px solid ${C.brd}` }}>
+          {userEmail && (
+            <div style={{ fontSize: 11, color: C.acc, marginBottom: 8, padding: '6px 8px', background: `${C.pri}15`, borderRadius: 6, textAlign: 'center', wordBreak: 'break-all' }}>
+              {userEmail}
+            </div>
+          )}
           <button
             onClick={handleLogout}
             style={{
