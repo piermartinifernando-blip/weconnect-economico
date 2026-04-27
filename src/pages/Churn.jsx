@@ -1,106 +1,91 @@
 import { useState, useEffect } from 'react'
 import { KpiCard, ChartCard, LoadingState, ErrorState, CustomTooltip } from '../components/UI'
-import { COLORS as C, PALETTE as PC } from '../lib/constants'
+import { COLORS as C } from '../lib/constants'
 import { fmtNum, ml } from '../lib/formatters'
 import { supabase } from '../lib/supabase'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ComposedChart, Line, PieChart, Pie, Cell } from 'recharts'
 
-async function fetchChurnData() {
-  const { data, error } = await supabase.from('clientes_ispcube').select('estado, fecha_alta, fecha_bloqueo')
-  if (error) return { error: error.message }
+async function fetchAll() {
+  // 1. Churn mensual real (from view)
+  const { data: churnMensual } = await supabase.from('vw_churn_mensual_real').select('*').order('mes')
 
-  const rows = (data || []).filter(r => r.fecha_alta)
-
-  // Monthly cohorts
-  const monthly = {}
-  rows.forEach(r => {
-    const mes = r.fecha_alta?.substring(0, 7)
-    if (!mes || mes < '2024-07') return
-    if (!monthly[mes]) monthly[mes] = { mes, total: 0, churned: 0, activos: 0, bloqueados: 0 }
-    monthly[mes].total++
-    if (r.estado === 'Sin servicio') monthly[mes].churned++
-    else if (r.estado === 'Habilitado') monthly[mes].activos++
-    else if (r.estado === 'Bloqueado') monthly[mes].bloqueados++
-  })
-  const monthlyArr = Object.values(monthly).sort((a, b) => a.mes.localeCompare(b.mes))
-
-  // Quarterly cohorts
-  const quarterly = {}
-  rows.forEach(r => {
-    const d = new Date(r.fecha_alta)
-    if (isNaN(d)) return
-    const q = `${d.getFullYear()}-Q${Math.ceil((d.getMonth() + 1) / 3)}`
-    if (q < '2024-Q2') return
-    if (!quarterly[q]) quarterly[q] = { cohorte: q, total: 0, churned: 0, dias: [] }
-    quarterly[q].total++
-    if (r.estado === 'Sin servicio') {
-      quarterly[q].churned++
-      if (r.fecha_bloqueo) {
-        const dias = Math.round((new Date(r.fecha_bloqueo) - d) / 86400000)
-        if (dias > 0) quarterly[q].dias.push(dias)
-      }
+  // 2. Cohortes trimestrales (SQL query via RPC or direct)
+  const { data: cohorteRaw } = await supabase.rpc('get_churn_cohortes').catch(() => ({ data: null }))
+  
+  // If RPC doesn't exist, calculate from raw data
+  let cohortes = cohorteRaw
+  if (!cohortes) {
+    const { data: clientes } = await supabase.from('clientes_ispcube').select('estado, fecha_alta, fecha_bloqueo')
+    if (clientes) {
+      const qMap = {}
+      clientes.filter(r => r.fecha_alta).forEach(r => {
+        const fa = r.fecha_alta.substring(0, 10)
+        const parts = fa.split('-')
+        const year = parseInt(parts[0])
+        const month = parseInt(parts[1])
+        const q = `${year}-Q${Math.ceil(month / 3)}`
+        if (q < '2024-Q3') return
+        if (!qMap[q]) qMap[q] = { cohorte: q, total: 0, churned: 0, dias_sum: 0, dias_count: 0 }
+        qMap[q].total++
+        if (r.estado === 'Sin servicio') {
+          qMap[q].churned++
+          if (r.fecha_bloqueo) {
+            const d1 = new Date(r.fecha_alta.substring(0, 10))
+            const d2 = new Date(r.fecha_bloqueo.substring(0, 10))
+            const dias = Math.round((d2 - d1) / 86400000)
+            if (dias > 0) { qMap[q].dias_sum += dias; qMap[q].dias_count++ }
+          }
+        }
+      })
+      cohortes = Object.values(qMap).sort((a, b) => a.cohorte.localeCompare(b.cohorte)).map(q => ({
+        cohorte: q.cohorte,
+        total: q.total,
+        churned: q.churned,
+        churn_pct: q.total > 0 ? Math.round(q.churned / q.total * 1000) / 10 : 0,
+        vida_media_dias: q.dias_count > 0 ? Math.round(q.dias_sum / q.dias_count) : null,
+      }))
     }
-  })
-  const quarterlyArr = Object.values(quarterly).sort((a, b) => a.cohorte.localeCompare(b.cohorte)).map(q => ({
-    ...q,
-    churn_pct: q.total > 0 ? Math.round(q.churned / q.total * 1000) / 10 : 0,
-    vida_media: q.dias.length > 0 ? Math.round(q.dias.reduce((a, b) => a + b, 0) / q.dias.length) : null,
-  }))
-
-  // Lifecycle distribution
-  const tramos = { '0-1 mes': 0, '1-3 meses': 0, '3-6 meses': 0, '6-12 meses': 0, '+12 meses': 0 }
-  rows.filter(r => r.estado === 'Sin servicio' && r.fecha_bloqueo).forEach(r => {
-    const dias = Math.round((new Date(r.fecha_bloqueo) - new Date(r.fecha_alta)) / 86400000)
-    if (dias <= 30) tramos['0-1 mes']++
-    else if (dias <= 90) tramos['1-3 meses']++
-    else if (dias <= 180) tramos['3-6 meses']++
-    else if (dias <= 365) tramos['6-12 meses']++
-    else tramos['+12 meses']++
-  })
-  const tramosArr = Object.entries(tramos).map(([tramo, cantidad]) => ({ tramo, cantidad }))
-  const totalChurned = Object.values(tramos).reduce((a, b) => a + b, 0)
-
-  // Global KPIs
-  const totalClientes = rows.length
-  const totalSS = rows.filter(r => r.estado === 'Sin servicio').length
-  const churnAcum = totalClientes > 0 ? Math.round(totalSS / totalClientes * 1000) / 10 : 0
-  const last12 = monthlyArr.slice(-12)
-  const tasaProm = last12.length > 0 ? Math.round(last12.reduce((s, m) => s + (m.total > 0 ? m.churned / m.total * 100 : 0), 0) / last12.length * 10) / 10 : 0
-  const churnAnual = Math.round((1 - Math.pow(1 - tasaProm / 100, 12)) * 1000) / 10
-
-  // Vida media global
-  const allDias = rows.filter(r => r.estado === 'Sin servicio' && r.fecha_bloqueo).map(r => {
-    return Math.round((new Date(r.fecha_bloqueo) - new Date(r.fecha_alta)) / 86400000)
-  }).filter(d => d > 0)
-  const vidaMediaDias = allDias.length > 0 ? Math.round(allDias.reduce((a, b) => a + b, 0) / allDias.length) : 0
-  const vidaMediaMeses = Math.round(vidaMediaDias / 30 * 10) / 10
-  const vidaMedianaDias = allDias.sort((a, b) => a - b)[Math.floor(allDias.length / 2)] || 0
-  const vidaMedianaMeses = Math.round(vidaMedianaDias / 30 * 10) / 10
-
-  // Monthly churn rate
-  const monthlyRate = monthlyArr.map(m => ({
-    mes: m.mes,
-    tasa: m.total > 0 ? Math.round(m.churned / m.total * 1000) / 10 : 0,
-    churned: m.churned,
-    total: m.total,
-  }))
-
-  // Early churn analysis
-  const antes3 = tramos['0-1 mes'] + tramos['1-3 meses']
-  const entre3y6 = tramos['3-6 meses']
-  const mas12 = tramos['+12 meses']
-  const pctAntes3 = totalChurned > 0 ? Math.round(antes3 / totalChurned * 1000) / 10 : 0
-  const pctEntre3y6 = totalChurned > 0 ? Math.round(entre3y6 / totalChurned * 1000) / 10 : 0
-  const pctMas12 = totalChurned > 0 ? Math.round(mas12 / totalChurned * 1000) / 10 : 0
-
-  return {
-    data: {
-      kpis: { churnAcum, totalSS, totalClientes, tasaProm, churnAnual, vidaMediaMeses, vidaMedianaMeses },
-      monthlyRate, quarterlyArr, tramosArr, totalChurned,
-      earlyChurn: { antes3, entre3y6, mas12, pctAntes3, pctEntre3y6, pctMas12 },
-    },
-    error: null,
   }
+
+  // 3. Tramos de permanencia
+  let tramos = null
+  const { data: clientesTramos } = await supabase.from('clientes_ispcube').select('fecha_alta, fecha_bloqueo, estado')
+  if (clientesTramos) {
+    const t = { '0-1 mes': 0, '1-3 meses': 0, '3-6 meses': 0, '6-12 meses': 0, '+12 meses': 0 }
+    let totalDias = 0, countDias = 0
+    clientesTramos.filter(r => r.estado === 'Sin servicio' && r.fecha_alta && r.fecha_bloqueo).forEach(r => {
+      const dias = Math.round((new Date(r.fecha_bloqueo.substring(0, 10)) - new Date(r.fecha_alta.substring(0, 10))) / 86400000)
+      if (dias <= 0) return
+      totalDias += dias; countDias++
+      if (dias <= 30) t['0-1 mes']++
+      else if (dias <= 90) t['1-3 meses']++
+      else if (dias <= 180) t['3-6 meses']++
+      else if (dias <= 365) t['6-12 meses']++
+      else t['+12 meses']++
+    })
+    const totalChurned = Object.values(t).reduce((a, b) => a + b, 0)
+    const antes3 = t['0-1 mes'] + t['1-3 meses']
+    tramos = {
+      data: Object.entries(t).map(([tramo, cantidad]) => ({ tramo, cantidad })),
+      totalChurned,
+      vidaMediaDias: countDias > 0 ? Math.round(totalDias / countDias) : 0,
+      vidaMediaMeses: countDias > 0 ? Math.round(totalDias / countDias / 30 * 10) / 10 : 0,
+      pctAntes3: totalChurned > 0 ? Math.round(antes3 / totalChurned * 1000) / 10 : 0,
+      pctEntre3y6: totalChurned > 0 ? Math.round(t['3-6 meses'] / totalChurned * 1000) / 10 : 0,
+      pctMas12: totalChurned > 0 ? Math.round(t['+12 meses'] / totalChurned * 1000) / 10 : 0,
+    }
+    // Mediana
+    const allDias = clientesTramos.filter(r => r.estado === 'Sin servicio' && r.fecha_alta && r.fecha_bloqueo)
+      .map(r => Math.round((new Date(r.fecha_bloqueo.substring(0, 10)) - new Date(r.fecha_alta.substring(0, 10))) / 86400000))
+      .filter(d => d > 0).sort((a, b) => a - b)
+    tramos.vidaMedianaMeses = allDias.length > 0 ? Math.round(allDias[Math.floor(allDias.length / 2)] / 30 * 10) / 10 : 0
+  }
+
+  // 4. KPIs globales from view
+  const { data: kpisRaw } = await supabase.from('vw_kpis_actuales').select('*')
+  const kpis = kpisRaw?.[0] || {}
+
+  return { churnMensual: churnMensual || [], cohortes: cohortes || [], tramos, kpis }
 }
 
 function CohorteBar({ label, pct, count, color }) {
@@ -108,11 +93,13 @@ function CohorteBar({ label, pct, count, color }) {
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
         <span style={{ color: C.tx }}>{label}</span>
-        <span style={{ color: C.tx2 }}>{count} inact.</span>
+        <span style={{ color: C.tx2 }}>{fmtNum(count)} inact.</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{ flex: 1, height: 24, borderRadius: 6, background: C.bg, overflow: 'hidden' }}>
-          <div style={{ width: `${Math.min(pct, 100)}%`, height: '100%', borderRadius: 6, background: color, display: 'flex', alignItems: 'center', paddingLeft: 8, fontSize: 11, fontWeight: 700, color: '#fff' }}>
+          <div style={{ width: `${Math.min(pct * 2.5, 100)}%`, height: '100%', borderRadius: 6, background: color,
+            display: 'flex', alignItems: 'center', paddingLeft: 8, fontSize: 11, fontWeight: 700, color: '#fff',
+            minWidth: pct > 0 ? 50 : 0 }}>
             {pct}%
           </div>
         </div>
@@ -124,58 +111,72 @@ function CohorteBar({ label, pct, count, color }) {
 export default function Churn() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchChurnData().then(res => {
-      if (res.error) setError(res.error)
-      else setData(res.data)
-      setLoading(false)
-    })
+    fetchAll().then(d => { setData(d); setLoading(false) })
   }, [])
 
   if (loading) return <LoadingState />
-  if (error) return <ErrorState message={error} />
-  if (!data) return null
+  if (!data) return <ErrorState message="Error cargando datos" />
 
-  const { kpis, monthlyRate, quarterlyArr, tramosArr, totalChurned, earlyChurn } = data
-  const pieColors = [C.red, C.amb, '#f97316', C.pri, C.grn]
+  const { churnMensual, cohortes, tramos, kpis } = data
+  const totalClientes = Number(kpis.clientes_total || 0)
+  const totalSS = Number(kpis.sin_servicio || 0)
+  const totalHab = Number(kpis.habilitados || 0)
+  const churnAcum = totalClientes > 0 ? Math.round(totalSS / totalClientes * 1000) / 10 : 0
 
-  const cohorteColors = q => {
-    const pct = q.churn_pct
+  // Tasa mensual: bajas del mes (from vw_churn_mensual_real)
+  const last12 = (churnMensual || []).slice(-12)
+  const tasaProm = last12.length > 0 ? Math.round(last12.reduce((s, m) => s + Number(m.bajas || 0), 0) / last12.length) : 0
+  const churnAnual = totalClientes > 0 ? Math.round(totalSS / totalClientes * 1000) / 10 : 0
+
+  // Chart data: bajas reales por mes (from view)
+  const chartData = (churnMensual || []).filter(m => m.mes >= '2024-07').map(m => ({
+    mes: m.mes,
+    bajas: Number(m.bajas || 0),
+    altas: Number(m.altas || 0),
+    neto: Number(m.neto || 0),
+    tasa: totalHab > 0 ? Math.round(Number(m.bajas || 0) / totalHab * 1000) / 10 : 0,
+  }))
+
+  const cohorteColor = pct => {
     if (pct >= 35) return C.red
     if (pct >= 25) return '#f97316'
     if (pct >= 15) return C.amb
     return C.grn
   }
 
+  const pieColors = [C.red, '#f97316', C.amb, C.pri, C.grn]
+
   return (
     <div>
       {/* KPIs */}
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
-        <KpiCard title="Churn acumulado" value={`${kpis.churnAcum}%`} icon="📉" sub={`${fmtNum(kpis.totalSS)} de ${fmtNum(kpis.totalClientes)}`} />
-        <KpiCard title="Tasa mensual prom." value={`${kpis.tasaProm}%`} icon="📊" sub={`~${Math.round(kpis.totalSS / Math.max(monthlyRate.length, 1))} clientes/mes`} />
-        <KpiCard title="Churn anual implícito" value={`${kpis.churnAnual}%`} icon="🔴" sub="1 de cada 3 / año" />
-        <KpiCard title="Vida media" value={`${kpis.vidaMediaMeses} meses`} icon="⏱️" sub={`mediana: ${kpis.vidaMedianaMeses} meses`} />
+        <KpiCard title="Churn acumulado" value={`${churnAcum}%`} icon="📉" sub={`${fmtNum(totalSS)} de ${fmtNum(totalClientes)}`} />
+        <KpiCard title="Bajas prom/mes" value={fmtNum(tasaProm)} icon="📊" sub="últimos 12 meses" />
+        <KpiCard title="Vida media" value={`${tramos?.vidaMediaMeses || 0} meses`} icon="⏱️" sub={`mediana: ${tramos?.vidaMedianaMeses || 0} meses`} />
+        <KpiCard title="Churn anual" value={`${churnAnual}%`} icon="🔴" sub={`${fmtNum(totalSS)} sin servicio`} />
       </div>
 
       {/* TASA MENSUAL + COHORTES */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <ChartCard title="Tasa de churn mensual (%)" height={300}>
-          <ComposedChart data={monthlyRate}>
+        <ChartCard title="Bajas mensuales (Sin servicio)" height={300}>
+          <ComposedChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke={C.brd} />
             <XAxis dataKey="mes" tickFormatter={ml} tick={{ fill: C.tx2, fontSize: 10 }} />
-            <YAxis tick={{ fill: C.tx2, fontSize: 10 }} unit="%" />
-            <Tooltip content={<CustomTooltip formatter={v => `${v}%`} />} />
-            <Line dataKey="tasa" name="Tasa churn" stroke={C.red} strokeWidth={2.5} dot={{ r: 4, fill: C.red }} />
+            <YAxis tick={{ fill: C.tx2, fontSize: 10 }} />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="bajas" name="Bajas" fill={C.red} radius={[4, 4, 0, 0]} opacity={0.85} />
+            <Line dataKey="altas" name="Altas" stroke={C.grn} strokeWidth={2} dot={{ r: 3, fill: C.grn }} />
           </ComposedChart>
         </ChartCard>
 
         <ChartCard title="Churn acumulado por cohorte" height="auto">
           <div style={{ padding: '8px 0' }}>
-            {quarterlyArr.map((q, i) => (
-              <CohorteBar key={i} label={`${q.cohorte} (${q.vida_media ? Math.round(q.vida_media / 30) + 'm' : '—'})`}
-                pct={q.churn_pct} count={q.churned} color={cohorteColors(q)} />
+            {cohortes.map((q, i) => (
+              <CohorteBar key={i}
+                label={`${q.cohorte} (${q.vida_media_dias ? Math.round(q.vida_media_dias / 30) + 'm' : '—'})`}
+                pct={q.churn_pct} count={q.churned} color={cohorteColor(q.churn_pct)} />
             ))}
           </div>
           <div style={{ marginTop: 12, padding: 12, background: C.bg, borderRadius: 8, fontSize: 11, color: C.tx2 }}>
@@ -185,51 +186,55 @@ export default function Churn() {
         </ChartCard>
       </div>
 
-      {/* EARLY CHURN + DISTRIBUCIÓN */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.red}`, padding: 20, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Churnan antes del mes 3</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: C.red }}>{earlyChurn.pctAntes3}%</div>
-          <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>problema de onboarding</div>
+      {/* EARLY CHURN */}
+      {tramos && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
+          <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.red}`, padding: 20, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Churnan antes del mes 3</div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: C.red }}>{tramos.pctAntes3}%</div>
+            <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>problema de onboarding</div>
+          </div>
+          <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.amb}`, padding: 20, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Churnan entre mes 3-6</div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: C.amb }}>{tramos.pctEntre3y6}%</div>
+            <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>primera renovación</div>
+          </div>
+          <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.grn}`, padding: 20, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Más de 12 meses activos</div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: C.grn }}>{tramos.pctMas12}%</div>
+            <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>los clientes "fieles"</div>
+          </div>
         </div>
-        <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.amb}`, padding: 20, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Churnan entre mes 3-6</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: C.amb }}>{earlyChurn.pctEntre3y6}%</div>
-          <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>primera renovación</div>
-        </div>
-        <div style={{ background: C.sf, borderRadius: 12, border: `2px solid ${C.grn}`, padding: 20, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: C.tx2, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Más de 12 meses activos</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: C.grn }}>{earlyChurn.pctMas12}%</div>
-          <div style={{ fontSize: 12, color: C.tx2, marginTop: 4 }}>los clientes "fieles"</div>
-        </div>
-      </div>
+      )}
 
       {/* DISTRIBUCIÓN VIDA */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <ChartCard title="Distribución de permanencia al irse" height={280}>
-          <BarChart data={tramosArr}>
-            <CartesianGrid strokeDasharray="3 3" stroke={C.brd} />
-            <XAxis dataKey="tramo" tick={{ fill: C.tx2, fontSize: 10 }} />
-            <YAxis tick={{ fill: C.tx2, fontSize: 10 }} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="cantidad" name="Clientes" radius={[6, 6, 0, 0]}>
-              {tramosArr.map((_, i) => <Cell key={i} fill={pieColors[i]} />)}
-            </Bar>
-          </BarChart>
-        </ChartCard>
+      {tramos && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <ChartCard title="Distribución de permanencia al irse" height={280}>
+            <BarChart data={tramos.data}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.brd} />
+              <XAxis dataKey="tramo" tick={{ fill: C.tx2, fontSize: 10 }} />
+              <YAxis tick={{ fill: C.tx2, fontSize: 10 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="cantidad" name="Clientes" radius={[6, 6, 0, 0]}>
+                {tramos.data.map((_, i) => <Cell key={i} fill={pieColors[i]} />)}
+              </Bar>
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="¿Cuándo se van?" height={280}>
-          <PieChart>
-            <Pie data={tramosArr.filter(t => t.cantidad > 0).map(t => ({ name: t.tramo, value: t.cantidad }))}
-              cx="50%" cy="50%" outerRadius={95} innerRadius={55} dataKey="value"
-              label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}
-              labelLine={{ stroke: C.tx2 }}>
-              {tramosArr.map((_, i) => <Cell key={i} fill={pieColors[i]} />)}
-            </Pie>
-            <Tooltip formatter={v => fmtNum(v)} />
-          </PieChart>
-        </ChartCard>
-      </div>
+          <ChartCard title="¿Cuándo se van?" height={280}>
+            <PieChart>
+              <Pie data={tramos.data.filter(t => t.cantidad > 0).map(t => ({ name: t.tramo, value: t.cantidad }))}
+                cx="50%" cy="50%" outerRadius={95} innerRadius={55} dataKey="value"
+                label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}
+                labelLine={{ stroke: C.tx2 }}>
+                {tramos.data.filter(t => t.cantidad > 0).map((_, i) => <Cell key={i} fill={pieColors[i]} />)}
+              </Pie>
+              <Tooltip formatter={v => fmtNum(v)} />
+            </PieChart>
+          </ChartCard>
+        </div>
+      )}
     </div>
   )
 }
