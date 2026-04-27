@@ -8,7 +8,8 @@ import Clientes from './pages/Clientes'
 import Mora from './pages/Mora'
 import Egresos from './pages/Egresos'
 import PnL from './pages/PnL'
-import { CargaManual, Catalogos, Auditoria } from './pages/Placeholders'
+import Clasificacion from './pages/Clasificacion'
+import { Catalogos, Auditoria } from './pages/Placeholders'
 
 const PAGES = {
   dashboard: Dashboard,
@@ -17,7 +18,7 @@ const PAGES = {
   mora: Mora,
   egresos: Egresos,
   pnl: PnL,
-  carga: CargaManual,
+  carga: Clasificacion,
   catalogos: Catalogos,
   auditoria: Auditoria,
 }

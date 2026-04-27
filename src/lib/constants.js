@@ -17,12 +17,10 @@ export const COLORS = {
   tx2: '#a78bdb',
   acc: '#c084fc',
 }
-
 export const PALETTE = [
   COLORS.pri, COLORS.sec, COLORS.grn, COLORS.amb, COLORS.pur,
   COLORS.pnk, COLORS.red, COLORS.cyn, COLORS.teal, COLORS.org
 ]
-
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊' },
   { id: 'ingresos', label: 'Ingresos', icon: '💰' },
@@ -30,7 +28,7 @@ export const NAV_ITEMS = [
   { id: 'mora', label: 'Mora', icon: '⚠️' },
   { id: 'egresos', label: 'Egresos', icon: '📑' },
   { id: 'pnl', label: 'P&L', icon: '📈' },
-  { id: 'carga', label: 'Carga manual', icon: '📝' },
+  { id: 'carga', label: 'Clasificar', icon: '✏️' },
   { id: 'catalogos', label: 'Catálogos', icon: '⚙️' },
   { id: 'auditoria', label: 'Auditoría', icon: '🔍' },
 ]
