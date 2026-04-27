@@ -4,6 +4,8 @@ import { COLORS as C } from '../lib/constants'
 import { fmt, fmtNum } from '../lib/formatters'
 import { supabase } from '../lib/supabase'
 
+const NETSHARING_ID = '234cbb7d-3172-4c56-9ae2-b79967031cd0'
+
 async function fetchEgresos(filtro) {
   let q = supabase.from('egresos').select(`
     id, fecha_documento, periodo, detalle, importe_total, tipo_egreso, medio_pago,
@@ -18,8 +20,8 @@ async function fetchEgresos(filtro) {
   if (filtro === 'ok') q = q.eq('estado_control', 'ok')
   if (filtro === 'sin_tipo') q = q.is('tipo_egreso', null)
   if (filtro === 'sin_sociedad') q = q.is('sociedad_consumidora_id', null)
-  if (filtro === 'sin_centro_geo') q = q.is('centro_costo_geo_id', null)
-  if (filtro === 'sin_centro_func') q = q.is('centro_costo_func_id', null)
+  if (filtro === 'sin_centro_geo') q = q.is('centro_costo_geo_id', null).eq('sociedad_consumidora_id', NETSHARING_ID)
+  if (filtro === 'sin_centro_func') q = q.is('centro_costo_func_id', null).eq('sociedad_consumidora_id', NETSHARING_ID)
   const { data, error } = await q.limit(200)
   return { data: data || [], error }
 }
@@ -40,15 +42,16 @@ async function fetchCatalogos() {
 }
 
 async function fetchStats() {
-  const { data } = await supabase.from('egresos').select('id, estado_control, tipo_egreso, subrubro_id, centro_costo_geo_id, centro_costo_func_id, sociedad_consumidora_id')
+  const { data } = await supabase.from('egresos').select('id, estado_control, tipo_egreso, subrubro_id, centro_costo_geo_id, centro_costo_func_id, sociedad_consumidora_id, sociedad_pagadora_id')
   if (!data) return null
+  const net = data.filter(r => r.sociedad_consumidora_id === NETSHARING_ID)
   return {
     total: data.length, revisar: data.filter(r => r.estado_control === 'revisar').length,
     ok: data.filter(r => r.estado_control === 'ok').length,
     sin_tipo: data.filter(r => !r.tipo_egreso).length,
     sin_sociedad: data.filter(r => !r.sociedad_consumidora_id).length,
-    sin_centro_geo: data.filter(r => !r.centro_costo_geo_id).length,
-    sin_centro_func: data.filter(r => !r.centro_costo_func_id).length,
+    sin_centro_geo: net.filter(r => !r.centro_costo_geo_id).length,
+    sin_centro_func: net.filter(r => !r.centro_costo_func_id).length,
   }
 }
 
@@ -91,6 +94,22 @@ export default function Clasificacion() {
     setShowNuevoFunc(false)
   }
 
+  const isNet = (id) => id === NETSHARING_ID
+
+  const isRowComplete = (row, edits) => {
+    const pag = edits?.sociedad_pagadora_id || row?.sociedad_pagadora_id
+    const cons = edits?.sociedad_consumidora_id || row?.sociedad_consumidora_id
+    const tipo = edits?.tipo_egreso || row?.tipo_egreso
+    const sub = edits?.subrubro_id || row?.subrubro?.id
+    if (!pag || !cons || !tipo || !sub) return false
+    if (isNet(cons)) {
+      const geo = edits?.centro_costo_geo_id || row?.centro_costo_geo_id
+      const func = edits?.centro_costo_func_id || row?.centro_costo_func_id
+      if (!geo || !func) return false
+    }
+    return true
+  }
+
   const saveEdit = async (id) => {
     setSaving(true)
     const changes = {}
@@ -98,24 +117,29 @@ export default function Clasificacion() {
     if (ed.sociedad_consumidora_id) changes.sociedad_consumidora_id = ed.sociedad_consumidora_id
     if (ed.tipo_egreso) changes.tipo_egreso = ed.tipo_egreso
     if (ed.subrubro_id) changes.subrubro_id = ed.subrubro_id
-    if (ed.centro_costo_geo_id) changes.centro_costo_geo_id = ed.centro_costo_geo_id
-    if (ed.centro_costo_func_id) changes.centro_costo_func_id = ed.centro_costo_func_id
+    
+    const cons = ed.sociedad_consumidora_id || egresos.find(e => e.id === id)?.sociedad_consumidora_id
+    if (isNet(cons)) {
+      if (ed.centro_costo_geo_id) changes.centro_costo_geo_id = ed.centro_costo_geo_id
+      if (ed.centro_costo_func_id) changes.centro_costo_func_id = ed.centro_costo_func_id
+    } else {
+      changes.centro_costo_geo_id = null
+      changes.centro_costo_func_id = null
+    }
+
     if (ed.sociedad_pagadora_id && ed.sociedad_consumidora_id) {
       changes.es_intercompany = ed.sociedad_pagadora_id !== ed.sociedad_consumidora_id
     }
+
     const row = egresos.find(e => e.id === id)
-    const ok = (changes.sociedad_pagadora_id || row?.sociedad_pagadora_id) &&
-      (changes.sociedad_consumidora_id || row?.sociedad_consumidora_id) &&
-      (changes.tipo_egreso || row?.tipo_egreso) &&
-      (changes.subrubro_id || row?.subrubro?.id) &&
-      (changes.centro_costo_geo_id || row?.centro_costo_geo_id) &&
-      (changes.centro_costo_func_id || row?.centro_costo_func_id)
-    if (ok) changes.estado_control = 'ok'
+    if (isRowComplete(row, { ...ed, ...changes })) {
+      changes.estado_control = 'ok'
+    }
     changes.updated_at = new Date().toISOString()
 
     const { error } = await supabase.from('egresos').update(changes).eq('id', id)
     if (error) { setMsg({ t: 'e', m: `Error: ${error.message}` }) }
-    else { setMsg({ t: 'ok', m: ok ? '✅ Línea clasificada completa' : '💾 Guardado parcial — faltan campos' }); setOpenId(null); await load() }
+    else { setMsg({ t: 'ok', m: changes.estado_control === 'ok' ? '✅ Línea clasificada completa' : '💾 Guardado parcial — faltan campos' }); setOpenId(null); await load() }
     setSaving(false)
     setTimeout(() => setMsg(null), 4000)
   }
@@ -137,11 +161,24 @@ export default function Clasificacion() {
     { id: 'revisar', n: stats?.revisar, c: C.amb, l: 'Por revisar' },
     { id: 'sin_tipo', n: stats?.sin_tipo, c: C.red, l: 'Sin OPEX/CAPEX' },
     { id: 'sin_sociedad', n: stats?.sin_sociedad, c: C.red, l: 'Sin sociedad' },
-    { id: 'sin_centro_geo', n: stats?.sin_centro_geo, c: C.pur, l: 'Sin centro geo' },
-    { id: 'sin_centro_func', n: stats?.sin_centro_func, c: C.pur, l: 'Sin centro func' },
+    { id: 'sin_centro_geo', n: stats?.sin_centro_geo, c: C.pur, l: 'NET sin centro geo' },
+    { id: 'sin_centro_func', n: stats?.sin_centro_func, c: C.pur, l: 'NET sin centro func' },
     { id: 'ok', n: stats?.ok, c: C.grn, l: 'Completos' },
     { id: 'todos', n: stats?.total, c: C.tx2, l: 'Todos' },
   ]
+
+  const getFaltan = (row) => {
+    const f = []
+    if (!row.sociedad_pagadora_id) f.push('Pagadora')
+    if (!row.sociedad_consumidora_id) f.push('Consumidora')
+    if (!row.tipo_egreso) f.push('Tipo')
+    if (!row.subrubro) f.push('Subrubro')
+    if (row.sociedad_consumidora_id === NETSHARING_ID) {
+      if (!row.centro_costo_geo_id) f.push('C.Geo')
+      if (!row.centro_costo_func_id) f.push('C.Func')
+    }
+    return f
+  }
 
   return (
     <div>
@@ -180,13 +217,8 @@ export default function Clasificacion() {
           <div style={{ padding: 40, textAlign: 'center', color: C.tx2, background: C.sf, borderRadius: 12 }}>✅ Sin registros en este filtro</div>
         ) : egresos.map((row) => {
           const isOpen = openId === row.id
-          const faltan = []
-          if (!row.sociedad_pagadora_id) faltan.push('Pagadora')
-          if (!row.sociedad_consumidora_id) faltan.push('Consumidora')
-          if (!row.tipo_egreso) faltan.push('Tipo')
-          if (!row.subrubro) faltan.push('Subrubro')
-          if (!row.centro_costo_geo_id) faltan.push('C.Geo')
-          if (!row.centro_costo_func_id) faltan.push('C.Func')
+          const faltan = getFaltan(row)
+          const showCentros = isOpen && isNet(ed.sociedad_consumidora_id)
 
           return (
             <div key={row.id} style={{ background: C.sf, borderRadius: 12, border: `1px solid ${isOpen ? C.pri : C.brd}`, overflow: 'hidden' }}>
@@ -220,6 +252,10 @@ export default function Clasificacion() {
                     <div style={{ ...tg('rgba(245,158,11,.15)', C.amb), marginBottom: 12 }}>⚠️ INTERCOMPANY — pagadora ≠ consumidora</div>
                   )}
 
+                  {!isNet(ed.sociedad_consumidora_id) && ed.sociedad_consumidora_id && (
+                    <div style={{ ...tg('rgba(6,182,212,.15)', C.cyn), marginBottom: 12 }}>ℹ️ Sociedad no ISP — sin centros de costo</div>
+                  )}
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                     <div>
                       <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SOCIEDAD PAGADORA</label>
@@ -245,7 +281,7 @@ export default function Clasificacion() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: showCentros ? '1fr 1fr 1fr' : '1fr', gap: 16, marginBottom: 20 }}>
                     <div>
                       <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SUBRUBRO</label>
                       <select value={ed.subrubro_id} onChange={e => setEd({ ...ed, subrubro_id: e.target.value })} style={sel}>
@@ -256,35 +292,40 @@ export default function Clasificacion() {
                         }
                       </select>
                     </div>
-                    <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO GEOGRÁFICO</label>
-                      <select value={ed.centro_costo_geo_id} onChange={e => setEd({ ...ed, centro_costo_geo_id: e.target.value })} style={sel}>
-                        <option value="">— Elegir ubicación —</option>
-                        {cat.centrosGeo.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO FUNCIONAL</label>
-                      {showNuevoFunc ? (
-                        <div style={{ display: 'flex', gap: 6 }}>
-                          <input value={nuevoFunc} onChange={e => setNuevoFunc(e.target.value)} placeholder="Nombre..."
-                            style={{ ...sel, flex: 1 }} onKeyDown={e => e.key === 'Enter' && crearFunc()} />
-                          <button onClick={crearFunc} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.grn, color: '#fff', fontWeight: 700 }}>✓</button>
-                          <button onClick={() => setShowNuevoFunc(false)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.red, color: '#fff' }}>✕</button>
-                        </div>
-                      ) : (
+
+                    {showCentros && (
+                      <>
                         <div>
-                          <select value={ed.centro_costo_func_id} onChange={e => setEd({ ...ed, centro_costo_func_id: e.target.value })} style={sel}>
-                            <option value="">— Elegir función —</option>
-                            {cat.centrosFunc.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO GEOGRÁFICO</label>
+                          <select value={ed.centro_costo_geo_id} onChange={e => setEd({ ...ed, centro_costo_geo_id: e.target.value })} style={sel}>
+                            <option value="">— Elegir ubicación —</option>
+                            {cat.centrosGeo.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                           </select>
-                          <button onClick={() => setShowNuevoFunc(true)} style={{
-                            marginTop: 6, padding: '5px 12px', borderRadius: 6, border: `1px dashed ${C.cyn}`,
-                            background: 'transparent', color: C.cyn, fontSize: 11, cursor: 'pointer', width: '100%',
-                          }}>+ Crear nuevo centro funcional</button>
                         </div>
-                      )}
-                    </div>
+                        <div>
+                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO FUNCIONAL</label>
+                          {showNuevoFunc ? (
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              <input value={nuevoFunc} onChange={e => setNuevoFunc(e.target.value)} placeholder="Nombre..."
+                                style={{ ...sel, flex: 1 }} onKeyDown={e => e.key === 'Enter' && crearFunc()} />
+                              <button onClick={crearFunc} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.grn, color: '#fff', fontWeight: 700 }}>✓</button>
+                              <button onClick={() => setShowNuevoFunc(false)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.red, color: '#fff' }}>✕</button>
+                            </div>
+                          ) : (
+                            <div>
+                              <select value={ed.centro_costo_func_id} onChange={e => setEd({ ...ed, centro_costo_func_id: e.target.value })} style={sel}>
+                                <option value="">— Elegir función —</option>
+                                {cat.centrosFunc.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                              </select>
+                              <button onClick={() => setShowNuevoFunc(true)} style={{
+                                marginTop: 6, padding: '5px 12px', borderRadius: 6, border: `1px dashed ${C.cyn}`,
+                                background: 'transparent', color: C.cyn, fontSize: 11, cursor: 'pointer', width: '100%',
+                              }}>+ Crear nuevo centro funcional</button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
