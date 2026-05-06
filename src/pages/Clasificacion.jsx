@@ -12,23 +12,24 @@ async function fetchEgresos(filtro) {
     estado_pago, estado_control, observaciones, origen, es_intercompany,
     sociedad_pagadora_id, sociedad_consumidora_id,
     centro_costo_geo_id, centro_costo_func_id, subrubro_id,
-    rubro:cat_rubros(id, nombre),
+    rubro:cat_rubros(id, nombre, tipo_egreso_default, es_intercompany),
     subrubro:cat_subrubros(id, nombre),
     proveedor:proveedores(id, nombre)
   `).order('importe_total', { ascending: false })
   if (filtro === 'revisar') q = q.eq('estado_control', 'revisar')
+  if (filtro === 'importado') q = q.eq('estado_control', 'importado')
   if (filtro === 'ok') q = q.eq('estado_control', 'ok')
   if (filtro === 'sin_tipo') q = q.is('tipo_egreso', null)
   if (filtro === 'sin_sociedad') q = q.is('sociedad_consumidora_id', null)
-  if (filtro === 'sin_centro_geo') q = q.is('centro_costo_geo_id', null).eq('sociedad_consumidora_id', NETSHARING_ID)
-  if (filtro === 'sin_centro_func') q = q.is('centro_costo_func_id', null).eq('sociedad_consumidora_id', NETSHARING_ID)
+  if (filtro === 'sin_subrubro') q = q.is('subrubro_id', null)
+  if (filtro === 'intercompany') q = q.eq('es_intercompany', true)
   const { data, error } = await q.limit(200)
   return { data: data || [], error }
 }
 
 async function fetchCatalogos() {
   const [rubros, subrubros, centros, sociedades] = await Promise.all([
-    supabase.from('cat_rubros').select('id, nombre').order('nombre'),
+    supabase.from('cat_rubros').select('id, nombre, tipo_egreso_default, es_intercompany').order('orden'),
     supabase.from('cat_subrubros').select('id, nombre, rubro_id').order('nombre'),
     supabase.from('cat_centros_costo').select('id, nombre, tipo').order('tipo, nombre'),
     supabase.from('sociedades').select('id, nombre').order('nombre'),
@@ -42,14 +43,18 @@ async function fetchCatalogos() {
 }
 
 async function fetchStats() {
-  const { data } = await supabase.from('egresos').select('id, estado_control, tipo_egreso, subrubro_id, centro_costo_geo_id, centro_costo_func_id, sociedad_consumidora_id, sociedad_pagadora_id')
+  const { data } = await supabase.from('egresos').select('id, estado_control, tipo_egreso, subrubro_id, centro_costo_geo_id, centro_costo_func_id, sociedad_consumidora_id, sociedad_pagadora_id, es_intercompany')
   if (!data) return null
   const net = data.filter(r => r.sociedad_consumidora_id === NETSHARING_ID)
   return {
-    total: data.length, revisar: data.filter(r => r.estado_control === 'revisar').length,
+    total: data.length,
+    revisar: data.filter(r => r.estado_control === 'revisar').length,
+    importado: data.filter(r => r.estado_control === 'importado').length,
     ok: data.filter(r => r.estado_control === 'ok').length,
     sin_tipo: data.filter(r => !r.tipo_egreso).length,
     sin_sociedad: data.filter(r => !r.sociedad_consumidora_id).length,
+    sin_subrubro: data.filter(r => !r.subrubro_id).length,
+    intercompany: data.filter(r => r.es_intercompany).length,
     sin_centro_geo: net.filter(r => !r.centro_costo_geo_id).length,
     sin_centro_func: net.filter(r => !r.centro_costo_func_id).length,
   }
@@ -63,13 +68,11 @@ export default function Clasificacion() {
   const [cat, setCat] = useState({ rubros: [], subrubros: [], centrosGeo: [], centrosFunc: [], sociedades: [] })
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [filtro, setFiltro] = useState('revisar')
+  const [filtro, setFiltro] = useState('importado')
   const [openId, setOpenId] = useState(null)
   const [ed, setEd] = useState({})
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState(null)
-  const [nuevoFunc, setNuevoFunc] = useState('')
-  const [showNuevoFunc, setShowNuevoFunc] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -91,7 +94,6 @@ export default function Clasificacion() {
       centro_costo_geo_id: row.centro_costo_geo_id || '',
       centro_costo_func_id: row.centro_costo_func_id || '',
     })
-    setShowNuevoFunc(false)
   }
 
   const isNet = (id) => id === NETSHARING_ID
@@ -117,7 +119,7 @@ export default function Clasificacion() {
     if (ed.sociedad_consumidora_id) changes.sociedad_consumidora_id = ed.sociedad_consumidora_id
     if (ed.tipo_egreso) changes.tipo_egreso = ed.tipo_egreso
     if (ed.subrubro_id) changes.subrubro_id = ed.subrubro_id
-    
+
     const cons = ed.sociedad_consumidora_id || egresos.find(e => e.id === id)?.sociedad_consumidora_id
     if (isNet(cons)) {
       if (ed.centro_costo_geo_id) changes.centro_costo_geo_id = ed.centro_costo_geo_id
@@ -144,25 +146,18 @@ export default function Clasificacion() {
     setTimeout(() => setMsg(null), 4000)
   }
 
-  const crearFunc = async () => {
-    if (!nuevoFunc.trim()) return
-    const { data } = await supabase.from('cat_centros_costo').insert({ nombre: nuevoFunc.trim(), tipo: 'funcional' }).select().single()
-    if (data) {
-      setCat(p => ({ ...p, centrosFunc: [...p.centrosFunc, data].sort((a, b) => a.nombre.localeCompare(b.nombre)) }))
-      setEd(p => ({ ...p, centro_costo_func_id: data.id }))
-      setShowNuevoFunc(false); setNuevoFunc('')
-    }
-  }
-
   if (loading) return <LoadingState />
-  const pctOk = stats ? Math.round(stats.ok / Math.max(stats.total, 1) * 100) : 0
+  const totalClasificable = stats ? stats.total - stats.intercompany : 0
+  const pctOk = totalClasificable > 0 ? Math.round(stats.ok / totalClasificable * 100) : 0
 
   const filtros = [
-    { id: 'revisar', n: stats?.revisar, c: C.amb, l: 'Por revisar' },
+    { id: 'importado', n: stats?.importado, c: C.amb, l: 'Importados' },
     { id: 'sin_tipo', n: stats?.sin_tipo, c: C.red, l: 'Sin OPEX/CAPEX' },
     { id: 'sin_sociedad', n: stats?.sin_sociedad, c: C.red, l: 'Sin sociedad' },
+    { id: 'sin_subrubro', n: stats?.sin_subrubro, c: C.org || C.red, l: 'Sin subrubro' },
     { id: 'sin_centro_geo', n: stats?.sin_centro_geo, c: C.pur, l: 'NET sin centro geo' },
     { id: 'sin_centro_func', n: stats?.sin_centro_func, c: C.pur, l: 'NET sin centro func' },
+    { id: 'intercompany', n: stats?.intercompany, c: C.cyn, l: 'Intercompany' },
     { id: 'ok', n: stats?.ok, c: C.grn, l: 'Completos' },
     { id: 'todos', n: stats?.total, c: C.tx2, l: 'Todos' },
   ]
@@ -180,25 +175,43 @@ export default function Clasificacion() {
     return f
   }
 
+  // Subrubros filtrados por rubro del registro
+  const getSubrubrosForRow = (row) => {
+    if (row.rubro?.id) {
+      const filtered = cat.subrubros.filter(s => s.rubro_id === row.rubro.id)
+      if (filtered.length > 0) return filtered
+    }
+    return cat.subrubros
+  }
+
+  // Tipo egreso sugerido por el rubro
+  const getTipoSugerido = (row) => {
+    if (row.rubro?.tipo_egreso_default && row.rubro.tipo_egreso_default !== 'INTERCOMPANY') {
+      return row.rubro.tipo_egreso_default
+    }
+    return null
+  }
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 13, color: C.tx2, marginBottom: 8 }}>Clasificación de egresos — {stats?.total || 0} registros</div>
+        <div style={{ fontSize: 13, color: C.tx2, marginBottom: 8 }}>Clasificación de egresos — {stats?.total || 0} registros ({stats?.intercompany || 0} intercompany)</div>
         <div style={{ display: 'flex', height: 14, borderRadius: 7, overflow: 'hidden', background: C.sf }}>
           <div style={{ width: `${pctOk}%`, background: C.grn, transition: 'width .5s', borderRadius: 7 }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginTop: 4 }}>
-          <span style={{ color: C.grn, fontWeight: 700 }}>{pctOk}% clasificado ({stats?.ok || 0})</span>
-          <span style={{ color: C.amb, fontWeight: 700 }}>{stats?.revisar || 0} pendientes</span>
+          <span style={{ color: C.grn, fontWeight: 700 }}>{pctOk}% clasificado ({stats?.ok || 0} de {totalClasificable})</span>
+          <span style={{ color: C.amb, fontWeight: 700 }}>{(stats?.importado || 0) + (stats?.revisar || 0)} pendientes</span>
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
         <KpiCard title="Total" value={fmtNum(stats?.total || 0)} icon="📋" />
         <KpiCard title="Completos" value={fmtNum(stats?.ok || 0)} icon="✅" sub={`${pctOk}%`} />
-        <KpiCard title="Pendientes" value={fmtNum(stats?.revisar || 0)} icon="⚠️" />
+        <KpiCard title="Importados" value={fmtNum(stats?.importado || 0)} icon="📥" />
         <KpiCard title="Sin tipo" value={fmtNum(stats?.sin_tipo || 0)} icon="🔴" />
         <KpiCard title="Sin sociedad" value={fmtNum(stats?.sin_sociedad || 0)} icon="🏢" />
+        <KpiCard title="Intercompany" value={fmtNum(stats?.intercompany || 0)} icon="🔄" />
       </div>
 
       {msg && <div style={{ padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 14, fontWeight: 600, background: msg.t === 'ok' ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)', color: msg.t === 'ok' ? C.grn : C.red }}>{msg.m}</div>}
@@ -219,22 +232,23 @@ export default function Clasificacion() {
           const isOpen = openId === row.id
           const faltan = getFaltan(row)
           const showCentros = isOpen && isNet(ed.sociedad_consumidora_id)
+          const tipoSugerido = getTipoSugerido(row)
 
           return (
             <div key={row.id} style={{ background: C.sf, borderRadius: 12, border: `1px solid ${isOpen ? C.pri : C.brd}`, overflow: 'hidden' }}>
               <div onClick={() => toggleRow(row)} style={{
-                display: 'grid', gridTemplateColumns: '80px 1fr 110px 130px 1fr 40px',
+                display: 'grid', gridTemplateColumns: '80px 1fr 110px 180px 1fr 40px',
                 padding: '12px 16px', cursor: 'pointer', alignItems: 'center',
                 background: isOpen ? 'rgba(147,51,234,.06)' : 'transparent',
               }}>
                 <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: C.tx2 }}>{row.periodo}</div>
                 <div>
                   <div style={{ fontWeight: 600, color: C.tx, fontSize: 13 }}>{row.detalle || '—'}</div>
-                  <div style={{ fontSize: 11, color: C.tx2 }}>{row.proveedor?.nombre || ''}</div>
                 </div>
                 <div style={{ textAlign: 'right', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: C.tx }}>{fmt(row.importe_total)}</div>
-                <div style={{ paddingLeft: 12 }}>
+                <div style={{ paddingLeft: 12, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {row.rubro ? <span style={tg('rgba(147,51,234,.15)', C.pri)}>{row.rubro.nombre}</span> : null}
+                  {row.es_intercompany && <span style={tg('rgba(6,182,212,.15)', C.cyn)}>INTER</span>}
                 </div>
                 <div style={{ paddingLeft: 12, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {faltan.length === 0 ? (
@@ -256,25 +270,32 @@ export default function Clasificacion() {
                     <div style={{ ...tg('rgba(6,182,212,.15)', C.cyn), marginBottom: 12 }}>ℹ️ Sociedad no ISP — sin centros de costo</div>
                   )}
 
+                  {tipoSugerido && !ed.tipo_egreso && (
+                    <div style={{ ...tg('rgba(147,51,234,.15)', C.pri), marginBottom: 12, cursor: 'pointer' }}
+                      onClick={() => setEd({ ...ed, tipo_egreso: tipoSugerido === 'Mixto' ? 'OPEX' : (tipoSugerido === 'CAPEX Obra' ? 'CAPEX' : tipoSugerido) })}>
+                      💡 Sugerido por rubro: {tipoSugerido} — clic para aplicar
+                    </div>
+                  )}
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                     <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SOCIEDAD PAGADORA</label>
+                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SOCIEDAD PAGADORA *</label>
                       <select value={ed.sociedad_pagadora_id} onChange={e => setEd({ ...ed, sociedad_pagadora_id: e.target.value })} style={sel}>
                         <option value="">— Elegir sociedad —</option>
                         {cat.sociedades.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SOCIEDAD CONSUMIDORA</label>
+                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SOCIEDAD CONSUMIDORA *</label>
                       <select value={ed.sociedad_consumidora_id} onChange={e => setEd({ ...ed, sociedad_consumidora_id: e.target.value })} style={sel}>
                         <option value="">— Elegir sociedad —</option>
                         {cat.sociedades.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>TIPO DE EGRESO</label>
+                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>TIPO DE EGRESO *</label>
                       <select value={ed.tipo_egreso} onChange={e => setEd({ ...ed, tipo_egreso: e.target.value })} style={sel}>
-                        <option value="">— OPEX o CAPEX —</option>
+                        <option value="">— Elegir tipo —</option>
                         <option value="OPEX">OPEX — Gasto operativo</option>
                         <option value="CAPEX">CAPEX — Inversión</option>
                       </select>
@@ -283,46 +304,28 @@ export default function Clasificacion() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: showCentros ? '1fr 1fr 1fr' : '1fr', gap: 16, marginBottom: 20 }}>
                     <div>
-                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SUBRUBRO</label>
+                      <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>SUBRUBRO * (filtrado por {row.rubro?.nombre || 'rubro'})</label>
                       <select value={ed.subrubro_id} onChange={e => setEd({ ...ed, subrubro_id: e.target.value })} style={sel}>
                         <option value="">— Elegir subrubro —</option>
-                        {(row.rubro ? cat.subrubros.filter(s => s.rubro_id === row.rubro.id) : []).length > 0
-                          ? cat.subrubros.filter(s => s.rubro_id === row.rubro?.id).map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)
-                          : cat.subrubros.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)
-                        }
+                        {getSubrubrosForRow(row).map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                       </select>
                     </div>
 
                     {showCentros && (
                       <>
                         <div>
-                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO GEOGRÁFICO</label>
+                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO GEOGRÁFICO *</label>
                           <select value={ed.centro_costo_geo_id} onChange={e => setEd({ ...ed, centro_costo_geo_id: e.target.value })} style={sel}>
                             <option value="">— Elegir ubicación —</option>
                             {cat.centrosGeo.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO FUNCIONAL</label>
-                          {showNuevoFunc ? (
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              <input value={nuevoFunc} onChange={e => setNuevoFunc(e.target.value)} placeholder="Nombre..."
-                                style={{ ...sel, flex: 1 }} onKeyDown={e => e.key === 'Enter' && crearFunc()} />
-                              <button onClick={crearFunc} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.grn, color: '#fff', fontWeight: 700 }}>✓</button>
-                              <button onClick={() => setShowNuevoFunc(false)} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: C.red, color: '#fff' }}>✕</button>
-                            </div>
-                          ) : (
-                            <div>
-                              <select value={ed.centro_costo_func_id} onChange={e => setEd({ ...ed, centro_costo_func_id: e.target.value })} style={sel}>
-                                <option value="">— Elegir función —</option>
-                                {cat.centrosFunc.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                              </select>
-                              <button onClick={() => setShowNuevoFunc(true)} style={{
-                                marginTop: 6, padding: '5px 12px', borderRadius: 6, border: `1px dashed ${C.cyn}`,
-                                background: 'transparent', color: C.cyn, fontSize: 11, cursor: 'pointer', width: '100%',
-                              }}>+ Crear nuevo centro funcional</button>
-                            </div>
-                          )}
+                          <label style={{ fontSize: 11, color: C.tx2, fontWeight: 700, display: 'block', marginBottom: 6 }}>CENTRO FUNCIONAL *</label>
+                          <select value={ed.centro_costo_func_id} onChange={e => setEd({ ...ed, centro_costo_func_id: e.target.value })} style={sel}>
+                            <option value="">— Elegir función —</option>
+                            {cat.centrosFunc.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                          </select>
                         </div>
                       </>
                     )}

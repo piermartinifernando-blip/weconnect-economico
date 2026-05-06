@@ -43,7 +43,6 @@ export const getChurnEventos = () =>
 export const getChurnMensualReal = () =>
   query(() => supabase.from('vw_churn_mensual_real').select('*').order('mes'))
 
-// Alias para compatibilidad con Clientes.jsx
 export const getChurnMensual = () =>
   query(() => supabase.from('vw_churn_mensual_real').select('*').order('mes'))
 
@@ -57,7 +56,7 @@ export const getKpisActuales = () =>
 export const getEstadoOperativo = () =>
   query(() => supabase.from('vw_estado_actual_operativo').select('*'))
 
-// MORA — total y por región
+// MORA
 export const getMoraActual = () =>
   query(() => supabase.from('vw_mora_actual').select('*'))
 
@@ -67,34 +66,33 @@ export const getMoraPorRegion = () =>
 export const getMoraPorCiudad = () =>
   query(() => supabase.from('vw_clientes_por_ciudad').select('*'))
 
-// EGRESOS — cols: periodo, tipo_egreso, total, registros
+// EGRESOS — vista vw_egresos_net_mensual cols: periodo, rubro, monto, registros, tipo
 export const getEgresosNetMensual = () =>
   query(() => supabase.from('vw_egresos_net_mensual').select('*').order('periodo'))
 
-export const getEgresosPorRubro = (periodo = null) =>
-  query(() => {
-    let q = supabase.from('vw_egresos_por_rubro').select('*')
-    if (periodo) q = q.eq('periodo', periodo)
-    return q.order('total', { ascending: false })
-  })
+// vista vw_egresos_por_rubro cols: rubro, monto_total, registros, meses
+export const getEgresosPorRubro = () =>
+  query(() => supabase.from('vw_egresos_por_rubro').select('*').order('monto_total', { ascending: false }))
 
+// vista vw_egresos_por_subrubro cols: rubro, subrubro, monto_total, registros
 export const getEgresosPorSubrubro = (rubro = null) =>
   query(() => {
     let q = supabase.from('vw_egresos_por_subrubro').select('*')
     if (rubro) q = q.eq('rubro', rubro)
-    return q.order('total', { ascending: false })
+    return q.order('monto_total', { ascending: false })
   })
 
-export const getEgresosPorProveedor = (rubro = null, periodo = null) =>
+// vista vw_egresos_por_proveedor cols: proveedor, monto_total, registros, rubros_distintos, tiene_intercompany
+export const getEgresosPorProveedor = (rubro = null) =>
   query(() => {
     let q = supabase.from('vw_egresos_por_proveedor').select('*')
-    if (rubro) q = q.eq('rubro', rubro)
-    if (periodo) q = q.eq('periodo', periodo)
-    return q.order('total', { ascending: false })
+    // nota: la vista no tiene filtro por rubro, se filtra en el frontend
+    return q.order('monto_total', { ascending: false })
   })
 
+// vista vw_egresos_por_centro cols: centro_costo, monto_total, registros
 export const getEgresosPorCentro = () =>
-  query(() => supabase.from('vw_egresos_por_centro').select('*').order('total', { ascending: false }))
+  query(() => supabase.from('vw_egresos_por_centro').select('*').order('monto_total', { ascending: false }))
 
 export const getEgresosDetalle = (proveedor = null, rubro = null, limit = 100) =>
   query(() => {
@@ -104,32 +102,27 @@ export const getEgresosDetalle = (proveedor = null, rubro = null, limit = 100) =
   })
 
 export const getEgresosOtrasSociedades = () =>
-  query(() => supabase.from('vw_egresos_otras_sociedades').select('*').order('total', { ascending: false }))
+  query(() => supabase.from('vw_egresos_otras_sociedades').select('*').order('monto', { ascending: false }))
 
-// RESULTADO MENSUAL (P&L integrado)
+// RESULTADO MENSUAL — vista vw_resultado_mensual cols: periodo, facturado, cobrado, opex, capex, resultado_operativo, resultado_neto
 export const getResultadoMensual = () =>
-  query(() => supabase.from('vw_resultado_mensual').select('*').order('mes'))
+  query(() => supabase.from('vw_resultado_mensual').select('*').order('periodo'))
 
-// P&L — combina cobranza + egresos
+// P&L — usa la vista vw_resultado_mensual directamente
 export const getPnL = async () => {
-  const [cobRes, egRes] = await Promise.all([
-    supabase.from('vw_cobranza_mensual').select('*').order('mes'),
-    supabase.from('vw_egresos_net_mensual').select('*').order('periodo'),
-  ])
-  if (cobRes.error) return { data: null, error: cobRes.error.message }
-  if (egRes.error) return { data: null, error: egRes.error.message }
+  const { data, error } = await supabase.from('vw_resultado_mensual').select('*').order('periodo')
+  if (error) return { data: null, error: error.message }
 
-  const cobranza = cobRes.data || []
-  const egresos = egRes.data || []
-  const periodos = [...new Set(egresos.map(e => e.periodo))].sort()
-
-  const pl = periodos.map(p => {
-    const cobr = cobranza.find(c => c.mes === p)
-    const opex = egresos.filter(e => e.periodo === p && e.tipo_egreso === 'OPEX').reduce((s, e) => s + Number(e.total), 0)
-    const capex = egresos.filter(e => e.periodo === p && e.tipo_egreso === 'CAPEX').reduce((s, e) => s + Number(e.total), 0)
-    const ingresos = Number(cobr?.cobrado || 0)
-    return { periodo: p, ingresos, opex, capex, egresos_total: opex + capex, resultado_operativo: ingresos - opex, resultado_neto: ingresos - opex - capex }
-  })
+  const pl = (data || []).map(p => ({
+    periodo: p.periodo,
+    ingresos: Number(p.cobrado || 0),
+    facturado: Number(p.facturado || 0),
+    opex: Number(p.opex || 0),
+    capex: Number(p.capex || 0),
+    egresos_total: Number(p.opex || 0) + Number(p.capex || 0),
+    resultado_operativo: Number(p.resultado_operativo || 0),
+    resultado_neto: Number(p.resultado_neto || 0),
+  }))
   return { data: pl, error: null }
 }
 

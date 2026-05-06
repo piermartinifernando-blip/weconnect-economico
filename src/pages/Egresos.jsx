@@ -4,7 +4,7 @@ import { useQuery, useMultiQuery } from '../lib/hooks'
 import { getEgresosNetMensual, getEgresosPorRubro, getEgresosPorSubrubro, getEgresosPorProveedor, getEgresosPorCentro, getEgresosDetalle } from '../lib/queries'
 import { fmt, fmtN, ml } from '../lib/formatters'
 import { COLORS as C, PALETTE as PC } from '../lib/constants'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ComposedChart, Line } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts'
 
 export default function Egresos() {
   const [view, setView] = useState('overview')
@@ -35,11 +35,13 @@ function EgresosOverview({ onNav }) {
   if (loading) return <LoadingState />
   if (error) return <ErrorState message={error} onRetry={retry} />
 
+  // vw_egresos_net_mensual cols: periodo, rubro, monto, registros, tipo
   const eg = mensual || []
   const periodos = [...new Set(eg.map(e => e.periodo))].sort()
   const monthlyData = periodos.map(p => {
-    const opex = eg.filter(e => e.periodo === p && e.tipo_egreso === 'OPEX').reduce((s, e) => s + Number(e.total), 0)
-    const capex = eg.filter(e => e.periodo === p && e.tipo_egreso === 'CAPEX').reduce((s, e) => s + Number(e.total), 0)
+    const rows = eg.filter(e => e.periodo === p)
+    const opex = rows.filter(e => e.tipo === 'OPEX').reduce((s, e) => s + Number(e.monto), 0)
+    const capex = rows.filter(e => e.tipo !== 'OPEX').reduce((s, e) => s + Number(e.monto), 0)
     return { mes: p, opex, capex, total: opex + capex }
   })
 
@@ -47,28 +49,27 @@ function EgresosOverview({ onNav }) {
   const totC = monthlyData.reduce((s, m) => s + m.capex, 0)
   const totE = totO + totC
 
-  const rubroAgg = {}
-  ;(rubros || []).forEach(r => {
-    if (!rubroAgg[r.rubro]) rubroAgg[r.rubro] = { rubro: r.rubro, total: 0, tipo: r.tipo_default }
-    rubroAgg[r.rubro].total += Number(r.total)
-  })
-  const rubroRanked = Object.values(rubroAgg).sort((a, b) => b.total - a.total)
+  // vw_egresos_por_rubro cols: rubro, monto_total, registros, meses
+  const rubroRanked = (rubros || []).map(r => ({
+    rubro: r.rubro,
+    total: Number(r.monto_total),
+  })).sort((a, b) => b.total - a.total)
 
   return (
     <div>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
-        <KpiCard title={`Egresos ${periodos.length}m`} value={fmt(totE)} icon="💸" sub={periodos.map(ml).join(', ')} />
+        <KpiCard title={`Egresos NET ${periodos.length}m`} value={fmt(totE)} icon="💸" sub="Solo Netsharing (sin intercompany)" />
         <KpiCard title="OPEX" value={fmt(totO)} icon="💼" sub={totE > 0 ? `${Math.round(totO / totE * 100)}% del total` : ''} />
         <KpiCard title="CAPEX" value={fmt(totC)} icon="🏗️" sub={totE > 0 ? `${Math.round(totC / totE * 100)}% del total` : ''} />
         <KpiCard title="Rubros activos" value={rubroRanked.length.toString()} icon="📂" />
       </div>
 
-      <AlertBanner type="warning">
-        Egresos consumidos por Netsharing. Datos de la Matriz histórica. Se actualizan dinámicamente desde Supabase.
+      <AlertBanner type="info">
+        Egresos de Netsharing exclusivamente. Intercompany (Rendiciones Enacom, Canon, Factura Terceros) excluidos del cálculo.
       </AlertBanner>
 
       {monthlyData.length > 0 && (
-        <ChartCard title="OPEX vs CAPEX mensual" height={300} full>
+        <ChartCard title="OPEX vs CAPEX mensual — solo Netsharing" height={300} full>
           <BarChart data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke={C.brd} />
             <XAxis dataKey="mes" tickFormatter={ml} tick={{ fill: C.tx2, fontSize: 11 }} />
@@ -96,7 +97,7 @@ function EgresosOverview({ onNav }) {
           {(centros || []).slice(0, 5).map((c, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '3px 0' }}>
               <span style={{ color: C.tx }}>{c.centro_costo || 'Sin asignar'}</span>
-              <span style={{ color: C.acc, fontFamily: 'monospace' }}>{fmt(c.total)}</span>
+              <span style={{ color: C.acc, fontFamily: 'monospace' }}>{fmt(c.monto_total)}</span>
             </div>
           ))}
         </ActionCard>
@@ -111,12 +112,13 @@ function EgresosRubros({ onNav }) {
   if (loading) return <LoadingState />
   if (error) return <ErrorState message={error} onRetry={retry} />
 
-  const rubroAgg = {}
-  ;(data || []).forEach(r => {
-    if (!rubroAgg[r.rubro]) rubroAgg[r.rubro] = { rubro: r.rubro, total: 0, tipo: r.tipo_egreso }
-    rubroAgg[r.rubro].total += Number(r.total)
-  })
-  const ranked = Object.values(rubroAgg).sort((a, b) => b.total - a.total)
+  // vw_egresos_por_rubro cols: rubro, monto_total, registros, meses
+  const ranked = (data || []).map(r => ({
+    rubro: r.rubro,
+    total: Number(r.monto_total),
+    registros: r.registros,
+    meses: r.meses,
+  })).sort((a, b) => b.total - a.total)
   const totalAll = ranked.reduce((s, r) => s + r.total, 0)
 
   return (
@@ -136,6 +138,7 @@ function EgresosRubros({ onNav }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 3 }}>
                   <span style={{ color: C.tx, fontWeight: 500 }}>
                     <span style={{ color: C.tx2, fontSize: 11, fontFamily: 'monospace', marginRight: 8 }}>{i + 1}</span>{r.rubro}
+                    <span style={{ color: C.tx2, fontSize: 10, marginLeft: 8 }}>({r.registros} reg, {r.meses}m)</span>
                   </span>
                   <span style={{ color: C.acc, fontFamily: 'monospace' }}>{fmt(r.total)} <span style={{ color: C.tx2, fontSize: 11 }}>({pct.toFixed(1)}%)</span></span>
                 </div>
@@ -158,21 +161,18 @@ function EgresosRubroDetail({ rubro, onNav }) {
   if (loading) return <LoadingState />
   if (error) return <ErrorState message={error} onRetry={retry} />
 
-  const subAgg = {}
-  ;(subrubros || []).forEach(s => {
-    const key = s.subrubro || 'Sin subrubro'
-    if (!subAgg[key]) subAgg[key] = 0
-    subAgg[key] += Number(s.total)
-  })
-  const subRanked = Object.entries(subAgg).map(([k, v]) => ({ name: k, total: v })).sort((a, b) => b.total - a.total)
+  // vw_egresos_por_subrubro cols: rubro, subrubro, monto_total, registros
+  const subRanked = (subrubros || []).map(s => ({
+    name: s.subrubro || 'Sin subrubro',
+    total: Number(s.monto_total),
+  })).sort((a, b) => b.total - a.total)
 
-  const provAgg = {}
-  ;(proveedores || []).forEach(p => {
-    if (!provAgg[p.proveedor]) provAgg[p.proveedor] = 0
-    provAgg[p.proveedor] += Number(p.total)
-  })
-  const provRanked = Object.entries(provAgg).map(([k, v]) => ({ name: k, total: v })).sort((a, b) => b.total - a.total)
-  const totalRubro = provRanked.reduce((s, p) => s + p.total, 0)
+  // vw_egresos_por_proveedor cols: proveedor, monto_total, registros, rubros_distintos, tiene_intercompany
+  const provRanked = (proveedores || []).map(p => ({
+    name: p.proveedor,
+    total: Number(p.monto_total),
+  })).sort((a, b) => b.total - a.total)
+  const totalRubro = subRanked.reduce((s, p) => s + p.total, 0)
 
   return (
     <div>
@@ -184,7 +184,7 @@ function EgresosRubroDetail({ rubro, onNav }) {
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
         <KpiCard title={rubro} value={fmt(totalRubro)} icon="📂" />
         <KpiCard title="Proveedores" value={provRanked.length.toString()} icon="🏢" />
-        <KpiCard title="Subrubros" value={subRanked.length.toString()} icon="📁" />
+        <KpiCard title="Subrubros" value={subRanked.length.toString()} icon="📑" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -230,7 +230,7 @@ function EgresosProveedorDetail({ proveedor, rubro, onNav }) {
     { key: 'periodo', label: 'Período' },
     { key: 'detalle', label: 'Detalle', render: r => <span style={{ maxWidth: 250, display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.detalle}</span> },
     { key: 'importe_total', label: 'Monto', align: 'right', mono: true, render: r => fmtN(r.importe_total) },
-    { key: 'tipo_egreso', label: 'Tipo', render: r => <span style={{ color: r.tipo_egreso === 'CAPEX' ? C.red : C.amb }}>{r.tipo_egreso}</span> },
+    { key: 'tipo_egreso', label: 'Tipo', render: r => <span style={{ color: r.tipo_egreso === 'CAPEX' ? C.red : C.amb }}>{r.tipo_egreso || '—'}</span> },
     { key: 'medio_pago', label: 'Medio' },
   ]
 
@@ -257,13 +257,12 @@ function EgresosCentros({ onNav }) {
   if (loading) return <LoadingState />
   if (error) return <ErrorState message={error} onRetry={retry} />
 
-  const ccAgg = {}
-  ;(data || []).forEach(c => {
-    const key = c.centro_costo || 'Sin asignar'
-    if (!ccAgg[key]) ccAgg[key] = { nombre: key, tipo: c.tipo_centro, total: 0 }
-    ccAgg[key].total += Number(c.total)
-  })
-  const ranked = Object.values(ccAgg).sort((a, b) => b.total - a.total)
+  // vw_egresos_por_centro cols: centro_costo, monto_total, registros
+  const ranked = (data || []).map(c => ({
+    nombre: c.centro_costo || 'Sin asignar',
+    total: Number(c.monto_total),
+    registros: c.registros,
+  })).sort((a, b) => b.total - a.total)
   const totalAll = ranked.reduce((s, c) => s + c.total, 0)
 
   return (
@@ -281,7 +280,7 @@ function EgresosCentros({ onNav }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 3 }}>
                   <span style={{ color: C.tx, fontWeight: 500 }}>
                     {c.nombre}
-                    {c.tipo && <span style={{ fontSize: 10, color: C.tx2, marginLeft: 8 }}>({c.tipo})</span>}
+                    <span style={{ fontSize: 10, color: C.tx2, marginLeft: 8 }}>({c.registros} reg)</span>
                   </span>
                   <span style={{ color: C.acc, fontFamily: 'monospace' }}>{fmt(c.total)} ({pct.toFixed(1)}%)</span>
                 </div>
